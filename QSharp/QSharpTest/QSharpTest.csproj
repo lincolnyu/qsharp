@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9D366B80-049D-4734-BA87-78FBA06B4876}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QSharpTest</RootNamespace>
+    <AssemblyName>QSharpTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>
+    </NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheme.Classical.Hash\AccessibleSoHashDyn.cs" />
+    <Compile Include="Scheme.Classical.Hash\AccessibleSoHashLinear.cs" />
+    <Compile Include="Scheme.Classical.Hash\IAccessibleSoHash.cs" />
+    <Compile Include="Scheme.Classical.Hash\SplitOrderedHashTest.cs" />
+    <Compile Include="Scheme.Classical.Hash\SplitOrderedHashConcurrentTest.cs" />
+    <Compile Include="Scheme.Classical.Sequential\MaxSublistMatchTest.cs" />
+    <Compile Include="Scheme.Classical.Trees\AvlTreeTest.cs" />
+    <Compile Include="Scheme.Classical.Trees\RbTreeTest.cs" />
+    <Compile Include="String.Rex\SegmentedSetTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\AllVertices2.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\IIndexedVertex.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\IncidentalVertices2.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\SampleWeightOrderedDigraph.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\TreeMarker.cs" />
+    <Compile Include="Scheme.Classical.Graphs\MstKruskalTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\MstBoruvkaTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\MstPrimTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\ShortestPathDijkstraTest.cs" />
+    <Compile Include="Shader.Graphics\CsgIntsTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\AllVertices.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\WeightTableGenerator.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\DistanceIndicator.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\IncidentalVertices.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\Distance.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\SampleWeightedDigraph.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\Vertex.cs" />
+    <Compile Include="Scheme.Classical.Graphs\Mocks\WeightTable.cs" />
+    <Compile Include="Scheme.Utility.HbSpaceMgmt\HbSpaceMgmtTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\MstTest.cs" />
+    <Compile Include="String.Rex\RexTest.cs" />
+    <Compile Include="Scheme.Classical.Trees\SearchTreeTest.cs" />
+    <Compile Include="Scheme.Classical.Trees\BTreeTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\ShortestPathFloydWarshallTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\ShortestPathFordFulkersonTest.cs" />
+    <Compile Include="Scheme.Classical.Graphs\ShortestPathTest.cs" />
+    <Compile Include="TestUtility\RandomSelector.cs" />
+    <Compile Include="TestUtility\RandomSequenceGenerator.cs" />
+    <Compile Include="Scheme.Classical.Sequential\SortingTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs.csproj">
+      <Project>{52a5c8be-ef54-48e7-a170-f3e6c5561e71}</Project>
+      <Name>QSharp.Scheme.Classical.Graphs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj">
+      <Project>{855cfe2a-eb4b-4ae1-9390-7211c4a1739c}</Project>
+      <Name>QSharp.Scheme.Classical.Hash</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
+      <Project>{231bd960-427b-4094-8014-328750d34303}</Project>
+      <Name>QSharp.Scheme.Classical.Sequential</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
+      <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
+      <Name>QSharp.Scheme.Classical.Trees</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj">
+      <Project>{757e114f-88a3-438b-a694-233b20427c92}</Project>
+      <Name>QSharp.Scheme.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj">
+      <Project>{bb89281c-c9c9-42e7-8d68-73e393763e3a}</Project>
+      <Name>QSharp.Scheme.Utility.HbSpaceMgmt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj">
+      <Project>{18ec37a0-27e0-4b8a-9841-ce4893d8de4b}</Project>
+      <Name>QSharp.Scheme.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj">
+      <Project>{55bcf997-5267-41ae-ac02-fe193fe9401f}</Project>
+      <Name>QSharp.Shader.Geometry.Triangulation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj">
+      <Project>{078fac3d-6372-4045-bea5-9d6388446f87}</Project>
+      <Name>QSharp.Shader.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj">
+      <Project>{57a8521f-b6ad-4a99-97c5-606d93202aea}</Project>
+      <Name>QSharp.Shader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+      <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
+      <Name>QSharp.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Signal.Classic\QSharp.Signal.Classic.csproj">
+      <Project>{f1fb42ba-a487-4cfd-bab5-066cd540cf74}</Project>
+      <Name>QSharp.Signal.Classic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj">
+      <Project>{afcb6760-0fbf-4a80-9310-3c0f7dcef67b}</Project>
+      <Name>QSharp.Signal.Visual</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.Compiler\QSharp.String.Compiler.csproj">
+      <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
+      <Name>QSharp.String.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
+      <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>
+      <Name>QSharp.String.Rex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj">
+      <Project>{3f9219d6-8f35-4320-94e5-23c383e64bf6}</Project>
+      <Name>QSharp.String.Stream</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String\QSharp.String.csproj">
+      <Project>{8cd77005-0e95-4ba7-b21c-4499e37c9baf}</Project>
+      <Name>QSharp.String</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

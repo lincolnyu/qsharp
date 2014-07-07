@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{078FAC3D-6372-4045-BEA5-9D6388446F87}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QSharp.Shader.Graphics</RootNamespace>
+    <AssemblyName>QSharp.Shader.Graphics</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arithmetic\Matrix.cs" />
+    <Compile Include="Base\Exceptions\GraphicsException.cs" />
+    <Compile Include="Base\Geometry\ITransformer.cs" />
+    <Compile Include="Base\Geometry\IVector4fTransformer.cs" />
+    <Compile Include="Base\Geometry\IVector4fTransformerPair.cs" />
+    <Compile Include="Base\Geometry\Matrix4f.cs" />
+    <Compile Include="Base\Geometry\ObservedVector4f.cs" />
+    <Compile Include="Base\Geometry\Vector4f.cs" />
+    <Compile Include="Base\Geometry\Vector4fAffineTransformer.cs" />
+    <Compile Include="Base\Geometry\Vector4fAffineTransformerPair.cs" />
+    <Compile Include="Base\Objects\ILuminant.cs" />
+    <Compile Include="Base\Objects\IObject.cs" />
+    <Compile Include="Base\Objects\IOptical.cs" />
+    <Compile Include="Base\Objects\IShape.cs" />
+    <Compile Include="Base\Optics\BlendedColor.cs" />
+    <Compile Include="Base\Optics\Intersection.cs" />
+    <Compile Include="Base\Optics\Light.cs" />
+    <Compile Include="Base\Optics\PixelColor8Bit.cs" />
+    <Compile Include="Base\Optics\Ray.cs" />
+    <Compile Include="Base\Optics\UndirectionalIntersection.cs" />
+    <Compile Include="Base\Shapes\Polygon2f.cs" />
+    <Compile Include="Base\Shapes\Polygon4f.cs" />
+    <Compile Include="Base\Shapes\Polyline4f.cs" />
+    <Compile Include="Base\World\Camera.cs" />
+    <Compile Include="Base\World\CameraWindow.cs" />
+    <Compile Include="Base\World\OrthographicRayCreator.cs" />
+    <Compile Include="Base\World\OrthographicScreen.cs" />
+    <Compile Include="Base\World\OrthographicTransformerPair.cs" />
+    <Compile Include="Base\World\PerspectiveRayCreator.cs" />
+    <Compile Include="Base\World\PerspectiveScreen.cs" />
+    <Compile Include="Base\World\PerspectiveTransformerPair.cs" />
+    <Compile Include="Base\World\RayCreator.cs" />
+    <Compile Include="Base\World\RayOrigin.cs" />
+    <Compile Include="Base\World\RectangularScreen.cs" />
+    <Compile Include="Base\World\Viewer.cs" />
+    <Compile Include="Csg\CsgNode.cs" />
+    <Compile Include="Csg\CsgRayTrace.cs" />
+    <Compile Include="Csg\CsgRaytraceOpticalNode.cs" />
+    <Compile Include="Csg\ICsgLeaf.cs" />
+    <Compile Include="Csg\ICsgRayTraceLeaf.cs" />
+    <Compile Include="Csg\ICsgShape.cs" />
+    <Compile Include="Csg\IntersectSet.cs" />
+    <Compile Include="Extended\Objects\Box.cs" />
+    <Compile Include="Extended\Objects\CsgSphere.cs" />
+    <Compile Include="Extended\Objects\CsgUsefulNode.cs" />
+    <Compile Include="Extended\Objects\ISphere.cs" />
+    <Compile Include="Extended\Objects\SimpleOpticalSphere.cs" />
+    <Compile Include="Extended\Objects\Sphere.cs" />
+    <Compile Include="Extended\Objects\UsefulSphere.cs" />
+    <Compile Include="Extended\Objects\WireframedSphere.cs" />
+    <Compile Include="Extended\Wireframe\IWireframedShape.cs" />
+    <Compile Include="Extended\Wireframe\IWireframeStyle.cs" />
+    <Compile Include="Extended\Wireframe\ScreenPlotter.cs" />
+    <Compile Include="Extended\Wireframe\SimpleWireframeStyle.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Raster\Clip\LineClipLB.cs" />
+    <Compile Include="Raster\Clip\LineClipSH.cs" />
+    <Compile Include="Raster\Clip\PolygonClipSH.cs" />
+    <Compile Include="Raster\Fill\EdgeFill.cs" />
+    <Compile Include="Raster\Fill\SeedFill.cs" />
+    <Compile Include="Raster\Plot\BresenhamCircle.cs" />
+    <Compile Include="Raster\Plot\BresenhamLine.cs" />
+    <Compile Include="Raster\Plot\MidPointCircle.cs" />
+    <Compile Include="Raster\Plot\VisitDelegate.cs" />
+    <Compile Include="RayTracer\IRayTraceLuminant.cs" />
+    <Compile Include="RayTracer\IRayTraceOptical.cs" />
+    <Compile Include="RayTracer\IRayTraceScene.cs" />
+    <Compile Include="RayTracer\IRayTraceSurface.cs" />
+    <Compile Include="RayTracer\PointLight.cs" />
+    <Compile Include="RayTracer\RayTraceOptical.cs" />
+    <Compile Include="RayTracer\RayTraceRenderer.cs" />
+    <Compile Include="RayTracer\SimpleEther.cs" />
+    <Compile Include="RayTracer\SimpleOptical.cs" />
+    <Compile Include="RayTracer\SimpleScene.cs" />
+    <Compile Include="RayTracer\SimpleSurface.cs" />
+    <Compile Include="RayTracer\SimpleSurfaceCharacteristics.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="QSharp.Shader.Graphics.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj">
+      <Project>{57a8521f-b6ad-4a99-97c5-606d93202aea}</Project>
+      <Name>QSharp.Shader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+      <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
+      <Name>QSharp.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

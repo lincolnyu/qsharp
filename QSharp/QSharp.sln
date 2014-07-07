@@ -1,0 +1,220 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharpTest", "QSharpTest\QSharpTest.csproj", "{9D366B80-049D-4734-BA87-78FBA06B4876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharpTestG", "QSharpTestG\QSharpTestG.csproj", "{92F4A341-663A-4B08-AE54-C4770DC4D52C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Sequential", "QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj", "{231BD960-427B-4094-8014-328750D34303}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Graphs", "QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs.csproj", "{52A5C8BE-EF54-48E7-A170-F3E6C5561E71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Trees", "QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj", "{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Mathematics", "QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj", "{757E114F-88A3-438B-A694-233B20427C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Utility", "QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj", "{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Utility.HbSpaceMgmt", "QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj", "{BB89281C-C9C9-42E7-8D68-73E393763E3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shader.Graphics", "QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj", "{078FAC3D-6372-4045-BEA5-9D6388446F87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shared", "QSharp.Shared\QSharp.Shared.csproj", "{5D077A1C-0B5D-4582-BDA5-0768E50D0FC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shader.Geometry.Triangulation", "QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj", "{55BCF997-5267-41AE-AC02-FE193FE9401F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shader", "QSharp.Shader\QSharp.Shader.csproj", "{57A8521F-B6AD-4A99-97C5-606D93202AEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Rex", "QSharp.String.Rex\QSharp.String.Rex.csproj", "{23E1397A-E451-46F2-9368-2A99A6B160D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Compiler", "QSharp.String.Compiler\QSharp.String.Compiler.csproj", "{C5E4DA93-892E-4D9F-B7DF-40478BC21081}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Stream", "QSharp.String.Stream\QSharp.String.Stream.csproj", "{3F9219D6-8F35-4320-94E5-23C383E64BF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String", "QSharp.String\QSharp.String.csproj", "{8CD77005-0E95-4BA7-B21C-4499E37C9BAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Classic", "QSharp.Signal.Classic\QSharp.Signal.Classic.csproj", "{F1FB42BA-A487-4CFD-BAB5-066CD540CF74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Visual", "QSharp.Signal.Visual\QSharp.Signal.Visual.csproj", "{AFCB6760-0FBF-4A80-9310-3C0F7DCEF67B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Hash", "QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj", "{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shared.RT", "QSharp.Shared\QSharp.Shared.RT.csproj", "{CC875A57-AD64-4AFD-B242-5E868390BD57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Trees.RT", "QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.RT.csproj", "{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Sequential.RT", "QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.RT.csproj", "{3FB8608B-0AB5-44CC-820A-F2DC23200553}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 23
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = QSharpTest\\QSharpTest.csproj
+		SccProjectName1 = QSharpTest
+		SccLocalPath1 = QSharpTest
+		SccProjectUniqueName2 = QSharpTestG\\QSharpTestG.csproj
+		SccProjectName2 = QSharpTestG
+		SccLocalPath2 = QSharpTestG
+		SccProjectUniqueName3 = QSharp.Scheme.Classical.Sequential\\QSharp.Scheme.Classical.Sequential.csproj
+		SccProjectName3 = QSharp.Scheme.Classical.Sequential
+		SccLocalPath3 = QSharp.Scheme.Classical.Sequential
+		SccProjectUniqueName4 = QSharp.Scheme.Classical.Graphs\\QSharp.Scheme.Classical.Graphs.csproj
+		SccProjectName4 = QSharp.Scheme.Classical.Graphs
+		SccLocalPath4 = QSharp.Scheme.Classical.Graphs
+		SccProjectUniqueName5 = QSharp.Scheme.Classical.Trees\\QSharp.Scheme.Classical.Trees.csproj
+		SccProjectName5 = QSharp.Scheme.Classical.Trees
+		SccLocalPath5 = QSharp.Scheme.Classical.Trees
+		SccProjectUniqueName6 = QSharp.Scheme.Mathematics\\QSharp.Scheme.Mathematics.csproj
+		SccProjectName6 = QSharp.Scheme.Mathematics
+		SccLocalPath6 = QSharp.Scheme.Mathematics
+		SccProjectUniqueName7 = QSharp.Scheme.Utility\\QSharp.Scheme.Utility.csproj
+		SccProjectName7 = QSharp.Scheme.Utility
+		SccLocalPath7 = QSharp.Scheme.Utility
+		SccProjectUniqueName8 = QSharp.Scheme.Utility.HbSpaceMgmt\\QSharp.Scheme.Utility.HbSpaceMgmt.csproj
+		SccProjectName8 = QSharp.Scheme.Utility.HbSpaceMgmt
+		SccLocalPath8 = QSharp.Scheme.Utility.HbSpaceMgmt
+		SccProjectUniqueName9 = QSharp.Shader.Graphics\\QSharp.Shader.Graphics.csproj
+		SccProjectName9 = QSharp.Shader.Graphics
+		SccLocalPath9 = QSharp.Shader.Graphics
+		SccProjectUniqueName10 = QSharp.Shared\\QSharp.Shared.csproj
+		SccProjectName10 = QSharp.Shared
+		SccLocalPath10 = QSharp.Shared
+		SccProjectUniqueName11 = QSharp.Shader.Geometry.Triangulation\\QSharp.Shader.Geometry.Triangulation.csproj
+		SccProjectName11 = QSharp.Shader.Geometry.Triangulation
+		SccLocalPath11 = QSharp.Shader.Geometry.Triangulation
+		SccProjectUniqueName12 = QSharp.Shader\\QSharp.Shader.csproj
+		SccProjectName12 = QSharp.Shader
+		SccLocalPath12 = QSharp.Shader
+		SccProjectUniqueName13 = QSharp.String.Rex\\QSharp.String.Rex.csproj
+		SccProjectName13 = QSharp.String.Rex
+		SccLocalPath13 = QSharp.String.Rex
+		SccProjectUniqueName14 = QSharp.String.Compiler\\QSharp.String.Compiler.csproj
+		SccProjectName14 = QSharp.String.Compiler
+		SccLocalPath14 = QSharp.String.Compiler
+		SccProjectUniqueName15 = QSharp.String.Stream\\QSharp.String.Stream.csproj
+		SccProjectName15 = QSharp.String.Stream
+		SccLocalPath15 = QSharp.String.Stream
+		SccProjectUniqueName16 = QSharp.String\\QSharp.String.csproj
+		SccProjectName16 = QSharp.String
+		SccLocalPath16 = QSharp.String
+		SccProjectUniqueName17 = QSharp.Signal.Classic\\QSharp.Signal.Classic.csproj
+		SccProjectName17 = QSharp.Signal.Classic
+		SccLocalPath17 = QSharp.Signal.Classic
+		SccProjectUniqueName18 = QSharp.Signal.Visual\\QSharp.Signal.Visual.csproj
+		SccProjectName18 = QSharp.Signal.Visual
+		SccLocalPath18 = QSharp.Signal.Visual
+		SccProjectUniqueName19 = QSharp.Scheme.Classical.Hash\\QSharp.Scheme.Classical.Hash.csproj
+		SccProjectName19 = QSharp.Scheme.Classical.Hash
+		SccLocalPath19 = QSharp.Scheme.Classical.Hash
+		SccProjectUniqueName20 = QSharp.Shared\\QSharp.Shared.RT.csproj
+		SccProjectName20 = QSharp.Shared
+		SccLocalPath20 = QSharp.Shared
+		SccProjectUniqueName21 = QSharp.Scheme.Classical.Trees\\QSharp.Scheme.Classical.Trees.RT.csproj
+		SccProjectName21 = QSharp.Scheme.Classical.Trees
+		SccLocalPath21 = QSharp.Scheme.Classical.Trees
+		SccProjectUniqueName22 = QSharp.Scheme.Classical.Sequential\\QSharp.Scheme.Classical.Sequential.RT.csproj
+		SccProjectName22 = QSharp.Scheme.Classical.Sequential
+		SccLocalPath22 = QSharp.Scheme.Classical.Sequential
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D366B80-049D-4734-BA87-78FBA06B4876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D366B80-049D-4734-BA87-78FBA06B4876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D366B80-049D-4734-BA87-78FBA06B4876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D366B80-049D-4734-BA87-78FBA06B4876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F4A341-663A-4B08-AE54-C4770DC4D52C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F4A341-663A-4B08-AE54-C4770DC4D52C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F4A341-663A-4B08-AE54-C4770DC4D52C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F4A341-663A-4B08-AE54-C4770DC4D52C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{231BD960-427B-4094-8014-328750D34303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231BD960-427B-4094-8014-328750D34303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231BD960-427B-4094-8014-328750D34303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231BD960-427B-4094-8014-328750D34303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52A5C8BE-EF54-48E7-A170-F3E6C5561E71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52A5C8BE-EF54-48E7-A170-F3E6C5561E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52A5C8BE-EF54-48E7-A170-F3E6C5561E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52A5C8BE-EF54-48E7-A170-F3E6C5561E71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{757E114F-88A3-438B-A694-233B20427C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{757E114F-88A3-438B-A694-233B20427C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{757E114F-88A3-438B-A694-233B20427C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{757E114F-88A3-438B-A694-233B20427C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB89281C-C9C9-42E7-8D68-73E393763E3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB89281C-C9C9-42E7-8D68-73E393763E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB89281C-C9C9-42E7-8D68-73E393763E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB89281C-C9C9-42E7-8D68-73E393763E3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{078FAC3D-6372-4045-BEA5-9D6388446F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{078FAC3D-6372-4045-BEA5-9D6388446F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{078FAC3D-6372-4045-BEA5-9D6388446F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{078FAC3D-6372-4045-BEA5-9D6388446F87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D077A1C-0B5D-4582-BDA5-0768E50D0FC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D077A1C-0B5D-4582-BDA5-0768E50D0FC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D077A1C-0B5D-4582-BDA5-0768E50D0FC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D077A1C-0B5D-4582-BDA5-0768E50D0FC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55BCF997-5267-41AE-AC02-FE193FE9401F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55BCF997-5267-41AE-AC02-FE193FE9401F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55BCF997-5267-41AE-AC02-FE193FE9401F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55BCF997-5267-41AE-AC02-FE193FE9401F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57A8521F-B6AD-4A99-97C5-606D93202AEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57A8521F-B6AD-4A99-97C5-606D93202AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57A8521F-B6AD-4A99-97C5-606D93202AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57A8521F-B6AD-4A99-97C5-606D93202AEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23E1397A-E451-46F2-9368-2A99A6B160D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E1397A-E451-46F2-9368-2A99A6B160D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E1397A-E451-46F2-9368-2A99A6B160D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E1397A-E451-46F2-9368-2A99A6B160D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5E4DA93-892E-4D9F-B7DF-40478BC21081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5E4DA93-892E-4D9F-B7DF-40478BC21081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5E4DA93-892E-4D9F-B7DF-40478BC21081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5E4DA93-892E-4D9F-B7DF-40478BC21081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F9219D6-8F35-4320-94E5-23C383E64BF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F9219D6-8F35-4320-94E5-23C383E64BF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F9219D6-8F35-4320-94E5-23C383E64BF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F9219D6-8F35-4320-94E5-23C383E64BF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD77005-0E95-4BA7-B21C-4499E37C9BAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD77005-0E95-4BA7-B21C-4499E37C9BAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD77005-0E95-4BA7-B21C-4499E37C9BAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD77005-0E95-4BA7-B21C-4499E37C9BAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1FB42BA-A487-4CFD-BAB5-066CD540CF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1FB42BA-A487-4CFD-BAB5-066CD540CF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1FB42BA-A487-4CFD-BAB5-066CD540CF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1FB42BA-A487-4CFD-BAB5-066CD540CF74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFCB6760-0FBF-4A80-9310-3C0F7DCEF67B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFCB6760-0FBF-4A80-9310-3C0F7DCEF67B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFCB6760-0FBF-4A80-9310-3C0F7DCEF67B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFCB6760-0FBF-4A80-9310-3C0F7DCEF67B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC875A57-AD64-4AFD-B242-5E868390BD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC875A57-AD64-4AFD-B242-5E868390BD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC875A57-AD64-4AFD-B242-5E868390BD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC875A57-AD64-4AFD-B242-5E868390BD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

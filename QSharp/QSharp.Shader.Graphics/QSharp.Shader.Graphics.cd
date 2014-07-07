@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="QSharp.Shader.Graphics.Base.Matrix.Matrix4f" Collapsed="true">
+    <Position X="17.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAQAAGAAABAAIegUBIIAAAgCAgAAAAACAAAQAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\Matrix4f.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Matrix.Vector4f" Collapsed="true">
+    <Position X="17.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oAJAAMBAEAQpBAAAfAEuBgAAIgTAoUAAggAAAAQAYAE=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\Vector4f.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Matrix.Vector4fAffineTransformer" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\Vector4fAffineTransformer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Matrix.Vector4fAffineTransformerPair" Collapsed="true">
+    <Position X="1.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAABAAAAAAAEAAAEAAAAAAAAAAAAAAQI=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\Vector4fAffineTransformerPair.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Optics.BlendedColor" Collapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAEAAAAAAAgECAAICAAAAAAAAAAAAAAAAABYABAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Optics\BlendedColor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Optics.Intersection" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAhIAAAAAAAEAAIAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Shader\Graphics\Base\Optics\Intersection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Optics.Light" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAEAAAAAAAAAAYQMCAAAAAAAAAAAAAAAAAAQABAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Optics\Light.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Optics.PixelColor8Bit" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAECAAAQAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Optics\PixelColor8Bit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.Optics.Ray" Collapsed="true">
+    <Position X="15.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAACAAAAAQAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Optics\Ray.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.Camera" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IgAAQACAgRQAggAAAAAAAAAgAQCAgAAAAAAQCAAAJIA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\Camera.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.CameraWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAADAAAAAAAgAAYAEAAAAAIAAAACACABAAAAQA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\CameraWindow.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.OrthographicRayCreator" Collapsed="true">
+    <Position X="7.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\OrthographicRayCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.OrthographicScreen" Collapsed="true">
+    <Position X="7.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAACAAAAAAAAAAAAAAAAAMA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\OrthographicScreen.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.OrthographicTransformerPair" Collapsed="true">
+    <Position X="2.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\OrthographicTransformerPair.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.PerspectiveRayCreator" Collapsed="true">
+    <Position X="5.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAQgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\PerspectiveRayCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.PerspectiveScreen" Collapsed="true">
+    <Position X="5.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAACAAAAAAAAAAAAAAAAAMA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\PerspectiveScreen.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.PerspectiveTransformerPair" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\PerspectiveTransformerPair.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.RayOrigin" Collapsed="true">
+    <Position X="17.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAKAAAAAAAAAAAAgAAAAAAAAAAAAAAAABAAAAAAYAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\RayCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.RayCreator" Collapsed="true">
+    <Position X="6.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\World\RayCreator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.RectScreen" Collapsed="true">
+    <Position X="6.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAIABAQBAAABAAAAAAAAEAAAAAAAAAAAAAAAAAAAII=</HashCode>
+      <FileName>Shader\Graphics\Base\World\RectScreen.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Base.World.Viewer" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAACAABBAAgAAAAAAAECAAAAAAABAEAAAAYAE=</HashCode>
+      <FileName>Shader\Graphics\Base\World\Viewer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgLeaf" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgLeaf.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgNode" Collapsed="true">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgRaytraceLeaf" Collapsed="true">
+    <Position X="19" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgRaytraceLeaf.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgRaytraceOpticalNode" Collapsed="true">
+    <Position X="2.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgRaytraceOpticalNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgShape" Collapsed="true">
+    <Position X="1.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgShape.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Csg.CsgUsefulNode" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\CsgUsefulNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.OpenGL.Matrix" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIACAABAAAAAAAAAAAIAAEBAACAIAAAACAABAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\OpenGL\Matrix.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Raster.BresenhamCircle" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Raster\BresenhamCircle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Raster.BresenhamLine" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAIAgAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Raster\BresenhamLine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.Raster.MidPointCircle" Collapsed="true">
+    <Position X="19" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Raster\MidPointCircle.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.RayTracer.PointLight" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAwA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\PointLight.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.RayTracer.RayTraceOptical" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAABAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\RayTraceOptical.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.RayTracer.RayTraceRenderer" Collapsed="true">
+    <Position X="12" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgIAAAAAAAhAAAAAAAAAAAAAAACBAAACAAAAA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\RayTraceRenderer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.RayTracer.RayTraceScene" Collapsed="true">
+    <Position X="13.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\RayTraceScene.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QSharp.Shader.Graphics.RayTracer.RayTraceSurface" Collapsed="true">
+    <Position X="15.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\RayTraceSurface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="QSharp.Shader.Graphics.Base.Matrix.ITransformer&lt;TA, TB&gt;" Collapsed="true">
+    <Position X="5.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\ITransformer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Matrix.IVector4fTransformer" Collapsed="true">
+    <Position X="5.5" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\IVector4fTransformer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Matrix.IVector4fTransformerPair" Collapsed="true">
+    <Position X="15.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Shader\Graphics\Base\Matrix\IVector4fTransformerPair.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Objects.ILuminant" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Objects\ILuminant.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Objects.IObject" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Objects\IObject.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Objects.IOptical" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Objects\IOptical.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Base.Objects.IShape" Collapsed="true">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Base\Objects\IShape.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.Csg.ICsgRayTraceAssistant" Collapsed="true">
+    <Position X="12" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Csg\ICsgRayTraceAssistant.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="QSharp.Shader.Graphics.RayTracer.IRayTraceLuminant" Collapsed="true">
+    <Position X="13.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\RayTracer\IRayTraceLuminant.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Delegate Name="QSharp.Shader.Graphics.Raster.VisitDelegate" Collapsed="true">
+    <Position X="12" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Shader\Graphics\Raster\VisitDelegate.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
