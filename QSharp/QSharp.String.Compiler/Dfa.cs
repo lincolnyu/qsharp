@@ -60,13 +60,13 @@ namespace QSharp.String.Compiler
 
     public class Dfa_LR0 : IDfa
     {
-        public State myStart = null;
-        public States myStates = new States();
-        public StateIndex myStateIndex = new StateIndex();
+        public State MyStart = null;
+        public States MyStates = new States();
+        public StateIndex MyStateIndex = new StateIndex();
 
-        public IState Start { get { return myStart; } } 
-        public IStates S { get { return myStates; } }
-        public IStateIndex SI { get { return myStateIndex; } }
+        public IState Start { get { return MyStart; } } 
+        public IStates S { get { return MyStates; } }
+        public IStateIndex SI { get { return MyStateIndex; } }
 
         public class Item : IComparable<Item>, IItem
         {
@@ -82,46 +82,46 @@ namespace QSharp.String.Compiler
             public int CompareTo(Item that)
             {
                 int cmp;
-                for (int i = 0; i < this.Prod.Count && i < that.Prod.Count; i++)
+                for (var i = 0; i < Prod.Count && i < that.Prod.Count; i++)
                 {
-                    cmp = this.Prod[i].CompareTo(that.Prod[i]);
+                    cmp = Prod[i].CompareTo(that.Prod[i]);
                     if (cmp != 0)
                     {
                         return cmp;
                     }
                 }
-                cmp = this.Prod.Count.CompareTo(that.Prod.Count);
+                cmp = Prod.Count.CompareTo(that.Prod.Count);
                 if (cmp != 0)
                 {
                     return cmp;
                 }
-                return this.Dot.CompareTo(that.Dot);
+                return Dot.CompareTo(that.Dot);
             }
 
             public bool NeedEnqueue()
             {
-                if (this.Dot >= this.Prod.Count)
+                if (Dot >= Prod.Count)
                 {
                     return false;
                 }
-                return (this.Prod[this.Dot] is Bnf.Nonterminal);
+                return (Prod[Dot] is Bnf.Nonterminal);
             }
 
             public Bnf.ISymbol NextSymbol
             {
                 get
                 {
-                    if (this.Dot >= this.Prod.Count)
+                    if (Dot >= Prod.Count)
                     {
                         return null;
                     }
-                    return this.Prod[this.Dot];
+                    return Prod[Dot];
                 }
             }
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 int i;
                 for (i = 0; i < Prod.Count; i++)
                 {
@@ -133,7 +133,7 @@ namespace QSharp.String.Compiler
                     {
                         sb.Append(' ');
                     }
-                    sb.Append(Prod[i].ToString());
+                    sb.Append(Prod[i]);
                 }
                 if (i == Dot)
                 {
@@ -151,15 +151,15 @@ namespace QSharp.String.Compiler
 
         public class State : Utility.Set<Item>, IComparable<State>, IState
         {
-            public GoMap myGo = new GoMap();
-            public IGoMap Go { get { return myGo; } }
+            public GoMap MyGo = new GoMap();
+            public IGoMap Go { get { return MyGo; } }
 
             public Utility.Set<Bnf.ISymbol> NextSymbols
             {
                 get
                 {
-                    Utility.Set<Bnf.ISymbol> res = new Utility.Set<Bnf.ISymbol>();
-                    foreach (Item item in this)
+                    var res = new Utility.Set<Bnf.ISymbol>();
+                    foreach (var item in this)
                     {
                         if (item.NextSymbol != null)
                         {
@@ -180,24 +180,23 @@ namespace QSharp.String.Compiler
              */
             public int CompareTo(State that)
             {
-                int cmp = 0;
-                for (int i = 0; i < this.Count && i < that.Count; i++)
+                for (int i = 0; i < Count && i < that.Count; i++)
                 {
-                    cmp = this[i].CompareTo(that[i]);
+                    var cmp = this[i].CompareTo(that[i]);
                     if (cmp != 0)
                     {
                         return cmp;
                     }
                 }
-                return this.Count.CompareTo(that.Count);
+                return Count.CompareTo(that.Count);
             }
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (Item item in this)
+                var sb = new StringBuilder();
+                foreach (var item in this)
                 {
-                    sb.Append(item.ToString());
+                    sb.Append(item);
                     sb.Append("\r\treesize");
                 }
                 return sb.ToString();
@@ -209,9 +208,9 @@ namespace QSharp.String.Compiler
             /* from IState : IEnumerator<IItem> */
             IEnumerator<IItem> IEnumerable<IItem>.GetEnumerator()
             {
-                foreach (Item item in this)
+                foreach (var item in this)
                 {
-                    IItem ii = item as Item;
+                    IItem ii = item;
                     yield return ii;
                 }
             }
@@ -229,10 +228,10 @@ namespace QSharp.String.Compiler
 
             public State Closure(State state)
             {
-                Queue<Item> q = new Queue<Item>();
+                var q = new Queue<Item>();
                 // enqueue all items
 
-                foreach (Item item in state)
+                foreach (var item in state)
                 {
                     if (item.NeedEnqueue())
                     {
@@ -242,18 +241,18 @@ namespace QSharp.String.Compiler
 
                 while (q.Count > 0)
                 {
-                    Item item = q.Dequeue();
+                    var item = q.Dequeue();
 
                     /**
                      * <remarks>
                      *  No need to check that as the symbol is checked before enqueued
                      * </remarks>
                      */
-                    Bnf.Nonterminal vnB = item.Prod[item.Dot] as Bnf.Nonterminal;
-                    foreach (Bnf.Production p in BnfSpec.P[vnB.Index])
+                    var vnB = (Bnf.Nonterminal)item.Prod[item.Dot];
+                    foreach (var p in BnfSpec.P[vnB.Index])
                     {
-                        Item newItem = new Item(p, 0);
-                        int nOldCount = state.Count;
+                        var newItem = new Item(p, 0);
+                        var nOldCount = state.Count;
                         state.Add(newItem);
                         if (state.Count > nOldCount && newItem.NeedEnqueue())
                         {
@@ -345,72 +344,72 @@ namespace QSharp.String.Compiler
 
             Queue<State> q = new Queue<State>();
             List<State> tempList = new List<State>();
-            myStates.Clear();
+            MyStates.Clear();
 
             // Create the starting node
-            myStart = new State();
+            MyStart = new State();
             foreach (Bnf.Production production in bnf.P[0])
             {
-                myStart.Add(new Item(production, 0));
+                MyStart.Add(new Item(production, 0));
             }
-            myStart = so.Closure(myStart);
-            q.Enqueue(myStart);
-            myStates.Add(myStart);
-            tempList.Add(myStart);
+            MyStart = so.Closure(MyStart);
+            q.Enqueue(MyStart);
+            MyStates.Add(MyStart);
+            tempList.Add(MyStart);
 
             while (q.Count > 0)
             {
-                State state = q.Dequeue();
+                var state = q.Dequeue();
 
-                Utility.Set<Bnf.ISymbol> nextSymbols = state.NextSymbols;
+                var nextSymbols = state.NextSymbols;
 
-                foreach (Bnf.ISymbol nextSymbol in nextSymbols)
+                foreach (var nextSymbol in nextSymbols)
                 {
-                    State newState = so.Go(state, nextSymbol);
+                    var newState = so.Go(state, nextSymbol);
 
                     int nOldCount = tempList.Count;
                     int index = addToList(tempList, newState);
-                    state.myGo[nextSymbol] = tempList[index];
+                    state.MyGo[nextSymbol] = tempList[index];
 
                     if (nOldCount < tempList.Count)
                     {   // a new state is coming
                         // newState should be exactly tempList[index]
                         newState = tempList[index];
                         q.Enqueue(newState);
-                        myStates.Add(newState);
+                        MyStates.Add(newState);
                     }
                 }
             }
 
-            myStateIndex.Clear();
-            for (int i = 0; i < myStates.Count; i++)
+            MyStateIndex.Clear();
+            for (int i = 0; i < MyStates.Count; i++)
             {
-                myStateIndex[myStates[i]] = i;
+                MyStateIndex[MyStates[i]] = i;
             }
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (State state in myStates)
+            var sb = new StringBuilder();
+            foreach (var state in MyStates)
             {
-                if (state == myStart)
+                if (state == MyStart)
                 {
                     sb.Append('*');
                 }
                 sb.Append("state[");
-                sb.Append(myStateIndex[state]);
+                sb.Append(MyStateIndex[state]);
                 sb.Append("] {\r\treesize");
-                sb.Append(state.ToString());
+                sb.Append(state);
                 sb.Append("----------\r\treesize");    // delimiter separating item division and go devision
 
-                foreach (Bnf.ISymbol symbol in state.myGo)
+                foreach (Bnf.ISymbol symbol in state.MyGo)
                 {
-                    State stateToGo = state.myGo[symbol];
-                    int stateIndex = myStateIndex[stateToGo];
+                    State stateToGo = state.MyGo[symbol];
+                    int stateIndex = MyStateIndex[stateToGo];
 
                     sb.Append("Go[");
-                    sb.Append(symbol.ToString());
+                    sb.Append(symbol);
                     sb.Append("] = state[");
                     sb.Append(stateIndex);
                     sb.Append("]\r\treesize");
@@ -423,13 +422,13 @@ namespace QSharp.String.Compiler
 
     public class Dfa_LR1 : IDfa
     {
-        public State myStart = null;
-        public States myStates = new States();
-        public StateIndex myStateIndex = new StateIndex();
+        public State MyStart = null;
+        public States MyStates = new States();
+        public StateIndex MyStateIndex = new StateIndex();
 
-        public IState Start { get { return myStart; } }
-        public IStates S { get { return myStates; } }
-        public IStateIndex SI { get { return myStateIndex; } }
+        public IState Start { get { return MyStart; } }
+        public IStates S { get { return MyStates; } }
+        public IStateIndex SI { get { return MyStateIndex; } }
 
         public class Item : Dfa_LR0.Item, IComparable<Item>, IItem_LR1
         {
@@ -458,19 +457,19 @@ namespace QSharp.String.Compiler
 
             public int CompareTo(Item that)
             {
-                int cmp = CompareMainPartTo(that);
+                var cmp = CompareMainPartTo(that);
                 if (cmp != 0)
                 {
                     return cmp;
                 }
-                return this.Follower.CompareTo(that.Follower);
+                return Follower.CompareTo(that.Follower);
             }
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder(base.ToString());
+                var sb = new StringBuilder(base.ToString());
                 sb.Append(", ");
-                sb.Append(Follower.ToString());
+                sb.Append(Follower);
 
                 return sb.ToString();
             }
@@ -480,8 +479,8 @@ namespace QSharp.String.Compiler
 
         public class State : Utility.Set<Item>, IComparable<State>, IState
         {
-            public GoMap myGo = new GoMap();
-            public IGoMap Go { get { return myGo; } }
+            public GoMap MyGo = new GoMap();
+            public IGoMap Go { get { return MyGo; } }
 
             /**
              * <remarks> 
@@ -492,8 +491,8 @@ namespace QSharp.String.Compiler
             {
                 get
                 {
-                    Utility.Set<Bnf.ISymbol> res = new Utility.Set<Bnf.ISymbol>();
-                    foreach (Item item in this)
+                    var res = new Utility.Set<Bnf.ISymbol>();
+                    foreach (var item in this)
                     {
                         if (item.NextSymbol != null)
                         {
@@ -514,19 +513,19 @@ namespace QSharp.String.Compiler
                 if (index < 0)
                 {
                     index = -index - 1;
-                    int indexBefore = index - 1;
+                    var indexBefore = index - 1;
                     // this[index] is the smallest one bigger than item
-                    if (index < this.Count && item.CompareMainPartTo(this[index]) == 0)
+                    if (index < Count && item.CompareMainPartTo(this[index]) == 0)
                     {
-                        myList[index].Follower.Unionize(item.Follower);
+                        MyList[index].Follower.Unionize(item.Follower);
                     }
                     else if (indexBefore >= 0 && item.CompareMainPartTo(this[indexBefore]) == 0)
                     {
-                        myList[indexBefore].Follower.Unionize(item.Follower);
+                        MyList[indexBefore].Follower.Unionize(item.Follower);
                     }
                     else
                     {
-                        myList.Insert(index, item);
+                        MyList.Insert(index, item);
                     }
                 }
                 return this;
@@ -543,16 +542,15 @@ namespace QSharp.String.Compiler
              */
             public int CompareTo(State that)
             {
-                int cmp = 0;
-                for (int i = 0; i < this.Count && i < that.Count; i++)
+                for (var i = 0; i < Count && i < that.Count; i++)
                 {
-                    cmp = this[i].CompareTo(that[i]);
+                    var cmp = this[i].CompareTo(that[i]);
                     if (cmp != 0)
                     {
                         return cmp;
                     }
                 }
-                return this.Count.CompareTo(that.Count);
+                return Count.CompareTo(that.Count);
             }
 
 
@@ -563,16 +561,15 @@ namespace QSharp.String.Compiler
              */
             public int CompareMainPartTo(State that)
             {
-                int cmp = 0;
-                for (int i = 0; i < this.Count && i < that.Count; i++)
+                for (var i = 0; i < Count && i < that.Count; i++)
                 {
-                    cmp = this[i].CompareMainPartTo(that[i]);
+                    var cmp = this[i].CompareMainPartTo(that[i]);
                     if (cmp != 0)
                     {
                         return cmp;
                     }
                 }
-                return this.Count.CompareTo(that.Count);
+                return Count.CompareTo(that.Count);
             }
 
             /**
@@ -585,7 +582,7 @@ namespace QSharp.String.Compiler
              */
             public void Absorb(State that)
             {
-                for (int i = 0; i < this.Count && i < that.Count; i++)
+                for (int i = 0; i < Count && i < that.Count; i++)
                 {
                     this[i].Follower.Unionize(that[i].Follower);
                 }
@@ -596,7 +593,7 @@ namespace QSharp.String.Compiler
                 StringBuilder sb = new StringBuilder();
                 foreach (Item item in this)
                 {
-                    sb.Append(item.ToString());
+                    sb.Append(item);
                     sb.Append("\r\treesize");
                 }
                 return sb.ToString();
@@ -610,7 +607,7 @@ namespace QSharp.String.Compiler
             {
                 foreach (Item item in this)
                 {
-                    IItem ii = item as Item;
+                    IItem ii = item;
                     yield return ii;
                 }
             }
@@ -630,7 +627,7 @@ namespace QSharp.String.Compiler
 
             public State Closure(State state)
             {
-                Queue<Item> q = new Queue<Item>();
+                var q = new Queue<Item>();
                 // enqueue all items
 
                 foreach (Item item in state)
@@ -643,16 +640,15 @@ namespace QSharp.String.Compiler
 
                 while (q.Count > 0)
                 {
-                    Item item = q.Dequeue();
+                    var item = q.Dequeue();
 
-                    Bnf.Phrase phrase = null;
-                    BnfAnalysis.VtTokenSet b = new BnfAnalysis.VtTokenSet();
+                    var b = new BnfAnalysis.VtTokenSet();
 
-                    foreach (IToken token in item.Follower)
+                    foreach (IComparableToken token in item.Follower)
                     {
-                        Bnf.Terminal t = token as Bnf.Terminal;
+                        var t = token as Bnf.Terminal;
 
-                        phrase = new Bnf.Phrase(BnfSpec);
+                        var phrase = new Bnf.Phrase(BnfSpec);
                         for (int i = item.Dot + 1; i < item.Prod.Count; i++)
                         {
                             phrase.Items.Add(item.Prod[i]);
@@ -677,7 +673,7 @@ namespace QSharp.String.Compiler
                      *  No need to check that as the symbol is checked before enqueued
                      * </remarks>
                      */
-                    Bnf.Nonterminal vnB = item.Prod[item.Dot] as Bnf.Nonterminal;
+                    var vnB = (Bnf.Nonterminal)item.Prod[item.Dot];
                     foreach (Bnf.Production p in BnfSpec.P[vnB.Index])
                     {
                         Item newItem = new Item(p, 0, b);
@@ -808,82 +804,82 @@ namespace QSharp.String.Compiler
 
         public void Create(Bnf bnf, AddToList addToList)
         {
-            BnfAnalysis.VtTokenSet[] firstSets = BnfAnalysis.DeriveFirstSets(bnf);
+            var firstSets = BnfAnalysis.DeriveFirstSets(bnf);
             Create(bnf, firstSets, addToList);
         }
 
         public void Create(Bnf bnf, BnfAnalysis.VtTokenSet[] firstSets, AddToList addToList)
         {
-            StateOperation so = new StateOperation(bnf, firstSets);
+            var so = new StateOperation(bnf, firstSets);
 
-            Queue<State> q = new Queue<State>();
-            List<State> tempList = new List<State>();
-            myStates.Clear();
+            var q = new Queue<State>();
+            var tempList = new List<State>();
+            MyStates.Clear();
 
             // Create the starting node
-            myStart = new State();
-            foreach (Bnf.Production production in bnf.P[0])
+            MyStart = new State();
+            foreach (var production in bnf.P[0])
             {
-                myStart.Add(new Item(production, 0, new BnfAnalysis.VtTokenSet(){new NullToken()}));
+                MyStart.Add(new Item(production, 0, new BnfAnalysis.VtTokenSet {new NullToken()}));
             }
-            myStart = so.Closure(myStart);
-            q.Enqueue(myStart);
-            myStates.Add(myStart);
-            tempList.Add(myStart);
+            MyStart = so.Closure(MyStart);
+            q.Enqueue(MyStart);
+            MyStates.Add(MyStart);
+            tempList.Add(MyStart);
 
             while (q.Count > 0)
             {
-                State state = q.Dequeue();
+                var state = q.Dequeue();
 
-                Utility.Set<Bnf.ISymbol> nextSymbols = state.NextSymbols;
+                var nextSymbols = state.NextSymbols;
 
-                foreach (Bnf.ISymbol nextSymbol in nextSymbols)
+                foreach (var nextSymbol in nextSymbols)
                 {
-                    State newState = so.Go(state, nextSymbol);
+                    var newState = so.Go(state, nextSymbol);
 
-                    int nOldCount = tempList.Count;
-                    int index = addToList(tempList, newState);
-                    state.myGo[nextSymbol] = tempList[index];
+                    var nOldCount = tempList.Count;
+                    var index = addToList(tempList, newState);
+                    state.MyGo[nextSymbol] = tempList[index];
                     
                     if (nOldCount < tempList.Count)
                     {   // a new state is coming
                         // newState should be exactly tempList[index]
                         newState = tempList[index];
                         q.Enqueue(newState);    
-                        myStates.Add(newState);
+                        MyStates.Add(newState);
                     }
                 }
             }
 
-            myStateIndex.Clear();
-            for (int i = 0; i < myStates.Count; i++)
+            MyStateIndex.Clear();
+            for (var i = 0; i < MyStates.Count; i++)
             {
-                myStateIndex[myStates[i]] = i;
+                MyStateIndex[MyStates[i]] = i;
             }
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (State state in myStates)
+            var sb = new StringBuilder();
+            foreach (var state in MyStates)
             {
-                if (state == myStart)
+                if (state == MyStart)
                 {
                     sb.Append("*");
                 }
                 sb.Append("state[");
-                sb.Append(myStateIndex[state]);
+                sb.Append(MyStateIndex[state]);
                 sb.Append("] {\r\treesize");
-                sb.Append(state.ToString());
+                sb.Append(state);
                 sb.Append("----------\r\treesize");    // delimiter separating item division and go devision
 
-                foreach (Bnf.ISymbol symbol in state.myGo)
+                foreach (var symbol in state.MyGo)
                 {
-                    State stateToGo = state.myGo[symbol];
-                    int stateIndex = myStateIndex[stateToGo];
+                    var stateToGo = state.MyGo[symbol];
+                    var stateIndex = MyStateIndex[stateToGo];
 
                     sb.Append("Go[");
-                    sb.Append(symbol.ToString());
+                    sb.Append(symbol);
                     sb.Append("] = state[");
                     sb.Append(stateIndex);
                     sb.Append("]\r\treesize");
@@ -969,9 +965,9 @@ namespace QSharp.String.Compiler
 
         public static TextualTestcase[] gBnfTexts = new TextualTestcase[]
             { 
-                TextualTestcase.gJchzh078,
-                TextualTestcase.gJchzh084,
-                TextualTestcase.gJchzh086,
+                TextualTestcase.Jchzh078,
+                TextualTestcase.Jchzh084,
+                TextualTestcase.Jchzh086,
             };
 
 #if TEST_String_Compiler_Dfa

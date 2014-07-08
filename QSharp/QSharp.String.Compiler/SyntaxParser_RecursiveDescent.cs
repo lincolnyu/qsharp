@@ -11,7 +11,8 @@ namespace QSharp.String.Compiler
 {
     public class SyntaxParser_RecursiveDescent : SyntaxParser_TopDown
     {
-    /* Types */
+        #region Enumerations
+
         public enum SingleSolutionError
         {
             kNone = 0,
@@ -21,7 +22,9 @@ namespace QSharp.String.Compiler
             kUnknown
         }
 
-    /* Member variables */
+        #endregion
+
+        #region Fields
 
         protected BnfAnalysis.VtTokenSet[] myFirstSets = null;
         protected BnfAnalysis.VtTokenSet[] myFollowSets = null;
@@ -29,15 +32,17 @@ namespace QSharp.String.Compiler
         protected const int kDefMaxTreeDepth = 16;
         protected int myMaxTreeDepth = kDefMaxTreeDepth;
 
+        #endregion
 
-    /* Properties */
+        #region Properties
+
         public override Bnf BnfSpec
         {
             set
             {
-                myBnf = value; 
-                myFirstSets = BnfAnalysis.DeriveFirstSets(myBnf);
-                myFollowSets = BnfAnalysis.DeriveFollowSets(myBnf, myFirstSets);
+                MyBnf = value; 
+                myFirstSets = BnfAnalysis.DeriveFirstSets(MyBnf);
+                myFollowSets = BnfAnalysis.DeriveFollowSets(MyBnf, myFirstSets);
                 Reset();
             }
         }
@@ -52,20 +57,17 @@ namespace QSharp.String.Compiler
             }
         }
 
-    /* Methods */
+        #endregion
 
-        public SyntaxParser_RecursiveDescent()
-            : base()
-        {
-        }
+        #region Methods
 
         /* non-recursive version */
         public bool Parse_NextAttempt()
         {
-            myRecentNode = null;
-            myStackOverflowed = false;
+            MyRecentNode = null;
+            MyStackOverflowed = false;
 
-            if (myStack.Count == 0)
+            if (MyStack.Count == 0)
             {   // no (additional) match
                 return false;
             }
@@ -78,12 +80,12 @@ namespace QSharp.String.Compiler
             {
                 if (node == null)
                 {
-                    if (myStack.Count > 0)
+                    if (MyStack.Count > 0)
                     {
-                        ttstep = myStack.Pop();
+                        ttstep = MyStack.Pop();
                         node = ttstep.Node;
                         iSubpd = ttstep.ISubpd;
-                        myCandidate.Pos = ttstep.Pos;
+                        MyCandidate.Pos = ttstep.Pos;
 #if SyntaxParser_Backtracking_CleanupAtOnce
                         SyntaxTree.NodeNonterminal nodeNt = (SyntaxTree.NodeNonterminal)node;
                         nodeNt.CleanupTentativeNodes();
@@ -103,24 +105,24 @@ namespace QSharp.String.Compiler
                 {
                     SyntaxTree.NodeNonterminal nodeNt = (SyntaxTree.NodeNonterminal)node;
 
-                    IComparableToken token = myCandidate.Read() as IComparableToken;
+                    IComparableToken token = MyCandidate.Read() as IComparableToken;
 
                     int iVn = nodeNt.Ref.Index;
 
                     // acquire iSubpd
                     if (iSubpd == 0)
                     {
-                        for (iSubpd = 0; iSubpd < myBnf.P[iVn].Count; iSubpd++)
+                        for (iSubpd = 0; iSubpd < MyBnf.P[iVn].Count; iSubpd++)
                         {
                             BnfAnalysis.VtTokenSet vtsSelect 
-                                = BnfAnalysis.Select(myBnf, myFirstSets, myFollowSets, iVn, iSubpd);
+                                = BnfAnalysis.Select(MyBnf, myFirstSets, myFollowSets, iVn, iSubpd);
 
                             if (vtsSelect.IsContaining(token))
                             {
                                 break;
                             }
                         }
-                        if (iSubpd == myBnf.P[iVn].Count)
+                        if (iSubpd == MyBnf.P[iVn].Count)
                         {   // not found, matching fails at this point
                             node = null;
                         }
@@ -128,17 +130,17 @@ namespace QSharp.String.Compiler
 
                     if (node != null)
                     {
-                        for (int i = iSubpd + 1; i < myBnf.P[iVn].Count; i++)
+                        for (int i = iSubpd + 1; i < MyBnf.P[iVn].Count; i++)
                         {
                             BnfAnalysis.VtTokenSet vtsSelect 
-                                = BnfAnalysis.Select(myBnf, myFirstSets, myFollowSets, iVn, i);
+                                = BnfAnalysis.Select(MyBnf, myFirstSets, myFollowSets, iVn, i);
 
                             if (vtsSelect.IsContaining(token))
                             {
-                                if (myStack.Count < myMaxStackDepth)
+                                if (MyStack.Count < MyMaxStackDepth)
                                 {
-                                    myStack.Push(new TentativeStep(nodeNt, i, 
-                                        myCandidate.Pos.Clone() as TokenStream.Position));
+                                    MyStack.Push(new TentativeStep(nodeNt, i, 
+                                        MyCandidate.Pos.Clone() as TokenStream.Position));
                                 }
                                 else
                                 {
@@ -151,7 +153,7 @@ namespace QSharp.String.Compiler
 
                     if (node != null)
                     {
-                        Bnf.IPhrase phrase = myBnf.P[iVn][iSubpd];
+                        Bnf.IPhrase phrase = MyBnf.P[iVn][iSubpd];
                         if (nodeNt.Depth >= myMaxTreeDepth)
                         {
                             node = null;
@@ -165,8 +167,8 @@ namespace QSharp.String.Compiler
                                 node = nodeNt.NextStub;
                                 if (node == null)
                                 {
-                                    myRecentNode = null;    // for the case that the tree is completed before the candidate is consumed
-                                    if (myCandidate.Read() == null)
+                                    MyRecentNode = null;    // for the case that the tree is completed before the candidate is consumed
+                                    if (MyCandidate.Read() == null)
                                     {
                                         return true;        // successful
                                     }
@@ -182,7 +184,7 @@ namespace QSharp.String.Compiler
                 else
                 {   // terminal node
                     SyntaxTree.NodeTerminal nodeT = (SyntaxTree.NodeTerminal)node;
-                    myRecentNode = nodeT; // myRecentNode node tracking is only needed in this terminal case
+                    MyRecentNode = nodeT; // myRecentNode node tracking is only needed in this terminal case
                                     // since they are the leaf-nodes in the tree
                     node = null;
 
@@ -191,9 +193,9 @@ namespace QSharp.String.Compiler
                     {
                         throw new QException("Bad terminal node");
                     }
-                    TokenStream.Position storedPos = (TokenStream.Position)myCandidate.Pos.Clone();
+                    TokenStream.Position storedPos = (TokenStream.Position)MyCandidate.Pos.Clone();
 
-                    if (t.Check(myCandidate))
+                    if (t.Check(MyCandidate))
                     {
                         nodeT.Pos = storedPos;
 
@@ -203,8 +205,8 @@ namespace QSharp.String.Compiler
                         node = nodeT.NextStub;
                         if (node == null)
                         {
-                            myRecentNode = null;  // for the case that the tree is completed before the candidate is consumed
-                            if (myCandidate.Read() == null)
+                            MyRecentNode = null;  // for the case that the tree is completed before the candidate is consumed
+                            if (MyCandidate.Read() == null)
                             {
                                 return true;   // successful
                             }
@@ -216,37 +218,37 @@ namespace QSharp.String.Compiler
 
         protected void Parse_SingleSolution(SyntaxTree.NodeNonterminal nodeNt, int nStackDepth)
         {
-            IComparableToken token = myCandidate.Read() as IComparableToken;
+            IComparableToken token = MyCandidate.Read() as IComparableToken;
 
             int iVn = nodeNt.Ref.Index;
-            for (int iSubpd = 0; iSubpd < myBnf.P[iVn].Count; iSubpd++)
+            for (int iSubpd = 0; iSubpd < MyBnf.P[iVn].Count; iSubpd++)
             {
                 BnfAnalysis.VtTokenSet vtsSelect 
-                    = BnfAnalysis.Select(myBnf, myFirstSets, myFollowSets, iVn, iSubpd);
+                    = BnfAnalysis.Select(MyBnf, myFirstSets, myFollowSets, iVn, iSubpd);
                 if (vtsSelect.IsContaining(token))
                 {
-                    Bnf.IPhrase phrase = myBnf.P[iVn][iSubpd];
+                    Bnf.IPhrase phrase = MyBnf.P[iVn][iSubpd];
                     nodeNt.Produce(phrase);
 
                     foreach (SyntaxTree.NodeBase node in nodeNt.Subnodes)
                     {
                         if (node is SyntaxTree.NodeNonterminal)
                         {
-                            if (nStackDepth >= myMaxStackDepth)
+                            if (nStackDepth >= MyMaxStackDepth)
                             {
-                                throw new StreamException("Stack overflow", myCandidate.Pos);
+                                throw new StreamException("Stack overflow", MyCandidate.Pos);
                             }
                             SyntaxTree.NodeNonterminal nodeNtNext = (SyntaxTree.NodeNonterminal)node;
                             Parse_SingleSolution(nodeNtNext, nStackDepth + 1);
                         }
                         else
                         {   // terminal
-                            myRecentNode = (SyntaxTree.NodeTerminal)node;
-                            Bnf.Terminal t = myRecentNode.Ref;
+                            MyRecentNode = (SyntaxTree.NodeTerminal)node;
+                            Bnf.Terminal t = MyRecentNode.Ref;
 
-                            TokenStream.Position storedPos = (TokenStream.Position)myCandidate.Pos.Clone();
+                            TokenStream.Position storedPos = (TokenStream.Position)MyCandidate.Pos.Clone();
 
-                            if (!t.Check(myCandidate))
+                            if (!t.Check(MyCandidate))
                             {
                                 throw new StreamException("Parsing failure", storedPos);
                             }
@@ -254,7 +256,7 @@ namespace QSharp.String.Compiler
                     }
                 }
             }
-            throw new StreamException("Parsing failure", myCandidate.Pos);
+            throw new StreamException("Parsing failure", MyCandidate.Pos);
         }
 
         public SingleSolutionError Parse_SingleSolution()
@@ -262,7 +264,7 @@ namespace QSharp.String.Compiler
             try
             {
                 Reset();
-                Parse_SingleSolution(myTree.Root, 0);
+                Parse_SingleSolution(MyTree.Root, 0);
                 return SingleSolutionError.kNone;
             }
             catch(Exception e)
@@ -329,8 +331,11 @@ namespace QSharp.String.Compiler
         public static bool Parse_FirstSolution(out SyntaxTree tree, 
             out SyntaxTree.NodeTerminal recent, Bnf bnf, ITokenStream candidate)
         {
-            return Parse_FirstSolution(out tree, out recent, bnf, candidate, kDefMaxStackDepth);
+            return Parse_FirstSolution(out tree, out recent, bnf, candidate, DefMaxStackDepth);
         }
+
+        #endregion
+
     }   /* class SyntaxParser_RecursiveDescent */
 
 #if TEST_String_Compiler

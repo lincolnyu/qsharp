@@ -29,6 +29,8 @@ namespace QSharpTest
             return;
 #endif
 
+            //QSharp.String.Compiler.IntegratedTest.TestEntry();
+            
             var t = new SplitOrderedHashConcurrentTest();
             //t.SoHashLinearAddItemPressureTest();
             //t.SoHashDynamicAddItemPressureTest();

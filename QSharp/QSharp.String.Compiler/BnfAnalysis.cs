@@ -35,22 +35,19 @@ namespace QSharp.String.Compiler
                 {
                     return -1;
                 }
-                else if (IVn > vp.IVn)
+                if (IVn > vp.IVn)
                 {
                     return 1;
                 }
-                else if (ISubpd < vp.ISubpd)
+                if (ISubpd < vp.ISubpd)
                 {
                     return -1;
                 }
-                else if (ISubpd> vp.ISubpd)
+                if (ISubpd> vp.ISubpd)
                 {
                     return 1;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
 
             public VisitedProduction(int iVn, int iSubpd)
@@ -86,9 +83,9 @@ namespace QSharp.String.Compiler
 
             public override string ToString()
             {   
-                StringBuilder sb = new StringBuilder('{');
-                bool bFirst = true;
-                foreach (IComparableToken token in this.myList)
+                var sb = new StringBuilder('{');
+                var bFirst = true;
+                foreach (var token in MyList)
                 {
                     if (bFirst)
                     {
@@ -99,7 +96,7 @@ namespace QSharp.String.Compiler
                         sb.Append(',');
                     }
 
-                    sb.Append(token.ToString());
+                    sb.Append(token);
                 }
                 sb.Append('}');
                 return sb.ToString();
@@ -147,15 +144,15 @@ namespace QSharp.String.Compiler
 
         protected static VtTokenSet First(Bnf bnf, VisitedProductions vps, Bnf.IPhrase phrase, int iStart)
         {
-            VtTokenSet rvts = new VtTokenSet();
-            bool bHavingNull = true;
-            for (int i = iStart; i < phrase.Count; i++)
+            var rvts = new VtTokenSet();
+            var bHavingNull = true;
+            for (var i = iStart; i < phrase.Count; i++)
             {
-                Bnf.ISymbol symbol = phrase[i];
-                if (symbol is Bnf.Terminal)
+                var symbol = phrase[i];
+                var t = symbol as Bnf.Terminal;
+                if (t != null)
                 {
-                    Bnf.Terminal t = (Bnf.Terminal)symbol;
-                    IComparableToken token = t.FirstToken as IComparableToken;
+                    var token = t.FirstToken as IComparableToken;
                     if (token == null)
                     {
                         throw new QException("Non-comparable first token for terminal");
@@ -164,20 +161,18 @@ namespace QSharp.String.Compiler
                     bHavingNull = false;
                     break;
                 }
+                
+                var nt = (Bnf.Nonterminal)symbol;
+                var vts = First(bnf, vps, nt.Index);
+                rvts.Unionize(vts);
+                if (vts.IsContaining(NullToken.Entity))
+                {
+                    rvts.Remove(NullToken.Entity);
+                }
                 else
                 {
-                    Bnf.Nonterminal nt = (Bnf.Nonterminal)symbol;
-                    VtTokenSet vts = First(bnf, vps, nt.Index);
-                    rvts.Unionize(vts);
-                    if (vts.IsContaining(NullToken.Entity))
-                    {
-                        rvts.Remove(NullToken.Entity);
-                    }
-                    else
-                    {
-                        bHavingNull = false;
-                        break;
-                    }
+                    bHavingNull = false;
+                    break;
                 }
             }
             if (bHavingNull)
@@ -212,15 +207,15 @@ namespace QSharp.String.Compiler
 
         public static VtTokenSet First(VtTokenSet[] firstSets, Bnf.IPhrase phrase, int iStart)
         {
-            VtTokenSet rvts = new VtTokenSet();
-            bool bHavingNull = true;
+            var rvts = new VtTokenSet();
+            var bHavingNull = true;
             for (int i = iStart; i < phrase.Count; i++)
             {
-                Bnf.ISymbol symbol = phrase[i];
-                if (symbol is Bnf.Terminal)
+                var symbol = phrase[i];
+                var t = symbol as Bnf.Terminal;
+                if (t != null)
                 {
-                    Bnf.Terminal t = (Bnf.Terminal)symbol;
-                    IComparableToken token = t.FirstToken as IComparableToken;
+                    var token = t.FirstToken as IComparableToken;
                     if (token == null)
                     {
                         throw new QException("Non-comparable first token for terminal");
@@ -229,20 +224,18 @@ namespace QSharp.String.Compiler
                     bHavingNull = false;
                     break;
                 }
+                
+                var nt = (Bnf.Nonterminal)symbol;
+                var vts = firstSets[nt.Index];
+                rvts.Unionize(vts);
+                if (vts.IsContaining(NullToken.Entity))
+                {
+                    rvts.Remove(NullToken.Entity);
+                }
                 else
                 {
-                    Bnf.Nonterminal nt = (Bnf.Nonterminal)symbol;
-                    VtTokenSet vts = firstSets[nt.Index];
-                    rvts.Unionize(vts);
-                    if (vts.IsContaining(NullToken.Entity))
-                    {
-                        rvts.Remove(NullToken.Entity);
-                    }
-                    else
-                    {
-                        bHavingNull = false;
-                        break;
-                    }
+                    bHavingNull = false;
+                    break;
                 }
             }
             if (bHavingNull)
@@ -270,7 +263,7 @@ namespace QSharp.String.Compiler
          */
         public static VtTokenSet[] DeriveFirstSets(Bnf bnf)
         {
-            VtTokenSet[] rvts = new VtTokenSet[bnf.P.Count];
+            var rvts = new VtTokenSet[bnf.P.Count];
             for (int i = 0; i < bnf.P.Count; i++)
             {
                 rvts[i] = First(bnf, i);
@@ -309,12 +302,12 @@ namespace QSharp.String.Compiler
         {
             public int Pop()
             {
-                if (myList.Count == 0)
+                if (MyList.Count == 0)
                 {
                     throw new QException("Empty FsNodeSet");
                 }
-                int r = myList[0];
-                myList.RemoveAt(0);
+                int r = MyList[0];
+                MyList.RemoveAt(0);
                 return r;
             }
         }
@@ -346,17 +339,17 @@ namespace QSharp.String.Compiler
             rvts[0].Add(NullToken.Entity);
 
             /* 2. terminal assignment */
-            for (int iVn = 0; iVn < bnf.P.Count; iVn++)
+            for (var iVn = 0; iVn < bnf.P.Count; iVn++)
             {
-                Bnf.ProductionLine pdl = bnf.P[iVn];
+                var pdl = bnf.P[iVn];
                 foreach (Bnf.IPhrase phrase in pdl)
                 {
-                    for (int i = 0; i < (int)phrase.Count - 1; i++)
+                    for (var i = 0; i < phrase.Count - 1; i++)
                     {
-                        Bnf.ISymbol symbol = phrase[i];
-                        if (symbol is Bnf.Nonterminal)
+                        var symbol = phrase[i];
+                        var nt = symbol as Bnf.Nonterminal;
+                        if (nt != null)
                         {
-                            Bnf.Nonterminal nt = (Bnf.Nonterminal)symbol;
                             VtTokenSet tsFirst = First(firstSets, phrase, i + 1);
                             if (tsFirst.IsContaining(NullToken.Entity))
                             {
@@ -373,15 +366,14 @@ namespace QSharp.String.Compiler
                     }
                     if (phrase.Count > 0)
                     {
-                        Bnf.ISymbol symbol = phrase[phrase.Count - 1];
-                        if (symbol is Bnf.Nonterminal)
+                        var symbol = phrase[phrase.Count - 1];
+
+                        var nt = symbol as Bnf.Nonterminal;
+                        if (nt != null && nt.Index != iVn)
                         {
-                            Bnf.Nonterminal nt = (Bnf.Nonterminal)symbol;
-                            if (nt.Index != iVn)
-                            {   // self loop is not allowed lest faults be caused in right recursive cases
-                                // and it actually makes no sense in terms of containing relations
-                                fsNodes[iVn].ConnectTo(nt.Index);
-                            }
+                            // self loop is not allowed lest faults be caused in right recursive cases
+                            // and it actually makes no sense in terms of containing relations
+                            fsNodes[iVn].ConnectTo(nt.Index);
                         }
                     }
                 }
@@ -451,31 +443,29 @@ namespace QSharp.String.Compiler
         public static VtTokenSet Select(Bnf bnf, VtTokenSet[] firstSets, 
             VtTokenSet[] followSets, int iVn, int iSubpd)
         {
-            VtTokenSet firstAlpha = First(bnf, firstSets, iVn, iSubpd);
+            var firstAlpha = First(bnf, firstSets, iVn, iSubpd);
 
             if (firstAlpha.IsContaining(NullToken.Entity))
             {
-                VtTokenSet followA = Follow(followSets, iVn);
+                var followA = Follow(followSets, iVn);
                 return (VtTokenSet)firstAlpha.Unionize(followA);
             }
-            else
-            {
-                return firstAlpha;
-            }
+            
+            return firstAlpha;
         }
 
         public static VtTokenSet[][] DeriveSelectSets(Bnf bnf, 
             VtTokenSet[] firstSets, VtTokenSet[] followSets)
         {
-            VtTokenSet[][] selectSets = new VtTokenSet[bnf.P.Count][];
+            var selectSets = new VtTokenSet[bnf.P.Count][];
 
-            for (int i = 0; i < bnf.P.Count; i++)
+            for (var i = 0; i < bnf.P.Count; i++)
             {
-                Bnf.ProductionLine pdl = bnf.P[i];
-                selectSets[i] = new BnfAnalysis.VtTokenSet[pdl.Count];
-                for (int j = 0; j < pdl.Count; j++)
+                var pdl = bnf.P[i];
+                selectSets[i] = new VtTokenSet[pdl.Count];
+                for (var j = 0; j < pdl.Count; j++)
                 {
-                    selectSets[i][j] = BnfAnalysis.Select(bnf, firstSets, 
+                    selectSets[i][j] = Select(bnf, firstSets, 
                         followSets, i, j);
                 }
             }
@@ -535,7 +525,7 @@ namespace QSharp.String.Compiler
 #if TEST_String_Compiler_BnfAnalysis
         public static void Main(string[] args)
         {
-            new BnfAnalysis_Test().Test(TextualTestcase.gJchzh062, true);
+            new BnfAnalysis_Test().Test(TextualTestcase.Jchzh062, true);
         }
 #endif
     }

@@ -18,15 +18,15 @@ namespace QSharp.String.Compiler
     {
         public override LRBaseTable Table
         {
-            get { return myTable; }
+            get { return MyTable; }
             set 
             {
-                myTable = value as LRTable;
+                MyTable = value as LRTable;
                 Reset();
             }
         }
 
-        protected LRTable myTable = null;
+        protected LRTable MyTable = null;
 
         public bool Parse(ITokenStream stream)
         {
@@ -35,18 +35,18 @@ namespace QSharp.String.Compiler
                 Reset();
             }
 
-            ParsingResult result = ParsingResult.kPending;
+            ParsingResult result;
             do
             {
                 result = ParseOneStep(stream);
-            } while (result == ParsingResult.kPending || result == ParsingResult.kNextTry);
-            return (result == ParsingResult.kSucceeded);
+            } while (result == ParsingResult.Pending || result == ParsingResult.NextTry);
+            return (result == ParsingResult.Succeeded);
         }
 
         /*
          * <remarks>
          *  Single result parsing with multiple steps
-         *  each step returning any one of kSucceeded, kFailed or kPending
+         *  each step returning any one of Succeeded, Failed or Pending
          * </remarks>
          */
         public ParsingResult ParseOneStep(ITokenStream stream)
@@ -60,7 +60,7 @@ namespace QSharp.String.Compiler
                 throw new QException("State stack error");
             }
 
-            Bnf.Terminal a = stream.Read() as Bnf.Terminal;
+            var a = stream.Read() as Bnf.Terminal;
             IComparableToken token = NullToken.Entity;
             if (a != null)
             {
@@ -74,12 +74,12 @@ namespace QSharp.String.Compiler
                 }
             }
 
-            LRTable.Action action = myTable.AMap[iState, token];
+            var action = MyTable.AMap[iState, token];
             if (action != null)
             {   // parsing error, try next situation
                 if (action.CanAccept && token is NullToken)
                 {
-                    return ParsingResult.kSucceeded;
+                    return ParsingResult.Succeeded;
                 }
 
                 if (action.CanShift && myIProd == -1)
@@ -92,7 +92,7 @@ namespace QSharp.String.Compiler
                     stream.Move(1);
                     myAStack.Push(a);
                     myStateStack.Push(action.IShift);
-                    return ParsingResult.kPending;
+                    return ParsingResult.Pending;
                 }
 
                 if (action.CanReduce)
@@ -130,7 +130,7 @@ namespace QSharp.String.Compiler
                     
                     Bnf.Nonterminal ap = prod.Owner.Left;
 
-                    int iNextState = myTable.GMap[iState, ap];
+                    int iNextState = MyTable.GMap[iState, ap];
                     if (iNextState < 0)
                     {
                         throw new QException("Inconsistent parsing");
@@ -140,18 +140,18 @@ namespace QSharp.String.Compiler
                     myAStack.Push(ap);
                     myIProd = -1;
 
-                    return ParsingResult.kPending;
+                    return ParsingResult.Pending;
                 }
             }
 
             /* Error, try next situation */
             if (PopTry(stream))
             {
-                return ParsingResult.kNextTry;
+                return ParsingResult.NextTry;
             }
             else
             {
-                return ParsingResult.kFailed;
+                return ParsingResult.Failed;
             }
         }
     }   /* class SyntaxParser_LRTable */
@@ -170,18 +170,17 @@ namespace QSharp.String.Compiler
 
         public static bool Test(string[] bnfText, string sInput, bool bLALR1, bool bVerbose)
         {
-            Dfa_Test dfaTest = new Dfa_Test();
-            LRTable table = LRTable_Test.CreateViaLR1(dfaTest, bnfText, bLALR1, bVerbose);
+            var dfaTest = new Dfa_Test();
+            var table = LRTable_Test.CreateViaLR1(dfaTest, bnfText, bLALR1, bVerbose);
 
-            SyntaxParser_LRTable parser = new SyntaxParser_LRTable();
-            parser.Table = table;
+            var parser = new SyntaxParser_LRTable {Table = table};
 
-            StringStream ssInput = new StringStream(sInput);
+            var ssInput = new StringStream(sInput);
 
-            ITerminalSelector ts = dfaTest.TSel;
-            StreamSwitcher sswInput = new StreamSwitcher(ts, ssInput);
+            var ts = dfaTest.TSel;
+            var sswInput = new StreamSwitcher(ts, ssInput);
 
-            bool bRes = parser.Parse(sswInput);
+            var bRes = parser.Parse(sswInput);
 
             if (bVerbose)
             {
@@ -205,18 +204,17 @@ namespace QSharp.String.Compiler
 
         public static bool TestSLR1(string[] bnfText, string sInput, bool bVerbose)
         {
-            Dfa_Test dfaTest = new Dfa_Test();
-            LRTable table = LRTable_Test.CreateViaSLR1(dfaTest, bnfText, bVerbose);
+            var dfaTest = new Dfa_Test();
+            var table = LRTable_Test.CreateViaSLR1(dfaTest, bnfText, bVerbose);
 
-            SyntaxParser_LRTable parser = new SyntaxParser_LRTable();
-            parser.Table = table;
+            var parser = new SyntaxParser_LRTable {Table = table};
 
-            StringStream ssInput = new StringStream(sInput);
+            var ssInput = new StringStream(sInput);
 
-            ITerminalSelector ts = dfaTest.TSel;
-            StreamSwitcher sswInput = new StreamSwitcher(ts, ssInput);
+            var ts = dfaTest.TSel;
+            var sswInput = new StreamSwitcher(ts, ssInput);
 
-            bool bRes = parser.Parse(sswInput);
+            var bRes = parser.Parse(sswInput);
 
             if (bVerbose)
             {

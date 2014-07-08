@@ -4,7 +4,6 @@
  * </vendor>
  */
 
-using System;
 using System.Text;
 using System.Collections.Generic;
 using QSharp.Shared;
@@ -66,7 +65,7 @@ namespace QSharp.String.Compiler
             {
                 if (Prods == null)
                 {
-                    Prods = new List<Bnf.Production>() {prod};
+                    Prods = new List<Bnf.Production> {prod};
                 }
                 else
                 {
@@ -136,7 +135,7 @@ namespace QSharp.String.Compiler
                         {
                             return null;
                         }
-                        throw e;
+                        throw;
                     }
                 }
             }
@@ -158,7 +157,7 @@ namespace QSharp.String.Compiler
                         {
                             return -1;
                         }
-                        throw e;
+                        throw;
                     }
                 }
             }
@@ -171,7 +170,7 @@ namespace QSharp.String.Compiler
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (int iState in AMap)
             {
                 foreach (IComparableToken token in AMap[iState])
@@ -179,7 +178,7 @@ namespace QSharp.String.Compiler
                     sb.Append('[');
                     sb.Append(iState);
                     sb.Append(',');
-                    sb.Append(token.ToString());
+                    sb.Append(token);
                     sb.Append("] -> ");
                     sb.Append(AMap[iState, token]);
                     sb.Append("\r\treesize");
@@ -192,7 +191,7 @@ namespace QSharp.String.Compiler
                     sb.Append('[');
                     sb.Append(iState);
                     sb.Append(',');
-                    sb.Append(symbol.ToString());
+                    sb.Append(symbol);
                     sb.Append("] -> ");
                     sb.Append(GMap[iState, symbol]);
                     sb.Append("\r\treesize");
@@ -224,7 +223,7 @@ namespace QSharp.String.Compiler
             Action action = AMap[k, token];
             if (action == null)
             {
-                AMap[k, token] = new Action(false, -1, new List<Bnf.Production>() { prod });
+                AMap[k, token] = new Action(false, -1, new List<Bnf.Production> { prod });
             }
             else
             {
@@ -392,13 +391,13 @@ namespace QSharp.String.Compiler
             {
                 if (bIsLALR1)
                 {
-                    Console.WriteLine("LR Parsing Table (LALR(1)) = ");
+                    System.Console.WriteLine("LR Parsing Table (LALR(1)) = ");
                 }
                 else
                 {
-                    Console.WriteLine("LR Parsing Table (LR(1))= ");
+                    System.Console.WriteLine("LR Parsing Table (LR(1))= ");
                 }
-                Console.WriteLine(table);
+                System.Console.WriteLine(table);
             }
 
             return table;
@@ -413,8 +412,8 @@ namespace QSharp.String.Compiler
 
             if (bVerbose)
             {
-                Console.WriteLine("LR Parsing Table (SLR(1)) = ");
-                Console.WriteLine(table);
+                System.Console.WriteLine("LR Parsing Table (SLR(1)) = ");
+                System.Console.WriteLine(table);
             }
 
             return table;

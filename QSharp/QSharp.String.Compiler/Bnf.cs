@@ -56,10 +56,10 @@ namespace QSharp.String.Compiler
                 {
                     return -1;
                 }
-                Nonterminal nt = that as Nonterminal;
+                var nt = that as Nonterminal;
                 if (nt != null)
                 {
-                    return this.Index.CompareTo(nt.Index);
+                    return Index.CompareTo(nt.Index);
                 }
                 return -that.CompareTo(this);
             }
@@ -127,9 +127,9 @@ namespace QSharp.String.Compiler
                 }
             }
 
-            public virtual int CompareTo(Bnf.ISymbol that)
+            public virtual int CompareTo(ISymbol that)
             {
-                if (that == null || that is Bnf.Nonterminal)
+                if (that == null || that is Nonterminal)
                 {
                     return 1;
                 }
@@ -200,28 +200,28 @@ namespace QSharp.String.Compiler
                 {
                     return 1;
                 }
-                for (int i = 0; i < this.Count && i < that.Count; i++)
+                for (int i = 0; i < Count && i < that.Count; i++)
                 {
-                    ISymbol sThis = this[i];
-                    ISymbol sThat = that[i];
-                    int cmp = sThis.CompareTo(sThat);
+                    var sThis = this[i];
+                    var sThat = that[i];
+                    var cmp = sThis.CompareTo(sThat);
                     if (cmp < 0)
                     {
                         return -1;
                     }
-                    else if (cmp > 0)
+                    if (cmp > 0)
                     {
                         return 1;
                     }
                 }
-                return this.Count.CompareTo(that.Count);
+                return Count.CompareTo(that.Count);
             }
 
             public override string ToString()
             {
-                bool bFirst = true;
-                StringBuilder sb = new StringBuilder();
-                foreach (ISymbol symbol in Items)
+                var bFirst = true;
+                var sb = new StringBuilder();
+                foreach (var symbol in Items)
                 {
                     if (bFirst)
                     {
@@ -231,7 +231,7 @@ namespace QSharp.String.Compiler
                     {
                         sb.Append(' ');
                     }
-                    sb.Append(symbol.ToString());
+                    sb.Append(symbol);
                 }
                 return sb.ToString();
             }
@@ -255,8 +255,7 @@ namespace QSharp.String.Compiler
 
             public static implicit operator Phrase(Production pd)
             {
-                Phrase r = new Phrase(pd.Owner.Owner);
-                r.Items = pd.Items;
+                var r = new Phrase(pd.Owner.Owner) {Items = pd.Items};
                 return r;
             }
         }   /* class Production */
@@ -289,8 +288,9 @@ namespace QSharp.String.Compiler
             // implement the interface IEnumerable
             public IEnumerator<Production> GetEnumerator()
             {
-                foreach (Production production in Items)
+                foreach (var item in Items)
                 {
+                    var production = (Production) item;
                     yield return production;
                 }
             }
@@ -301,9 +301,9 @@ namespace QSharp.String.Compiler
 
             public void TendChildren()
             {
-                for (int i = 0; i < Items.Count; i++)
+                for (var i = 0; i < Items.Count; i++)
                 {
-                    Production production = this[i];
+                    var production = this[i];
                     production.Index = i;
                     production.Owner = this;
                 }
@@ -311,12 +311,13 @@ namespace QSharp.String.Compiler
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder(Left.ToString());
+                var sb = new StringBuilder(Left.ToString());
                 sb.Append(" -> ");
 
-                bool bFirst = true;
-                foreach (Production production in Items)
+                var bFirst = true;
+                foreach (var phrase in Items)
                 {
+                    var production = (Production) phrase;
                     if (bFirst)
                     {
                         bFirst = false;
@@ -325,7 +326,7 @@ namespace QSharp.String.Compiler
                     {
                         sb.Append(" | ");
                     }
-                    sb.Append(production.ToString());
+                    sb.Append(production);
                 }
                 return sb.ToString();
             }
@@ -375,10 +376,10 @@ namespace QSharp.String.Compiler
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (ProductionLine pdl in P)
+            var sb = new StringBuilder();
+            foreach (var pdl in P)
             {
-                sb.Append(pdl.ToString());
+                sb.Append(pdl);
                 sb.Append("\r\treesize");
             }
             return sb.ToString();

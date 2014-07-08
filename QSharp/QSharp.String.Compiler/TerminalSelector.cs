@@ -20,19 +20,18 @@ namespace QSharp.String.Compiler
      */
     public class TerminalSelector : ITerminalSelector
     {
-        protected Utility.Set<IComparableParser> myTerminalParsers
-            = new Utility.Set<IComparableParser>();
+        protected Utility.Set<IComparableParser> MyTerminalParsers = new Utility.Set<IComparableParser>();
 
         public virtual void Register(Bnf.Terminal t)
         {
-            myTerminalParsers.Add(t.Parser);
+            MyTerminalParsers.Add(t.Parser);
         }
 
         public IToken Parse(ITokenStream stream)
         {
-            foreach (IComparableParser cp in myTerminalParsers)
+            foreach (var cp in MyTerminalParsers)
             {
-                IToken token = cp.Parse(stream);
+                var token = cp.Parse(stream);
                 if (token != null)
                 {
                     return token;

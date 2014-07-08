@@ -4,7 +4,6 @@
  * </vendor>
  */
 
-using System;
 using System.Text;
 using System.Collections.Generic;
 using QSharp.Shared;
@@ -17,10 +16,10 @@ namespace QSharp.String.Compiler
     {
         public enum Relation
         {
-            kIgnored,
-            kLower,
-            kHigher,
-            kEqual,
+            Ignored,
+            Lower,
+            Higher,
+            Equal,
         }
 
         public class SymbolSet : Utility.Set<Bnf.ISymbol>
@@ -39,9 +38,9 @@ namespace QSharp.String.Compiler
                 {
                     if (e.Message == "Unmapped value")
                     {
-                        return Relation.kIgnored;
+                        return Relation.Ignored;
                     }
-                    throw e;
+                    throw;
                 }
             }
         }
@@ -51,8 +50,8 @@ namespace QSharp.String.Compiler
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (Bnf.ISymbol s1 in this)
+            var sb = new StringBuilder();
+            foreach (var s1 in this)
             {
                 foreach (Bnf.ISymbol s2 in this[s1])
                 {
@@ -70,9 +69,9 @@ namespace QSharp.String.Compiler
 
         public static SymbolSet First(Bnf bnf, Bnf.Nonterminal nt)
         {
-            SymbolSet ss = new SymbolSet() { nt };
-            Queue<Bnf.Nonterminal> sq = new Queue<Bnf.Nonterminal>();
-            bool bHasNt = false;
+            var ss = new SymbolSet { nt };
+            var sq = new Queue<Bnf.Nonterminal>();
+            var bHasNt = false;
 
             sq.Enqueue(nt);
 
@@ -109,9 +108,9 @@ namespace QSharp.String.Compiler
 
         public static SymbolSet Last(Bnf bnf, Bnf.Nonterminal nt)
         {
-            SymbolSet ss = new SymbolSet() { nt };
-            Queue<Bnf.Nonterminal> sq = new Queue<Bnf.Nonterminal>();
-            bool bHasNt = false;
+            var ss = new SymbolSet { nt };
+            var sq = new Queue<Bnf.Nonterminal>();
+            var bHasNt = false;
 
             sq.Enqueue(nt);
 
@@ -148,10 +147,10 @@ namespace QSharp.String.Compiler
 
         public static SymbolSet[] DeriveFirstSets(Bnf bnf)
         {
-            SymbolSet[]  sss = new SymbolSet[bnf.P.Count];
-            for (int i = 0; i < bnf.P.Count; i++)
+            var  sss = new SymbolSet[bnf.P.Count];
+            for (var i = 0; i < bnf.P.Count; i++)
             {
-                Bnf.ProductionLine pdl = bnf.P[i];
+                var pdl = bnf.P[i];
                 sss[i] = First(bnf, pdl.Left);
             }
             return sss;
@@ -159,10 +158,10 @@ namespace QSharp.String.Compiler
 
         public static SymbolSet[] DeriveLastSets(Bnf bnf)
         {
-            SymbolSet[] sss = new SymbolSet[bnf.P.Count];
-            for (int i = 0; i < bnf.P.Count; i++)
+            var sss = new SymbolSet[bnf.P.Count];
+            for (var i = 0; i < bnf.P.Count; i++)
             {
-                Bnf.ProductionLine pdl = bnf.P[i];
+                var pdl = bnf.P[i];
                 sss[i] = Last(bnf, pdl.Left);
             }
             return sss;
@@ -170,7 +169,7 @@ namespace QSharp.String.Compiler
 
         protected bool AssignRelation(Bnf.ISymbol s1, Bnf.ISymbol s2, Relation rel)
         {
-            if (this[s1,s2] != Relation.kIgnored)
+            if (this[s1,s2] != Relation.Ignored)
             {   // assigned
                 return (this[s1, s2] == rel);
             }
@@ -180,37 +179,37 @@ namespace QSharp.String.Compiler
 
         public bool Create(Bnf bnf)
         {
-            SymbolSet[] fss = DeriveFirstSets(bnf);
-            SymbolSet[] lss = DeriveLastSets(bnf);
+            var fss = DeriveFirstSets(bnf);
+            var lss = DeriveLastSets(bnf);
             return Create(bnf, fss, lss);
         }
 
         public bool Create(Bnf bnf, SymbolSet[] fss, SymbolSet[] lss)
         {
             BnfSpec = bnf;
-            BnfAnalysis.VtTokenSet vts = BnfAnalysis.First(bnf, 0);
+            var vts = BnfAnalysis.First(bnf, 0);
             HasNullDerivative = vts.IsContaining(NullToken.Entity);
-            foreach (Bnf.ProductionLine pdl in bnf.P)
+            foreach (var pdl in bnf.P)
             {
-                foreach (Bnf.Production p in pdl)
+                foreach (var p in pdl)
                 {
-                    for (int i = 0; i < p.Count - 1; i++)
+                    for (var i = 0; i < p.Count - 1; i++)
                     {
-                        Bnf.ISymbol s1 = p[i];
-                        Bnf.ISymbol s2 = p[i + 1];
+                        var s1 = p[i];
+                        var s2 = p[i + 1];
 
-                        if (!AssignRelation(s1, s2, Relation.kEqual))
+                        if (!AssignRelation(s1, s2, Relation.Equal))
                         {
                             return false;
                         }
 
-                        Bnf.Nonterminal ns1 = s1 as Bnf.Nonterminal;
-                        Bnf.Nonterminal ns2 = s2 as Bnf.Nonterminal;
+                        var ns1 = s1 as Bnf.Nonterminal;
+                        var ns2 = s2 as Bnf.Nonterminal;
                         if (ns2 != null)
                         {
-                            foreach (Bnf.ISymbol s in fss[ns2.Index])
+                            foreach (var s in fss[ns2.Index])
                             {
-                                if (!AssignRelation(s1, s, Relation.kLower))
+                                if (!AssignRelation(s1, s, Relation.Lower))
                                 {
                                     return false;
                                 }
@@ -219,17 +218,17 @@ namespace QSharp.String.Compiler
 
                         if (ns1 != null)
                         {
-                            foreach (Bnf.ISymbol si in lss[ns1.Index])
+                            foreach (var si in lss[ns1.Index])
                             {
-                                if (!AssignRelation(si, s2, Relation.kHigher))
+                                if (!AssignRelation(si, s2, Relation.Higher))
                                 {
                                     return false;
                                 }
                                 if (ns2 != null)
                                 {
-                                    foreach (Bnf.ISymbol sj in fss[ns2.Index])
+                                    foreach (var sj in fss[ns2.Index])
                                     {
-                                        if (!AssignRelation(si, sj, Relation.kHigher))
+                                        if (!AssignRelation(si, sj, Relation.Higher))
                                         {
                                             return false;
                                         }
@@ -247,95 +246,94 @@ namespace QSharp.String.Compiler
 
     public class SyntaxParser_SimplePrecedence
     {
-        protected Stack<Bnf.ISymbol> myAStack = new Stack<Bnf.ISymbol>();
+        protected Stack<Bnf.ISymbol> MyAStack = new Stack<Bnf.ISymbol>();
         public SPMatrix SpRel = null;
 
         protected Bnf.ISymbol GetSymbolAtTop()
         {
-            if (myAStack.Count == 0)
+            if (MyAStack.Count == 0)
             {
                 return null;
             }
-            Bnf.ISymbol top = myAStack.Pop();
-            myAStack.Push(top);
+            var top = MyAStack.Pop();
+            MyAStack.Push(top);
             return top;
         }
 
         public bool Parse(ITokenStream stream)
         {
             Reset();
-            ParsingResult result = ParsingResult.kPending;
+            ParsingResult result;
             do
             {
                 result = ParseOneStep(stream);
-            } while (result == ParsingResult.kPending);
-            return (result == ParsingResult.kSucceeded);
+            } while (result == ParsingResult.Pending);
+            return (result == ParsingResult.Succeeded);
         }
 
         public void Reset()
         {
-            myAStack.Clear();
+            MyAStack.Clear();
         }
 
         public enum ParsingResult
         {
-            kSucceeded,
-            kFailed,
-            kPending,
+            Succeeded,
+            Failed,
+            Pending,
         }
         public ParsingResult ParseOneStep(ITokenStream stream)
         {
 #if DEBUG_SimplePrecedence
             ViewProcess(stream);
 #endif
-            Bnf.ISymbol top = GetSymbolAtTop();
-            Bnf.Terminal a = stream.Read() as Bnf.Terminal;
+            var top = GetSymbolAtTop();
+            var a = stream.Read() as Bnf.Terminal;
 
             if (top == null)
             {
                 if (a == null)
                 {
-                    return SpRel.HasNullDerivative? ParsingResult.kSucceeded : ParsingResult.kFailed;
+                    return SpRel.HasNullDerivative? ParsingResult.Succeeded : ParsingResult.Failed;
                 }
                 stream.Move(1);
-                myAStack.Push(a);
-                return ParsingResult.kPending;
+                MyAStack.Push(a);
+                return ParsingResult.Pending;
             }
 
             SPMatrix.Relation rel;
             if (a == null)
             {
-                Bnf.Nonterminal ntop = top as Bnf.Nonterminal;
-                if (myAStack.Count == 1 && ntop.Index == 0)
+                var ntop = (Bnf.Nonterminal)top;
+                if (MyAStack.Count == 1 && ntop.Index == 0)
                 {
-                    return ParsingResult.kSucceeded;
+                    return ParsingResult.Succeeded;
                 }
-                rel = SPMatrix.Relation.kHigher;
+                rel = SPMatrix.Relation.Higher;
             }
             else
             {
                 rel = SpRel[top, a];
             }
 
-            if (rel == SPMatrix.Relation.kHigher)
+            if (rel == SPMatrix.Relation.Higher)
             {
-                List<Bnf.ISymbol> revp = new List<Bnf.ISymbol>();
-                revp.Add(top);
-                myAStack.Pop();
-                Bnf.ISymbol sNext = top;
-                while (myAStack.Count > 0)
+                var revp = new List<Bnf.ISymbol> {top};
+                MyAStack.Pop();
+                var sNext = top;
+                while (MyAStack.Count > 0)
                 {
-                    Bnf.ISymbol s = myAStack.Pop();
-                    SPMatrix.Relation relsa = SpRel[s, sNext];
-                    if (relsa == SPMatrix.Relation.kLower)
+                    var s = MyAStack.Pop();
+                    var relsa = SpRel[s, sNext];
+                    if (relsa == SPMatrix.Relation.Lower)
                     {
-                        myAStack.Push(s);
+                        MyAStack.Push(s);
                         break;
                     }
                     revp.Add(s);
                     sNext = s;
                 }
-                Bnf.Phrase pTarget = new Bnf.Phrase(SpRel.BnfSpec);
+                var pTarget = new Bnf.Phrase(SpRel.BnfSpec);
                 for (int i = revp.Count - 1; i >= 0; i--)
                 {
                     pTarget.Items.Add(revp[i]);
@@ -343,7 +341,7 @@ namespace QSharp.String.Compiler
 
                 // search the production
                 Bnf.Nonterminal ntTarget = null;
-                foreach (Bnf.ProductionLine pdl in SpRel.BnfSpec.P)
+                foreach (var pdl in SpRel.BnfSpec.P)
                 {
                     int index = pdl.Items.BinarySearch(pTarget);
                     if (index >= 0)
@@ -357,15 +355,15 @@ namespace QSharp.String.Compiler
                     throw new QException("Phrase not found as derivative");
                 }
 
-                myAStack.Push(ntTarget);
+                MyAStack.Push(ntTarget);
             }
             else
             {
-                myAStack.Push(a);
+                MyAStack.Push(a);
                 stream.Move(1);
             }
 
-            return ParsingResult.kPending;
+            return ParsingResult.Pending;
         }
 
 #if DEBUG_SimplePrecedence
@@ -402,41 +400,40 @@ namespace QSharp.String.Compiler
     {
         public static bool Test(string[] bnfText, string sInput, bool bVerbose)
         {
-            StringsStream sss = new StringsStream(bnfText);
+            var sss = new StringsStream(bnfText);
 
             Bnf bnf;
             ITerminalSelector ts;
-            BnfCreator_Textual bnfct = new BnfCreator_Textual();
-            bool bRes = bnfct.Create(out bnf, out ts, sss);
+            var bnfct = new BnfCreator_Textual();
+            var bRes = bnfct.Create(out bnf, out ts, sss);
             if (!bRes)
             {
-                Console.WriteLine(": Failed to create BNF");
+                System.Console.WriteLine(": Failed to create BNF");
                 return false;
             }
 
-            SPMatrix spmatrix = new SPMatrix();
+            var spmatrix = new SPMatrix();
             spmatrix.Create(bnf);
             if (bVerbose)
             {
-                Console.WriteLine(": SP matrix = ");
-                Console.WriteLine(spmatrix);
+                System.Console.WriteLine(": SP matrix = ");
+                System.Console.WriteLine(spmatrix);
             }
-            SyntaxParser_SimplePrecedence parser = new SyntaxParser_SimplePrecedence();
-            parser.SpRel = spmatrix;
+            var parser = new SyntaxParser_SimplePrecedence {SpRel = spmatrix};
 
-            StringStream ssInput = new StringStream(sInput);
-            StreamSwitcher sswInput = new StreamSwitcher(ts, ssInput);
+            var ssInput = new StringStream(sInput);
+            var sswInput = new StreamSwitcher(ts, ssInput);
             bRes = parser.Parse(sswInput);
 
             if (bVerbose)
             {
                 if (bRes)
                 {
-                    Console.WriteLine(": Parsing succeeded with no error.");
+                    System.Console.WriteLine(": Parsing succeeded with no error.");
                 }
                 else
                 {
-                    Console.WriteLine(": Parsing failed");
+                    System.Console.WriteLine(": Parsing failed");
                 }
             }
             return bRes;
@@ -445,7 +442,7 @@ namespace QSharp.String.Compiler
 #if TEST_String_Compiler_SyntaxParser_SimplePrecedence
         public static void Main(string[] args)
         {
-            Test(TextualTestcase.gJchzh071, TextualTestcase.gJchzh071.SamplesPassed[0], true);
+            Test(TextualTestcase.Jchzh071, TextualTestcase.Jchzh071.SamplesPassed[0], true);
         }
 #endif
     }   /* class SyntaxParser_SimplePrecendence_Test */

@@ -5,7 +5,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using QSharp.Shared;
 using QSharp.String.Stream;
 
@@ -38,10 +37,10 @@ namespace QSharp.String.Compiler
     {
     }
 
-    public class StreamSwitcher : TokenStream
+    public sealed class StreamSwitcher : TokenStream
     {
-        public virtual ITokenStream UnderlyingStream { get; set; }
-        public virtual IStreamParser Parser { get; set; }
+        public ITokenStream UnderlyingStream { get; set; }
+        public IStreamParser Parser { get; set; }
 
         public StreamSwitcher(IStreamParser sp, ITokenStream ts)
         {
@@ -65,8 +64,8 @@ namespace QSharp.String.Compiler
         
         public override IToken Read()
         {
-            Position pos = (Position)UnderlyingStream.Pos.Clone();
-            IToken token = Parser.Parse(UnderlyingStream);
+            var pos = (Position)UnderlyingStream.Pos.Clone();
+            var token = Parser.Parse(UnderlyingStream);
             UnderlyingStream.Pos = pos;
             return token;
         }

@@ -1,0 +1,3 @@
+﻿namespace QSharpTest.String.Compiler
+{
+}

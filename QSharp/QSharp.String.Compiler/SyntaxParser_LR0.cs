@@ -59,10 +59,10 @@ namespace QSharp.String.Compiler
 
         public enum ParsingResult
         {
-            kSucceeded,
-            kFailed,
-            kPending,
-            kNextTry,
+            Succeeded,
+            Failed,
+            Pending,
+            NextTry,
         }
 
         public abstract LRBaseTable Table
@@ -188,12 +188,13 @@ namespace QSharp.String.Compiler
     {
         public class Action
         {
-            bool Shiftable = false;
+            readonly bool _shiftable;
+
             public List<Bnf.Production> Prods = null;
 
             public Action(bool bShiftable, List<Bnf.Production> prods)
             {
-                Shiftable = bShiftable;
+                _shiftable = bShiftable;
                 Prods = prods;
             }
 
@@ -201,7 +202,7 @@ namespace QSharp.String.Compiler
             {
                 get 
                 {
-                    return Shiftable;
+                    return _shiftable;
                 }
             }
 
@@ -252,7 +253,7 @@ namespace QSharp.String.Compiler
                         {
                             return -1;
                         }
-                        throw e;
+                        throw;
                     }
                 }
             }
@@ -268,15 +269,13 @@ namespace QSharp.String.Compiler
             GMap.Clear();
             Ambiguous = false;
 
-            for (int k = 0; k < dfa.S.Count; k++)
+            for (var k = 0; k < dfa.S.Count; k++)
             {
-                IState state = dfa.S[k];
+                var state = dfa.S[k];
 
-                Action action = null;
-
-                int nSCount = 0;
-                List<Bnf.Production> prods = new List<Bnf.Production>();
-                foreach (IItem item in state)
+                var nSCount = 0;
+                var prods = new List<Bnf.Production>();
+                foreach (var item in state)
                 {
                     if (item.Dot == item.Prod.Count)
                     {
@@ -293,7 +292,7 @@ namespace QSharp.String.Compiler
                     }
                 }
 
-                action = new Action(nSCount > 0, prods);
+                var action = new Action(nSCount > 0, prods);
                 Ambiguous = (prods.Count > 0 && nSCount > 0 || prods.Count > 1);
 
                 Actions.Add(action);
@@ -302,11 +301,11 @@ namespace QSharp.String.Compiler
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            for (int iState = 0; iState < Actions.Count; iState++)
+            for (var iState = 0; iState < Actions.Count; iState++)
             {
-                Action action = Actions[iState];
+                var action = Actions[iState];
                 sb.Append('[');
                 sb.Append(iState);
                 sb.Append("] -> ");
@@ -314,9 +313,9 @@ namespace QSharp.String.Compiler
                 sb.Append("\r\treesize");
             }
 
-            foreach (int iState in GMap)
+            foreach (var iState in GMap)
             {
-                foreach (Bnf.ISymbol symbol in GMap[iState])
+                foreach (var symbol in GMap[iState])
                 {
                     sb.Append('[');
                     sb.Append(iState);
@@ -335,15 +334,15 @@ namespace QSharp.String.Compiler
     {
         public override LRBaseTable Table
         {
-            get { return myTable; }
+            get { return MyTable; }
             set
             {
-                myTable = value as LR0Table;
+                MyTable = value as LR0Table;
                 Reset();
             }
         }
 
-        protected LR0Table myTable = null;
+        protected LR0Table MyTable = null;
 
         protected Bnf.ISymbol GetSymbolAtTop()
         {
@@ -363,12 +362,12 @@ namespace QSharp.String.Compiler
                 Reset();
             }
 
-            ParsingResult result = ParsingResult.kPending;
+            ParsingResult result;
             do
             {
                 result = ParseOneStep(stream);
-            } while (result == ParsingResult.kPending || result == ParsingResult.kNextTry);
-            return (result == ParsingResult.kSucceeded);
+            } while (result == ParsingResult.Pending || result == ParsingResult.NextTry);
+            return (result == ParsingResult.Succeeded);
         }
 
         public ParsingResult ParseOneStep(ITokenStream stream)
@@ -376,21 +375,21 @@ namespace QSharp.String.Compiler
 #if DEBUG_SyntaxParser_LR0
             ViewProcess(stream);
 #endif
-            int iState = GetStateAtTop();
+            var iState = GetStateAtTop();
             if (iState < 0)
             {
                 throw new QException("State stack error");
             }
 
-            LR0Table.Action action = myTable.Actions[iState];
+            var action = MyTable.Actions[iState];
 
             if (action.CanShift && myIProd == -1)
             {
-                Bnf.Terminal a = stream.Read() as Bnf.Terminal;
-                int iNextState = -1;
+                var a = stream.Read() as Bnf.Terminal;
+                var iNextState = -1;
                 if (a != null)
                 {
-                    iNextState = myTable.GMap[iState, a];
+                    iNextState = MyTable.GMap[iState, a];
                 }
                 if (iNextState < 0)
                 {
@@ -398,12 +397,9 @@ namespace QSharp.String.Compiler
                     {
                         if (PopTry(stream))
                         {
-                            return ParsingResult.kNextTry;
+                            return ParsingResult.NextTry;
                         }
-                        else
-                        {
-                            return ParsingResult.kFailed;
-                        }
+                        return ParsingResult.Failed;
                     }
                 }
                 else
@@ -418,7 +414,7 @@ namespace QSharp.String.Compiler
                     myStateStack.Push(iNextState);
                     myIProd = -1;
 
-                    return ParsingResult.kPending;
+                    return ParsingResult.Pending;
                 }
             }
 
@@ -470,22 +466,18 @@ namespace QSharp.String.Compiler
                 {
                     if (stream.Read() as Bnf.Terminal == null)
                     {
-                        return ParsingResult.kSucceeded;
+                        return ParsingResult.Succeeded;
                     }
-                    else
+                    
+                    if (PopTry(stream))
                     {
-                        if (PopTry(stream))
-                        {
-                            return ParsingResult.kNextTry;
-                        }
-                        else
-                        {
-                            return ParsingResult.kFailed;
-                        }
+                        return ParsingResult.NextTry;
                     }
+                    
+                    return ParsingResult.Failed;
                 }
 
-                int iNextState = myTable.GMap[iState, ap];
+                int iNextState = MyTable.GMap[iState, ap];
 
                 if (iNextState < 0)
                 {
@@ -495,10 +487,10 @@ namespace QSharp.String.Compiler
                 myAStack.Push(ap);
 
                 myIProd = -1;
-                return ParsingResult.kPending;
+                return ParsingResult.Pending;
             }
 
-            return ParsingResult.kFailed;
+            return ParsingResult.Failed;
         }
 
     }   /*  class SyntaxParser_LR0 */

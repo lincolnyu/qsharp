@@ -11,12 +11,7 @@ namespace QSharp.String.Compiler
 {
     public class SyntaxParser_Backtracking : SyntaxParser_TopDown
     {
-    /* Methods */
-
-        public SyntaxParser_Backtracking()
-            : base()
-        {
-        }
+        #region Methods
 
         /**
          * SyntaxParser_Backtracking.Parse_NextAttempt
@@ -30,10 +25,10 @@ namespace QSharp.String.Compiler
          */
         public bool Parse_NextAttempt()
         {
-            myRecentNode = null;
-            myStackOverflowed = false;
+            MyRecentNode = null;
+            MyStackOverflowed = false;
 
-            if (myStack.Count == 0)
+            if (MyStack.Count == 0)
             {   // no (additional) match
                 return false;
             }
@@ -46,12 +41,12 @@ namespace QSharp.String.Compiler
             {
                 if (node == null)
                 {   // try another path
-                    if (myStack.Count > 0)
+                    if (MyStack.Count > 0)
                     {
-                        ttstep = myStack.Pop();
+                        ttstep = MyStack.Pop();
                         node = ttstep.Node;
                         iSubpd = ttstep.ISubpd;
-                        myCandidate.Pos = ttstep.Pos;
+                        MyCandidate.Pos = ttstep.Pos;
 #if SyntaxParser_Backtracking_CleanupAtOnce
                         SyntaxTree.NodeNonterminal nodeNt = (SyntaxTree.NodeNonterminal)node;
                         nodeNt.CleanupTentativeNodes();
@@ -69,26 +64,26 @@ namespace QSharp.String.Compiler
 
                 if (node is SyntaxTree.NodeNonterminal)
                 {
-                    SyntaxTree.NodeNonterminal nodeNt = (SyntaxTree.NodeNonterminal)node;
-                    nodeNt.Produce(myBnf.P[nodeNt.Ref.Index][iSubpd]);
+                    var nodeNt = (SyntaxTree.NodeNonterminal)node;
+                    nodeNt.Produce(MyBnf.P[nodeNt.Ref.Index][iSubpd]);
 #if DEBUG_SyntaxParser_Backtracking
                     System.Console.WriteLine("% Checking {0} at {1}", nodeNt, myCandidate.Pos);
                     System.Console.WriteLine("% Produced: {0}", myBnf.P[nodeNt.Ref.Index][iSubpd]);
 #endif
                     iSubpd++;
-                    if (iSubpd < myBnf.P[nodeNt.Ref.Index].Count)
+                    if (iSubpd < MyBnf.P[nodeNt.Ref.Index].Count)
                     {   // needs to be added to the stack as an attempt
                         // FIXME: enhance the perfomance by ruling out unnecessary attempt pushing
-                        if (myStack.Count < myMaxStackDepth)
+                        if (MyStack.Count < MyMaxStackDepth)
                         {
-                            myStack.Push(new TentativeStep(nodeNt, iSubpd, 
-                                myCandidate.Pos.Clone() as TokenStream.Position));
+                            MyStack.Push(new TentativeStep(nodeNt, iSubpd, 
+                                MyCandidate.Pos.Clone() as TokenStream.Position));
                         }
                         else
                         {   /* exceeding the stack depth, no more attempt can be made
                              * we no longer accept nonterminal at this point in stack
                              * only in this case 'node' is set to null */
-                            myStackOverflowed = true;
+                            MyStackOverflowed = true;
                             node = null;
                         }
                     }
@@ -99,8 +94,8 @@ namespace QSharp.String.Compiler
                             node = nodeNt.NextStub;
                             if (node == null)
                             {
-                                myRecentNode = null;    // for the case that the tree is completed before the candidate is consumed
-                                if (myCandidate.Read() == null)
+                                MyRecentNode = null;    // for the case that the tree is completed before the candidate is consumed
+                                if (MyCandidate.Read() == null)
                                 {
                                     return true;        // successful
                                 }
@@ -114,19 +109,19 @@ namespace QSharp.String.Compiler
                 }
                 else
                 {   // terminal node
-                    SyntaxTree.NodeTerminal nodeT = (SyntaxTree.NodeTerminal)node;
-                    myRecentNode = nodeT; // myRecentNode node tracking is only needed in this terminal case
+                    var nodeT = (SyntaxTree.NodeTerminal)node;
+                    MyRecentNode = nodeT; // myRecentNode node tracking is only needed in this terminal case
                                     // since they are the leaf-nodes in the tree
                     node = null;
 
-                    Bnf.Terminal t = nodeT.Ref as Bnf.Terminal;
+                    var t = nodeT.Ref;
                     if (t == null)
                     {
                         throw new QException("Null terminal node");
                     }
 
-                    TokenStream.Position storedPos = (TokenStream.Position)myCandidate.Pos.Clone();
-                    bool bPassed = t.Check(myCandidate);
+                    var storedPos = (TokenStream.Position)MyCandidate.Pos.Clone();
+                    var bPassed = t.Check(MyCandidate);
 
 #if DEBUG_SyntaxParser_Backtracking
                     System.Console.WriteLine("% Matching attempt (with {0}) starting at {1} returns {2}", t, storedPos, bPassed);
@@ -140,8 +135,8 @@ namespace QSharp.String.Compiler
                         node = nodeT.NextStub;
                         if (node == null)
                         {
-                            myRecentNode = null;  // for the case that the tree is completed before the candidate is consumed
-                            if (myCandidate.Read() == null)
+                            MyRecentNode = null;  // for the case that the tree is completed before the candidate is consumed
+                            if (MyCandidate.Read() == null)
                             {
                                 return true;   // successful
                             }
@@ -155,13 +150,14 @@ namespace QSharp.String.Compiler
             out SyntaxTree.NodeTerminal recent, out bool bStackOverflowed, Bnf bnf, 
             ITokenStream candidate, int nMaxStackDepth)
         {
-            SyntaxParser_Backtracking parser = new SyntaxParser_Backtracking();
+            var parser = new SyntaxParser_Backtracking
+            {
+                MaxStackDepth = nMaxStackDepth,
+                Candidate = candidate,
+                BnfSpec = bnf
+            };
 
-            parser.MaxStackDepth = nMaxStackDepth;
-            parser.Candidate = candidate;
-            parser.BnfSpec = bnf;
-            
-            bool res = parser.Parse_NextAttempt();
+            var res = parser.Parse_NextAttempt();
 
             recent = parser.RecentNode;
             tree = parser.ResultTree;
@@ -181,8 +177,11 @@ namespace QSharp.String.Compiler
             out SyntaxTree.NodeTerminal recent, Bnf bnf, ITokenStream candidate)
         {
             return Parse_FirstSolution(out tree, out recent, 
-                bnf, candidate, kDefMaxStackDepth);
+                bnf, candidate, DefMaxStackDepth);
         }
+
+        #endregion
+
     }   /* class SyntaxParser_Backtracking */
 
 #if TEST_String_Compiler

@@ -12,7 +12,7 @@ namespace QSharp.String.Compiler
 {
     public class SyntaxParser_TopDown
     {
-    /* Types */
+        #region Nested types
 
         public class TentativeStep
         {
@@ -28,64 +28,76 @@ namespace QSharp.String.Compiler
             }
         }
 
-    /* Member variables */
+        #endregion
+
+        #region Fields
 
         /* stack storing attempts */
-        protected const int kDefMaxStackDepth = 1024;
-        protected int myMaxStackDepth = kDefMaxStackDepth;
-        protected Stack<TentativeStep> myStack = null;
+        protected const int DefMaxStackDepth = 1024;
+        protected int MyMaxStackDepth = DefMaxStackDepth;
+        protected Stack<TentativeStep> MyStack = null;
 
         /* result for the recent parsing */
-        protected SyntaxTree myTree = null;
-        protected SyntaxTree.NodeTerminal myRecentNode = null;
-        protected bool myStackOverflowed = false;
-        protected Bnf myBnf = null;
-        protected ITokenStream myCandidate = null;
+        protected SyntaxTree MyTree = null;
+        protected SyntaxTree.NodeTerminal MyRecentNode = null;
+        protected bool MyStackOverflowed = false;
+        protected Bnf MyBnf = null;
+        protected ITokenStream MyCandidate = null;
 
-    /* Properties */
+        #endregion
+
+        #region Properties
 
         public Stack<TentativeStep> AttemptStack
         {
-            get { return myStack; }
+            get { return MyStack; }
         }
 
         public SyntaxTree ResultTree
         {
-            get { return myTree; }
+            get { return MyTree; }
         }
 
         public SyntaxTree.NodeTerminal RecentNode
         {
-            get { return myRecentNode; }
+            get { return MyRecentNode; }
         }
 
         public bool StackOverflowed
         {
-            get { return myStackOverflowed; }
+            get { return MyStackOverflowed; }
         }
 
         public virtual int MaxStackDepth
         {
-            get { return myMaxStackDepth; }
-            set { myMaxStackDepth = value; Reset(); }
+            get { return MyMaxStackDepth; }
+            set { MyMaxStackDepth = value; Reset(); }
         }
 
         public virtual Bnf BnfSpec
         {
-            get { return myBnf; }
-            set { myBnf = value; Reset(); }
+            get { return MyBnf; }
+            set { MyBnf = value; Reset(); }
         }
 
         public virtual ITokenStream Candidate
         {
-            get { return myCandidate; }
-            set { myCandidate = value; Reset(); }
+            get { return MyCandidate; }
+            set { MyCandidate = value; Reset(); }
         }
+
+        #endregion
+
+        #region Constructors
 
         public SyntaxParser_TopDown()
         {
-            Reset();
+            MyReset();
         }
+
+        #endregion
+
+        #region Methods
 
         /**
          * <remarks>
@@ -99,11 +111,16 @@ namespace QSharp.String.Compiler
          */
         public virtual void Reset()
         {
+            MyReset();
+        }
+
+        private void MyReset()
+        {
             // 
             // the starting symbol
-            myTree = new SyntaxTree();
-            myStack = new Stack<TentativeStep>();
-            myStackOverflowed = false;
+            MyTree = new SyntaxTree();
+            MyStack = new Stack<TentativeStep>();
+            MyStackOverflowed = false;
 
             /**
              * <remarks>
@@ -111,16 +128,18 @@ namespace QSharp.String.Compiler
              *  BNF is obtained
              * </remarks>
              */
-            if (myBnf != null)
+            if (MyBnf != null)
             {
-                myTree.Root = new SyntaxTree.NodeNonterminal(myBnf.P[0].Left);
+                MyTree.Root = new SyntaxTree.NodeNonterminal(MyBnf.P[0].Left);
             }
 
-            if (myCandidate != null)
+            if (MyCandidate != null)
             {
-                myStack.Push(new TentativeStep(myTree.Root, 0, (TokenStream.Position)myCandidate.Pos.Clone()));
+                MyStack.Push(new TentativeStep(MyTree.Root, 0, (TokenStream.Position)MyCandidate.Pos.Clone()));
             }
         }
+
+        #endregion
     }
 }   /* namespace QSharp.String.Compiler */
 

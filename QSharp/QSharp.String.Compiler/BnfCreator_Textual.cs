@@ -46,10 +46,10 @@ namespace QSharp.String.Compiler
             {
                 return 1;
             }
-            TextualTerminal tt = that as TextualTerminal;
+            var tt = that as TextualTerminal;
             if (tt != null)
             {
-                return this.Text.CompareTo(tt.Text);
+                return System.String.Compare(Text, tt.Text, System.StringComparison.Ordinal);
             }
             return -that.CompareTo(this);
         }
@@ -69,10 +69,10 @@ namespace QSharp.String.Compiler
 
         public override bool Check(ITokenStream stream)
         {
-            TokenStream.Position storedPos = (TokenStream.Position)stream.Pos.Clone();
+            var storedPos = (TokenStream.Position)stream.Pos.Clone();
             foreach (char ch in Text)
             {
-                CharToken token = stream.Read() as CharToken;
+                var token = stream.Read() as CharToken;
                 if (token == null || token != ch)
                 {
                     stream.Pos = storedPos;
@@ -164,7 +164,7 @@ namespace QSharp.String.Compiler
             return new TextualTerminal_String(text);
         }
 
-        public TextualTerminal_String() : base()
+        public TextualTerminal_String()
         {
         }
 
@@ -175,8 +175,8 @@ namespace QSharp.String.Compiler
 
         public override bool Check(ITokenStream stream)
         {
-            TextualTerminal_String token = stream.Read() as TextualTerminal_String;
-            if (token == null || CompareTo(token as IComparableToken) != 0)
+            var token = stream.Read() as TextualTerminal_String;
+            if (token == null || CompareTo(token) != 0)
             {
                 return false;
             }
@@ -210,10 +210,10 @@ namespace QSharp.String.Compiler
         /* from IComparableToken */
         public int CompareTo(IComparableToken rhs)
         {
-            TextualTerminal_String thatTerminal = rhs as TextualTerminal_String;
+            var thatTerminal = rhs as TextualTerminal_String;
             if (thatTerminal != null)
             {
-                return Text.CompareTo(thatTerminal.Text);
+                return System.String.Compare(Text, thatTerminal.Text, System.StringComparison.Ordinal);
             }
             if (rhs is NullToken)
             {
@@ -233,10 +233,10 @@ namespace QSharp.String.Compiler
             {
                 throw new QException("TextualTerminal_String cannot work together with TextualTerminal");
             }
-            TextualTerminal_String thatTerminal = rhs as TextualTerminal_String;
+            var thatTerminal = rhs as TextualTerminal_String;
             if (thatTerminal != null)
             {
-                return Text.CompareTo(thatTerminal.Text);
+                return System.String.Compare(Text, thatTerminal.Text, System.StringComparison.Ordinal);
             }
             return -rhs.CompareTo(this);
         }
@@ -250,10 +250,10 @@ namespace QSharp.String.Compiler
         /* from IComparableParser */
         public override IToken Parse(ITokenStream stream)
         {
-            TokenStream.Position storedPos = (TokenStream.Position)stream.Pos.Clone();
+            var storedPos = (TokenStream.Position)stream.Pos.Clone();
             foreach (char ch in Text)
             {
-                CharToken token = stream.Read() as CharToken;
+                var token = stream.Read() as CharToken;
                 if (token == null || token != ch)
                 {
                     stream.Pos = storedPos;
@@ -267,11 +267,11 @@ namespace QSharp.String.Compiler
 
     public class TextualTerminalDescriptor : IStreamParser
     {
-        TextualTerminal myFactory = null;
+        private readonly TextualTerminal _factory;
 
         public TextualTerminalDescriptor(TextualTerminal factory)
         {
-            myFactory = factory;
+            _factory = factory;
         }
 
         public IToken Parse(ITokenStream stream)
@@ -305,7 +305,7 @@ namespace QSharp.String.Compiler
                     {
                         case '\'':
                             stream.Move(1);
-                            return new BnfCreator.SymbolPackage(myFactory.CreateInstance(sT.ToString()));
+                            return new BnfCreator.SymbolPackage(_factory.CreateInstance(sT.ToString()));
                         case '\\':
                             stage = 2;
                             break;
@@ -351,12 +351,12 @@ namespace QSharp.String.Compiler
         public bool Create(out Bnf bnf, out ITerminalSelector ts, 
             ITokenStream stream)
         {
-            BnfCreator.DescriptorCollection dc = new BnfCreator.DescriptorCollection();
+            var dc = new BnfCreator.DescriptorCollection();
 
             dc.Register(new TextualTerminalDescriptor(new TextualTerminal_String()));
 
             ts = new TerminalSelector();
-            BnfCreator creator = new BnfCreator();
+            var creator = new BnfCreator();
             return creator.Create(out bnf, ref ts, dc, stream);
         }
     }
@@ -410,7 +410,7 @@ namespace QSharp.String.Compiler
         {
             Bnf bnf;
             ITerminalSelector ts;
-            CreateBnf(out bnf, out ts, TextualTestcase.gQuanben002, true);
+            CreateBnf(out bnf, out ts, TextualTestcase.Quanben002, true);
         }
 #endif
     }

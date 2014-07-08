@@ -28,18 +28,18 @@ namespace QSharp.String.Compiler
 
         public class NonterminalRegistry
         {
-            protected Bnf.Nonterminal myStart = null;
-            protected Utility.Map<string, Bnf.Nonterminal> myNonstarts 
+            protected Bnf.Nonterminal MyStart = null;
+            protected Utility.Map<string, Bnf.Nonterminal> MyNonstarts 
                 = new Utility.Map<string, Bnf.Nonterminal>();
 
             public NonterminalRegistry(string nameOfStart)
             {
-                myStart = new Bnf.Nonterminal(0, nameOfStart);
+                MyStart = new Bnf.Nonterminal(0, nameOfStart);
             }
 
             public void Register(string sNt)
             {
-                if (sNt == myStart.Name)
+                if (sNt == MyStart.Name)
                 {
                     return;
                 }
@@ -49,7 +49,7 @@ namespace QSharp.String.Compiler
                  *  it is not decided yet.
                  * </remarks>
                  */
-                myNonstarts[sNt] = new Bnf.Nonterminal(0, sNt);
+                MyNonstarts[sNt] = new Bnf.Nonterminal(0, sNt);
             }
 
             /// <summary>
@@ -57,22 +57,22 @@ namespace QSharp.String.Compiler
             /// </summary>
             public void Freeze()
             {
-                for (int i = 0; i < myNonstarts.Count; i++)
+                for (int i = 0; i < MyNonstarts.Count; i++)
                 {
-                    string s = myNonstarts.RetrieveSByIndex(i);
-                    myNonstarts[s] = new Bnf.Nonterminal(i + 1, s);
+                    string s = MyNonstarts.RetrieveSByIndex(i);
+                    MyNonstarts[s] = new Bnf.Nonterminal(i + 1, s);
                 }
             }
 
             public Bnf.Nonterminal Request(string sNt)
             {
-                if (sNt == myStart.Name)
+                if (sNt == MyStart.Name)
                 {
-                    return myStart;
+                    return MyStart;
                 }
                 try 
                 {
-                    return myNonstarts[sNt];
+                    return MyNonstarts[sNt];
                 }
                 catch (Exception e)
                 {
@@ -80,13 +80,13 @@ namespace QSharp.String.Compiler
                     {
                         return null;
                     }
-                    throw e;
+                    throw;
                 }
             }
 
             public int Count
             {
-                get { return myNonstarts.Count + 1; }
+                get { return MyNonstarts.Count + 1; }
             }
 
             public Bnf.Nonterminal this[int index]
@@ -95,9 +95,9 @@ namespace QSharp.String.Compiler
                 {
                     if (index == 0)
                     {
-                        return myStart;
+                        return MyStart;
                     }
-                    return myNonstarts.RetrieveDByIndex(index - 1);
+                    return MyNonstarts.RetrieveDByIndex(index - 1);
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace QSharp.String.Compiler
         public class DescriptorCollection
         {
             public NonterminalDescriptor ND { get; set; }
-            protected List<IStreamParser> myParsers = new List<IStreamParser>();
+            protected List<IStreamParser> MyParsers = new List<IStreamParser>();
 
             public void Register(IStreamParser parser)
             {
@@ -118,19 +118,19 @@ namespace QSharp.String.Compiler
                 {
                     return;
                 }
-                myParsers.Add(parser);
+                MyParsers.Add(parser);
             }
 
             public DescriptorCollection()
             {
-                myParsers.Add(ND = new NonterminalDescriptor());
-                myParsers.Add(new ProductionMarkDescriptor());
+                MyParsers.Add(ND = new NonterminalDescriptor());
+                MyParsers.Add(new ProductionMarkDescriptor());
             }
 
             public IToken Parse(ITokenStream stream)
             {
                 IToken token = null;
-                foreach (IStreamParser parser in myParsers)
+                foreach (IStreamParser parser in MyParsers)
                 {
                     token = parser.Parse(stream);
                     if (token != null)
@@ -143,10 +143,10 @@ namespace QSharp.String.Compiler
 
             public IToken ParseOnly(ITokenTypes types, ITokenStream stream)
             {
-                foreach (IStreamParser parser in myParsers)
+                foreach (var parser in MyParsers)
                 {
-                    TokenStream.Position storedPos = (TokenStream.Position)stream.Pos.Clone();
-                    IToken token = parser.Parse(stream);
+                    var storedPos = (TokenStream.Position)stream.Pos.Clone();
+                    var token = parser.Parse(stream);
                     if (token != null)
                     {
                         if (types.IsContaining(token))
@@ -181,8 +181,8 @@ namespace QSharp.String.Compiler
             {
                 Lexical.SkipBlanks(stream);
 
-                TokenStream.Position storedPos = (TokenStream.Position)stream.Pos.Clone();
-                CharToken token = stream.Read() as CharToken;
+                var storedPos = (TokenStream.Position)stream.Pos.Clone();
+                var token = stream.Read() as CharToken;
                 if (token == null || token != '-')
                 {
                     return null;    // useful stream content not consumed, return null directly
@@ -207,16 +207,16 @@ namespace QSharp.String.Compiler
 
             public IToken Parse(ITokenStream stream)
             {
-                StringBuilder sNt = new StringBuilder();
+                var sNt = new StringBuilder();
                 Lexical.SkipBlanks(stream);
 
-                TokenStream.Position storedPos = stream.Pos.Clone() as TokenStream.Position;
+                var storedPos = stream.Pos.Clone() as TokenStream.Position;
 
-                Lexical.CharSet letters = new Lexical.CharSet().CreateAsAlphabet();
-                Lexical.CharSet digitsAndLetters = 
+                var letters = new Lexical.CharSet().CreateAsAlphabet();
+                var digitsAndLetters = 
                     (Lexical.CharSet)new Lexical.CharSet().CreateAsDigitSet().Unionize(letters);
-                string s = "";
-                int nRead = Lexical.ReadWhen(ref s, stream, letters);
+                var s = "";
+                var nRead = Lexical.ReadWhen(ref s, stream, letters);
                 if (nRead == 0)
                 {
                     return null;    // useful stream content not consumed, return null directly
@@ -230,19 +230,14 @@ namespace QSharp.String.Compiler
                 {
                     return new PendingNonterminal(sNt.ToString());
                 }
-                else
+
+                var nt = Reg.Request(sNt.ToString());
+                if (nt == null)
                 {
-                    Bnf.Nonterminal nt = Reg.Request(sNt.ToString());
-                    if (nt == null)
-                    {
-                        stream.Pos = storedPos;
-                        return null;
-                    }
-                    else
-                    {
-                        return new SymbolPackage(nt);
-                    }
+                    stream.Pos = storedPos;
+                    return null;
                 }
+                return new SymbolPackage(nt);
             }
         }
 
@@ -258,7 +253,7 @@ namespace QSharp.String.Compiler
         {
             public bool IsContaining(IToken se)
             {
-                SymbolPackage sp = se as SymbolPackage;
+                var sp = se as SymbolPackage;
                 if (sp == null)
                 {
                     return false;
@@ -286,13 +281,13 @@ namespace QSharp.String.Compiler
         protected NonterminalRegistry CollectNonterminals(DescriptorCollection dc, ITokenStream stream)
         {
             NonterminalRegistry reg = null;
-            Lexical.CharSet returnMark = new Lexical.CharSet('\n');
-            Lexical.CharSet returnMarkAndBlank 
+            var returnMark = new Lexical.CharSet('\n');
+            var returnMarkAndBlank 
                 = (Lexical.CharSet)new Lexical.CharSet(' ', '\t').Unionize(returnMark);
 
             while (true)
             {
-                IToken se = dc.ParseOnly(new PendingNonterminalType(), stream);
+                var se = dc.ParseOnly(new PendingNonterminalType(), stream);
                 if (se == null)
                 {
                     if (stream.Read() != null)
@@ -303,7 +298,7 @@ namespace QSharp.String.Compiler
                     return reg;
                 }
 
-                string name = ((PendingNonterminal)se).Name;
+                var name = ((PendingNonterminal)se).Name;
                 if (reg == null)
                 {
                     reg = new NonterminalRegistry(name);    // start symbol
@@ -327,23 +322,20 @@ namespace QSharp.String.Compiler
         protected Bnf.Production CreateProduction(NonterminalRegistry reg, 
             DescriptorCollection dc, ref ITerminalSelector ts, ITokenStream stream)
         {
-            Bnf.Production production = new Bnf.Production();
+            var production = new Bnf.Production();
             while (true)
             {
                 IToken se = dc.ParseOnly(new SymbolType(), stream);
-                SymbolPackage sp = se as SymbolPackage;
+                var sp = se as SymbolPackage;
 
                 if (sp == null)
                 {
-                    CharToken token = stream.Read() as CharToken;
+                    var token = stream.Read() as CharToken;
                     if (token == null || token == '\n' || token == '|')
                     {
                         return production;
                     }
-                    else
-                    {
-                        throw new StreamException("Valid symbol, line break or end of stream expected", stream.Pos);
-                    }
+                    throw new StreamException("Valid symbol, line break or end of stream expected", stream.Pos);
                 }
 
                 if (sp.Sym == null)
@@ -351,7 +343,7 @@ namespace QSharp.String.Compiler
                     throw new QException("Null symbol");
                 }
 
-                Bnf.Terminal t = sp.Sym as Bnf.Terminal; 
+                var t = sp.Sym as Bnf.Terminal; 
                 if (t != null)
                 {
                     ts.Register(t);
@@ -369,8 +361,8 @@ namespace QSharp.String.Compiler
         protected Bnf CreateBnf(NonterminalRegistry reg, DescriptorCollection dc, 
             ref ITerminalSelector ts, ITokenStream stream)
         {
-            Bnf bnf = new Bnf();
-            List<Bnf.ProductionLine> prodLines = new List<Bnf.ProductionLine>();
+            var bnf = new Bnf();
+            var prodLines = new List<Bnf.ProductionLine>();
 
             for (int i = 0; i < reg.Count; i++)
             {
@@ -379,14 +371,14 @@ namespace QSharp.String.Compiler
 
             while (true)
             {
-                IToken se = dc.ParseOnly(new NonterminalType(), stream);
-                SymbolPackage sp = se as SymbolPackage;
+                var se = dc.ParseOnly(new NonterminalType(), stream);
+                var sp = se as SymbolPackage;
 
                 if (sp == null)
                 {
                     if (stream.Read() == null)
                     {   // end of stream
-                        foreach (Bnf.ProductionLine pdl in prodLines)
+                        foreach (var pdl in prodLines)
                         {
                             pdl.TendChildren();
                         }
@@ -396,13 +388,13 @@ namespace QSharp.String.Compiler
                     throw new StreamException("Valid nonterminal expected", stream.Pos);
                 }
 
-                Bnf.Nonterminal nt = sp.Sym as Bnf.Nonterminal;
+                var nt = sp.Sym as Bnf.Nonterminal;
                 if (nt == null)
                 {
                     throw new QException("Null nonterminal");
                 }
 
-                int iProdLine = nt.Index;
+                var iProdLine = nt.Index;
 
                 se = dc.ParseOnly(new ProductionMarkType(), stream);
                 if (se == null)

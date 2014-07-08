@@ -5,11 +5,10 @@
  */
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using QSharp.Shared;
-
 
 namespace QSharp.String.Compiler
 {
@@ -27,7 +26,7 @@ namespace QSharp.String.Compiler
 
         public static string MakeWhitespaces(uint nCount)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (uint i = 0; i < nCount; i++)
             {
                 sb.Append(' ');
@@ -35,39 +34,36 @@ namespace QSharp.String.Compiler
             return sb.ToString();
         }
 
-        public class Set<T> : ICloneable, IEnumerable<T>, 
-            IComparable< Set<T> > where T : IComparable<T>
+        public class Set<T> : ICloneable, IEnumerable<T>, IComparable<Set<T>> where T : IComparable<T>
         {
-            protected List<T> myList = new List<T>();
+            #region Fields
 
-            public Set(params T[] initialItems)
-            {
-                foreach (T item in initialItems)
-                {
-                    Add(item);
-                }
-            }
+            protected List<T> MyList = new List<T>();
+
+            #endregion
+
+            #region Methods
 
             public virtual void Clear()
             {
-                myList.Clear();
+                MyList.Clear();
             }
 
             /* from IComparable< Set<T> > */
             public virtual int CompareTo(Set<T> that)
             {
                 int i, j;
-                for (i = 0, j = 0; i < this.Count && j < that.Count; i++, j++)
+                for (i = 0, j = 0; i < Count && j < that.Count; i++, j++)
                 {
-                    T tThis = this.RetrieveByIndex(i);
-                    T tThat = that.RetrieveByIndex(j);
-                    int cmp = tThis.CompareTo(tThat);
+                    var tThis = RetrieveByIndex(i);
+                    var tThat = that.RetrieveByIndex(j);
+                    var cmp = tThis.CompareTo(tThat);
                     if (cmp != 0)
                     {
                         return cmp;
                     }
                 }
-                return this.Count.CompareTo(that.Count);
+                return Count.CompareTo(that.Count);
             }
 
             public virtual Set<T> Add(T item)
@@ -75,11 +71,11 @@ namespace QSharp.String.Compiler
 #if TEST_String_Compiler_Utility_Set
                 Console.WriteLine("Adding {0}", item);
 #endif
-                int i = myList.BinarySearch(item);
+                int i = MyList.BinarySearch(item);
                 if (i < 0)
                 {
                     i = -i - 1;
-                    myList.Insert(i, item);
+                    MyList.Insert(i, item);
                 }
                 else
                 {
@@ -89,39 +85,39 @@ namespace QSharp.String.Compiler
                      *  ( consider when remapping )
                      * </remark>
                      */
-                    myList[i] = item;
+                    MyList[i] = item;
                 }
                 return this;
             }
 
             public virtual Set<T> Remove(T item)
             {
-                int i = myList.BinarySearch(item);
+                var i = MyList.BinarySearch(item);
                 if (i >= 0)
                 {
-                    myList.RemoveAt(i);
+                    MyList.RemoveAt(i);
                 }
                 return this;
             }
 
             public virtual bool IsContaining(T item)
             {
-                return (myList.BinarySearch(item) >= 0);
+                return (MyList.BinarySearch(item) >= 0);
             }
 
             public virtual bool IsContaining(Set<T> that)
             {
-                if (that.Count > this.Count)
+                if (that.Count > Count)
                 {
                     return false;
                 }
-                int i = 0;
-                foreach (T thatItem in that)
+                var i = 0;
+                foreach (var thatItem in that)
                 {
-                    int cmp = -1;   /* in case this set has no more items */
-                    for ( ; i < this.Count; i++)
+                    var cmp = -1;   /* in case this set has no more items */
+                    for ( ; i < Count; i++)
                     {
-                        cmp = myList[i].CompareTo(thatItem);
+                        cmp = MyList[i].CompareTo(thatItem);
                         if (cmp >= 0)
                         {
                             break;
@@ -138,20 +134,20 @@ namespace QSharp.String.Compiler
 
             public virtual T RetrieveByIndex(int index)
             {
-                return myList[index];
+                return MyList[index];
             }
 
             public virtual int IndexOf(T item)
             {
-                return myList.BinarySearch(item);
+                return MyList.BinarySearch(item);
             }
 
             public virtual Object Clone()
             {
-                Set<T> copy = new Set<T>();
-                foreach (T item in myList)
+                var copy = new Set<T>();
+                foreach (var item in MyList)
                 {
-                    copy.myList.Add(item);
+                    copy.MyList.Add(item);
                 }
                 return copy;
             }
@@ -159,34 +155,34 @@ namespace QSharp.String.Compiler
             public virtual Set<T> Unionize(Set<T> that)
             {
                 // FIXME: performance can be enhanced?
-                Set<T> tmp = this | that;
-                this.myList = tmp.myList;
+                var tmp = this | that;
+                MyList = tmp.MyList;
                 return this;
             }
 
             public virtual Set<T> Intersect(Set<T> that)
             {
                 // FIXME: performance can be enhanced?
-                Set<T> tmp = this & that;
-                this.myList = tmp.myList;
+                var tmp = this & that;
+                MyList = tmp.MyList;
                 return this;
             }
 
             public virtual Set<T> Subtract(Set<T> that)
             {
-                Set<T> tmp = this - that;
-                this.myList = tmp.myList;
+                var tmp = this - that;
+                MyList = tmp.MyList;
                 return this;
             }
 
             public virtual bool HasIntersection(Set<T> that)
             {
                 int i = 0, j = 0;
-                for ( ; i < this.myList.Count && j < that.myList.Count; )
+                for ( ; i < MyList.Count && j < that.MyList.Count; )
                 {
-                    T itemL = this.myList[i];
-                    T itemR = that.myList[j];
-                    int cmp = itemL.CompareTo(itemR);
+                    var itemL = MyList[i];
+                    var itemR = that.MyList[j];
+                    var cmp = itemL.CompareTo(itemR);
                     if (cmp < 0)
                     {
                         i++;
@@ -204,45 +200,45 @@ namespace QSharp.String.Compiler
             }
 
 
-            /**
-             * <summary>
-             *  The result set this operation gives takes elements
-             *  exist in either operand
-             * </summary>
-             */
+            /// <summary>
+            ///  The result set this operation gives takes elements exist in either operand
+            /// </summary>
+            /// <param name="lhs"></param>
+            /// <param name="rhs"></param>
+            /// <returns></returns>
             public static Set<T> operator|(Set<T> lhs, Set<T> rhs)
             {
-                Set<T> res = new Set<T>();
+                var res = new Set<T>();
                 int i = 0, j = 0;
-                for ( ; i < lhs.myList.Count && j < rhs.myList.Count; )
+                for ( ; i < lhs.MyList.Count && j < rhs.MyList.Count; )
                 {
-                    T itemL = lhs.myList[i];
-                    T itemR = rhs.myList[j];
-                    int cmp = itemL.CompareTo(itemR);
+                    var itemL = lhs.MyList[i];
+                    var itemR = rhs.MyList[j];
+                    var cmp = itemL.CompareTo(itemR);
                     if (cmp < 0)
                     {
-                        res.myList.Add(itemL);
+                        res.MyList.Add(itemL);
                         i++;
                     }
                     else if (cmp > 0)
                     {
-                        res.myList.Add(itemR);
+                        res.MyList.Add(itemR);
                         j++;
                     }
                     else
                     {
                         // take the duplicate item from list on the right
-                        res.myList.Add(itemR); 
+                        res.MyList.Add(itemR); 
                         i++; j++;
                     }
                 }
-                for ( ; i < lhs.myList.Count; i++)
+                for ( ; i < lhs.MyList.Count; i++)
                 {
-                    res.myList.Add(lhs.myList[i]);
+                    res.MyList.Add(lhs.MyList[i]);
                 }
-                for ( ; j < rhs.myList.Count; j++)
+                for ( ; j < rhs.MyList.Count; j++)
                 {
-                    res.myList.Add(rhs.myList[j]);
+                    res.MyList.Add(rhs.MyList[j]);
                 }
                 return res;
             }
@@ -261,13 +257,13 @@ namespace QSharp.String.Compiler
              */
             public static Set<T> operator&(Set<T> lhs, Set<T> rhs)
             {
-                Set<T> res = new Set<T>();
+                var res = new Set<T>();
                 int i = 0, j = 0;
-                for ( ; i < lhs.myList.Count && j < rhs.myList.Count; )
+                for ( ; i < lhs.MyList.Count && j < rhs.MyList.Count; )
                 {
-                    T itemL = lhs.myList[i];
-                    T itemR = rhs.myList[j];
-                    int cmp = itemL.CompareTo(itemR);
+                    var itemL = lhs.MyList[i];
+                    var itemR = rhs.MyList[j];
+                    var cmp = itemL.CompareTo(itemR);
                     if (cmp < 0)
                     {
                         i++;
@@ -279,7 +275,7 @@ namespace QSharp.String.Compiler
                     else
                     {
                         // take the duplicate item from list on the right
-                        res.myList.Add(itemR); 
+                        res.MyList.Add(itemR); 
                         i++; j++;
                     }
                 }
@@ -294,16 +290,16 @@ namespace QSharp.String.Compiler
              */
             public static Set<T> operator-(Set<T> lhs, Set<T> rhs)
             {
-                Set<T> res = new Set<T>();
+                var res = new Set<T>();
                 int i = 0, j = 0;
-                for ( ; i < lhs.myList.Count && j < rhs.myList.Count; )
+                for ( ; i < lhs.MyList.Count && j < rhs.MyList.Count; )
                 {
-                    T itemL = lhs.myList[i];
-                    T itemR = rhs.myList[j];
+                    T itemL = lhs.MyList[i];
+                    T itemR = rhs.MyList[j];
                     int cmp = itemL.CompareTo(itemR);
                     if (cmp < 0)
                     {
-                        res.myList.Add(itemL);
+                        res.MyList.Add(itemL);
                         i++;
                     }
                     else if (cmp > 0)
@@ -341,21 +337,21 @@ namespace QSharp.String.Compiler
             {
                 get
                 {
-                    return myList.Count;
+                    return MyList.Count;
                 }
             }
 
             public IEnumerator<T> GetEnumerator()
             {
-                foreach (T item in myList)
-                {
-                    yield return item;
-                }
+                return ((IEnumerable<T>) MyList).GetEnumerator();
             }
+
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
+
+            #endregion
         }
 
         /// <summary>
@@ -368,74 +364,87 @@ namespace QSharp.String.Compiler
         {
             protected class Node : IComparable<Node>
             {
-                protected internal S myS = default(S);
-                protected internal D myD = default(D);
+                protected internal S MyS = default(S);
+                protected internal D MyD = default(D);
 
                 public Node(S s, D d)
                 {
-                    myS = s;
-                    myD = d;
+                    MyS = s;
+                    MyD = d;
                 }
 
                 public int CompareTo(Node rhs)
                 {
-                    return myS.CompareTo(rhs.myS);
+                    return MyS.CompareTo(rhs.MyS);
                 }
             }
 
-            protected Set<Node> mySet = new Set<Node>();
+            protected Set<Node> MySet = new Set<Node>();
 
             public virtual int Count
             {
                 get
                 {
-                    return mySet.Count;
+                    return MySet.Count;
                 }
             }
 
             public virtual void Clear()
             {
-                mySet.Clear();
+                MySet.Clear();
             }
 
             public virtual Map<S, D> Add(S s, D d)
             {
-                mySet.Add(new Node(s, d));
+                MySet.Add(new Node(s, d));
                 return this;
             }
 
             public virtual bool IsMapped(S s)
             {
-                Node key = new Node(s, default(D));
-                int index = mySet.IndexOf(key);
+                var key = new Node(s, default(D));
+                var index = MySet.IndexOf(key);
                 return (index >= 0);
             }
 
             public virtual D Retrieve(S s)
             {
-                Node key = new Node(s, default(D));
-                int index = mySet.IndexOf(key);
+                var key = new Node(s, default(D));
+                var index = MySet.IndexOf(key);
                 if (index < 0)
                 {
-                    throw new QException("Unmapped value");
+                    throw new Exception("Unmapped value"); // NOTE can't use QException, don't know why
                 }
-                return mySet[index].myD;
+                return MySet[index].MyD;
+            }
+
+            public virtual bool TryRetrieve(S s, out D d)
+            {
+                var key = new Node(s, default(D));
+                var index = MySet.IndexOf(key);
+                if (index < 0)
+                {
+                    d = default(D);
+                    return false;
+                }
+                d = MySet[index].MyD;
+                return true;
             }
 
             public virtual S RetrieveSByIndex(int index)
             {
-                return mySet[index].myS;
+                return MySet[index].MyS;
             }
 
             public virtual D RetrieveDByIndex(int index)
             {
-                return mySet[index].myD;
+                return MySet[index].MyD;
             }
 
             public virtual Map<S, D> Unmap(S s)
             {
-                Node key = new Node(s, default(D));
-                mySet.Remove(key);
+                var key = new Node(s, default(D));
+                MySet.Remove(key);
                 return this;
             }
 
@@ -453,11 +462,9 @@ namespace QSharp.String.Compiler
 
             public IEnumerator<S> GetEnumerator()
             {
-                foreach (Node node in mySet)
-                {
-                    yield return node.myS;
-                }
+                return MySet.Select(node => node.MyS).GetEnumerator();
             }
+
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
@@ -493,10 +500,20 @@ namespace QSharp.String.Compiler
             {
             }
 
+            #region Properties
+
             public override Map2dLine this[S1 s1]
             {
                 get
                 {
+#if true    // This version doesn't except an exception, making it easier to debug
+                    Map2dLine res;
+                    if (!base.TryRetrieve(s1, out res))
+                    {
+                        res = null;
+                    }
+                    return res;
+#else
                     try
                     {
                         return base[s1];
@@ -509,6 +526,7 @@ namespace QSharp.String.Compiler
                         }
                         throw e;
                     }
+#endif
                 }
                 set
                 {
@@ -522,7 +540,7 @@ namespace QSharp.String.Compiler
                 {
                     if (this[s1] == null)
                     {
-                        throw new QException("Unmapped value");
+                        throw new Exception("Unmapped value");
                     }
                     /**
                      * an exception may be thrown out, and it's 
@@ -539,6 +557,8 @@ namespace QSharp.String.Compiler
                     this[s1][s2] = value;
                 }
             }
+
+            #endregion
         }
 
 #if TEST_String_Compiler_Utility_Map

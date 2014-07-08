@@ -14,6 +14,8 @@ namespace QSharp.String.Compiler
 {
     public class SyntaxTree
     {
+        #region Nested classes 
+
         public class NodeBase : IDisposable   
         {
             public NodeNonterminal Parent = null;
@@ -25,20 +27,16 @@ namespace QSharp.String.Compiler
                     /* tell the garbage collection not to call the destructor hereafter */
             }
 
-            ~NodeBase()
-            {
-            }
-
             public NodeBase LeftmostLeaf
             {
                 get
                 {
-                    NodeBase node = this;
+                    var node = this;
                     while (true)
                     {
                         if (node is NodeNonterminal)
                         {
-                            NodeNonterminal ntnode = (NodeNonterminal)node;
+                            var ntnode = (NodeNonterminal)node;
                             if (ntnode.NSubnodes > 0)
                             {
                                 node = ntnode[0];
@@ -129,42 +127,43 @@ namespace QSharp.String.Compiler
 
             public void RemoveAsSubtree()
             {
-                this.Parent.Subnodes.RemoveAt(IOfParent);
+                Parent.Subnodes.RemoveAt(IOfParent);
                 // FIXME: the node should be disposed at once
                 // for performance
             }
             
             public void RemoveAllSubnodes()
             {
-                this.Subnodes.Clear();
+                Subnodes.Clear();
             }
 
             public void InsertSubnode(int iPos, NodeBase node)
             {
-                this.Subnodes.Insert(iPos, node);
+                Subnodes.Insert(iPos, node);
                 node.Parent = this;
                 // update IOfParent of offsprings
-                for (int i = iPos; i < this.Subnodes.Count; i++)
+                for (var i = iPos; i < Subnodes.Count; i++)
                 {
-                    this.Subnodes[i].IOfParent = i;
+                    Subnodes[i].IOfParent = i;
                 }
             }
 
             public void AddSubnode(NodeBase node)
             {
-                this.Subnodes.Add(node);
+                Subnodes.Add(node);
                 node.Parent = this;
-                node.IOfParent = this.Subnodes.Count - 1;
+                node.IOfParent = Subnodes.Count - 1;
             }
 
             public void Produce(Bnf.IPhrase phrase)
             {
-                this.Subnodes.Clear();
-                foreach (Bnf.ISymbol symbol in phrase)
+                Subnodes.Clear();
+                foreach (var symbol in phrase)
                 {
-                    if (symbol is Bnf.Nonterminal)
+                    var nont = symbol as Bnf.Nonterminal;
+                    if (nont != null)
                     {
-                        AddSubnode(new NodeNonterminal((Bnf.Nonterminal)symbol));
+                        AddSubnode(new NodeNonterminal(nont));
                     }
                     else
                     {
@@ -186,18 +185,19 @@ namespace QSharp.String.Compiler
              */
             public void CleanupTentativeNodes()
             {
-                NodeNonterminal node = this;
+                var node = this;
                 node.Subnodes.Clear();
-                SyntaxTree.NodeNonterminal parent = node.Parent;
+                var parent = node.Parent;
                 for ( ; parent != null; node = parent, parent = node.Parent)
                 {
-                    int iOfParent = node.IOfParent;
+                    var iOfParent = node.IOfParent;
                     for (int i = iOfParent + 1; i < parent.Subnodes.Count; i++)
                     {
-                        SyntaxTree.NodeBase subnode = parent.Subnodes[i];
-                        if (subnode is SyntaxTree.NodeNonterminal)
+                        var subnode = parent.Subnodes[i];
+                        var nont = subnode as NodeNonterminal;
+                        if (nont != null)
                         {
-                            ((SyntaxTree.NodeNonterminal)subnode).Subnodes.Clear();
+                            nont.Subnodes.Clear();
                         }
                     }
                 }
@@ -228,32 +228,31 @@ namespace QSharp.String.Compiler
             public override string ToString()
             {
                 return new StringBuilder("NodeTerminal { Ref = ")
-                    .Append(Ref.ToString())
+                    .Append(Ref)
                     .Append(" }").ToString();
             }
         }
 
+        #endregion
+
+        #region Fields
+
         public NodeNonterminal Root = new NodeNonterminal();
 
-        public SyntaxTree()
-        {
-        }
-
-        ~SyntaxTree()
-        {
-        }
+        #endregion
 
         protected string SubtreeToString(NodeBase node, uint nDepth)
         {
-            string leadingWs = Utility.MakeWhitespaces(nDepth * 2);
-            StringBuilder sb = new StringBuilder(leadingWs);
-            if (node is NodeNonterminal)
+            var leadingWs = Utility.MakeWhitespaces(nDepth * 2);
+            var sb = new StringBuilder(leadingWs);
+
+            var nodeNt = node as NodeNonterminal;
+            if (nodeNt != null)
             {
-                NodeNonterminal nodeNt = (NodeNonterminal)node;
                 sb.Append("NodeNonterminal { Ref.Index = ").Append(nodeNt.Ref.Index).Append("; ");
                 sb.Append("Subnodes.Count = ").Append(nodeNt.Subnodes.Count).Append("; Subnodes: \r\treesize");
 
-                foreach (NodeBase subnode in nodeNt.Subnodes)
+                foreach (var subnode in nodeNt.Subnodes)
                 {
                     sb.Append(SubtreeToString(subnode, nDepth + 1));
                     sb.Append("\r\treesize");
@@ -263,7 +262,7 @@ namespace QSharp.String.Compiler
             }
             else
             {   // node is terminal
-                sb.Append(node.ToString());
+                sb.Append(node);
             }
             return sb.ToString();
         }

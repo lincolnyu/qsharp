@@ -10,7 +10,6 @@
 #define SWITCH_SyntaxParser_LRTable_Test
 #define SWITCH_SyntaxParser_LR0_Test
 
-
 #if TEST_String_Compiler
 
 #define ENABLED
@@ -30,188 +29,195 @@ namespace QSharp.String.Compiler
         public string[] SamplesPassed = null;
         public string[] SamplesFailed = null;
 
-        public static int gFailedTotal;
-        public static int gExTotal;
-        public static int gTestTotal;
+        public static int FailedTotal;
+        public static int ExTotal;
+        public static int TestTotal;
 
-        public static TextualTestcase gJchzh062 = new TextualTestcase(
-                    "gJchzh062",
-                    new string[]
-                {
-                    "E -> T Ep",
-                    "Ep -> '+' T Ep | ",
-                    "T -> F Tp",
-                    "Tp -> '*' F Tp | ",
-                    "F -> 'i' | '(' E ')' "
-                },
-                    new string[]
-                {
-                    "i+i*i",
-                    "i +"
-                },
-                    new string[]
-                {
-                    "iiiii"
-                }
-                    );
-        public static TextualTestcase gJchzh071 = new TextualTestcase(
-             "gJchzh071",
-            new string[]
-                {
-                    "Z-> 'b' M 'b'",
-                    "M-> 'a' | '(' L",
-                    "L-> M 'a'')'"
-                },
-            new string[]
-                {
-                    "b(aa)b"
-                },
-                null
-            );
-        public static TextualTestcase gJchzh078 = new TextualTestcase(
-            "gJchzh078",
-            new string[]
-                {
-                    "Z -> 'a' A 'c' ",
-                    "A -> 'b' B | 'b' 'a' ",
-                    "B -> 'd' B | 'e'"
-                },
-            null,
-            null
-            );
-
-        public static TextualTestcase gJchzh084 = new TextualTestcase(
-            "gJchzh084",
-            new string[]
-                {
-                    "W -> B B ",
-                    "B -> 'a' B",
-                    "B -> 'b'"
-                },
-            null,
-            new string[]
-                {
-                    "ababbbbb",
-                }
-            );
-        public static TextualTestcase gJchzh086 = new TextualTestcase(
-            "gJchzh086",
-            new string[]
-                {
-                    "M -> T",
-                    "T -> F '*' T",
-                    "T -> F",
-                    "F -> 'a'",
-                    "F -> 'b'",
-                },
-            null,
-            null
-            );
-        public static TextualTestcase gQuanben001 = new TextualTestcase(
-            "gQuanben001",
-            new string[] 
-                { 
-                    "Z -> 'b' A B", 
-                    "A -> A B | 'a' | 'a' A", 
-                    "B -> 'b' B | 'b'" 
-                },
-            new string[]
-                {
-                    "baabbbbb"
-                },
-            null
-            );
-        public static TextualTestcase gQuanben002 = new TextualTestcase(
-            "gQuanben002",
-            new string[] 
-                { 
-                    " P -> 'bP'| A ", 
-                    " A -> 'd' A"
-                },
-            null,
-            null
-            );
-        public static TextualTestcase gQuanben003 = new TextualTestcase(
-            "gQuanben003",
-            new string[] 
-                { 
-                    "N -> D | D N", /* N->D|N D, left recursive, not parsable by LR  */
-                    "D -> '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'"
-                },
-            new string[]
-                {
-                    "43210123",
-                },
-            new string[]
-                {
-                    "",
-                }
-            );
-        public static TextualTestcase gQuanben003_bad01 = new TextualTestcase(
-            "gQuanben003_bad01",
-            new string[] 
-                { 
-                    "N->D|ND", 
-                    "D->'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'"
-                },
-            null,
-            null
-            );
-        public static TextualTestcase gQuanben004 = new TextualTestcase(
-            "gQuanben004",
-            new string[] 
-                { 
-                    " P ->'a'| A ", 
-                    " A->'d' A | 'b' "
-                },
-            new string[]
-                {
-                    "b"
-                },
-            null
-            );
-
-        public static TextualTestcase[] gAll = new TextualTestcase[]
+        public static TextualTestcase Jchzh062 = new TextualTestcase(
+            "Jchzh062",
+            new[]
             {
-                gJchzh062,
-                gJchzh071,
-                gJchzh078,
-                gJchzh084,
-                gJchzh086,
-                gQuanben001,
-                gQuanben002,
-                gQuanben003,
-                gQuanben003_bad01,
-                gQuanben004,
-            };
+                "E -> T Ep",
+                "Ep -> '+' T Ep | ",
+                "T -> F Tp",
+                "Tp -> '*' F Tp | ",
+                "F -> 'i' | '(' E ')' "
+            },
+            new[]
+            {
+                "i+i*i",
+                "i +"
+            },
+            new[]
+            {
+                "iiiii"
+            }
+            );
+
+        public static TextualTestcase Jchzh071 = new TextualTestcase(
+            "Jchzh071",
+            new[]
+            {
+                "Z-> 'b' M 'b'",
+                "M-> 'a' | '(' L",
+                "L-> M 'a'')'"
+            },
+            new[]
+            {
+                "b(aa)b"
+            },
+            null
+            );
+
+        public static TextualTestcase Jchzh078 = new TextualTestcase(
+            "Jchzh078",
+            new[]
+            {
+                "Z -> 'a' A 'c' ",
+                "A -> 'b' B | 'b' 'a' ",
+                "B -> 'd' B | 'e'"
+            },
+            null,
+            null
+            );
+
+        public static TextualTestcase Jchzh084 = new TextualTestcase(
+            "Jchzh084",
+            new[]
+            {
+                "W -> B B ",
+                "B -> 'a' B",
+                "B -> 'b'"
+            },
+            null,
+            new[]
+            {
+                "ababbbbb",
+            }
+            );
+
+        public static TextualTestcase Jchzh086 = new TextualTestcase(
+            "Jchzh086",
+            new[]
+            {
+                "M -> T",
+                "T -> F '*' T",
+                "T -> F",
+                "F -> 'a'",
+                "F -> 'b'",
+            },
+            null,
+            null
+            );
+
+        // NOTE this may not be an LL1
+        public static TextualTestcase Quanben001 = new TextualTestcase(
+            "Quanben001",
+            new[]
+            {
+                "Z -> 'b' A B",
+                "A -> A B | 'a' | 'a' A",
+                "B -> 'b' B | 'b'"
+            },
+            new[]
+            {
+                "baabbbbb"
+            },
+            null
+            );
+
+        public static TextualTestcase Quanben002 = new TextualTestcase(
+            "Quanben002",
+            new[]
+            {
+                " P -> 'bP'| A ",
+                " A -> 'd' A"
+            },
+            null,
+            null
+            );
+
+        public static TextualTestcase Quanben003 = new TextualTestcase(
+            "Quanben003",
+            new[]
+            {
+                "N -> D | D N", /* N->D|N D, left recursive, not parsable by LR  */
+                "D -> '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'"
+            },
+            new[]
+            {
+                "43210123",
+            },
+            new[]
+            {
+                "",
+            }
+            );
+
+        public static TextualTestcase Quanben003_bad01 = new TextualTestcase(
+            "Quanben003_bad01",
+            new[]
+            {
+                "N->D|ND",
+                "D->'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'"
+            },
+            null,
+            null
+            );
+
+        public static TextualTestcase Quanben004 = new TextualTestcase(
+            "Quanben004",
+            new[]
+            {
+                " P ->'a'| A ",
+                " A->'d' A | 'b' "
+            },
+            new[]
+            {
+                "b"
+            },
+            null
+            );
+
+        public static TextualTestcase[] All =
+        {
+            Jchzh062,
+            Jchzh071,
+            Jchzh078,
+            Jchzh084,
+            Jchzh086,
+            Quanben001,
+            Quanben002,
+            Quanben003,
+            Quanben003_bad01,
+            Quanben004
+        };
 
         public TextualTestcase(string name, string[] bnfText, string[] samplesPassed, string[] samplesFailed)
         {
-            Name = name; BnfText = bnfText;
+            Name = name;
+            BnfText = bnfText;
             SamplesPassed = samplesPassed;
             SamplesFailed = samplesFailed;
         }
 
         public string GetSampleAtRandom()
         {
-            int nPassed = (SamplesPassed != null) ? SamplesPassed.Length : 0;
-            int nFailed = (SamplesFailed != null) ? SamplesFailed.Length : 0;
-            int nTotal = nPassed + nFailed;
+            var nPassed = (SamplesPassed != null) ? SamplesPassed.Length : 0;
+            var nFailed = (SamplesFailed != null) ? SamplesFailed.Length : 0;
+            var nTotal = nPassed + nFailed;
             if (nTotal == 0)
             {
                 return null;
             }
-            Random rand = new Random(DateTime.Now.Millisecond);
-            int index = rand.Next(nTotal);
+            var rand = new Random(DateTime.Now.Millisecond);
+            var index = rand.Next(nTotal);
             if (index >= nPassed)
             {
                 index -= nPassed;
                 return SamplesFailed[index];
             }
-            else
-            {
-                return SamplesPassed[index];
-            }
+            return SamplesPassed[index];
         }
 
         public string GetSamplePassedAtRandom()
@@ -220,8 +226,8 @@ namespace QSharp.String.Compiler
             {
                 return null;
             }
-            int nSamplePassed = SamplesPassed.Length;
-            Random rand = new Random(DateTime.Now.Millisecond);
+            var nSamplePassed = SamplesPassed.Length;
+            var rand = new Random(DateTime.Now.Millisecond);
             return SamplesPassed[rand.Next(nSamplePassed)];
         }
 
@@ -231,8 +237,8 @@ namespace QSharp.String.Compiler
             {
                 return null;
             }
-            int nSamplesFailed = SamplesFailed.Length;
-            Random rand = new Random(DateTime.Now.Millisecond);
+            var nSamplesFailed = SamplesFailed.Length;
+            var rand = new Random(DateTime.Now.Millisecond);
             return SamplesFailed[rand.Next(nSamplesFailed)];
         }
 
@@ -243,77 +249,80 @@ namespace QSharp.String.Compiler
 
         public static void TestAll(TestMethod testMethod)
         {
-            gFailedTotal = 0;
-            gExTotal = 0;
-            gTestTotal = 0;
-            foreach (TextualTestcase testcase in TextualTestcase.gAll)
+            FailedTotal = 0;
+            ExTotal = 0;
+            TestTotal = 0;
+            foreach (TextualTestcase testcase in All)
             {
-                string[] bnfText = testcase.BnfText;
-                int nFailedTestcases = 0;
-                int nExTestcases = 0;
-                int nTestcases = 0;
-                int i = 0;
+                var bnfText = testcase.BnfText;
+                var nFailedTestcases = 0;
+                var nExTestcases = 0;
+                var nTestcases = 0;
+                int i;
                 if (testcase.SamplesPassed != null)
                 {
                     i = 0;
                     foreach (string sPassed in testcase.SamplesPassed)
                     {
-                        try 
+                        try
                         {
                             bool bRes = testMethod(bnfText, sPassed);
                             if (bRes == false)
                             {
                                 Console.WriteLine("! Failed at '{0}' passed sample {1}", testcase.Name, i);
                                 nFailedTestcases++;
-                                gFailedTotal++;
+                                FailedTotal++;
                             }
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("! Test {0} passed sample{1} failed with exception '{2}'", 
+                            Console.WriteLine("! Test {0} passed sample{1} failed with exception '{2}'",
                                 testcase.Name, i, e.Message);
                             nExTestcases++;
-                            gExTotal++;
+                            ExTotal++;
                         }
                         nTestcases++;
-                        gTestTotal++;
+                        TestTotal++;
                         i++;
                     }
                 }
                 if (testcase.SamplesFailed != null)
                 {
                     i = 0;
-                    foreach (string sFailed in testcase.SamplesFailed)
+                    foreach (var sFailed in testcase.SamplesFailed)
                     {
                         try
                         {
-                            bool bRes = testMethod(bnfText, sFailed);
-                            if (bRes == true)
+                            var bRes = testMethod(bnfText, sFailed);
+                            if (bRes)
                             {
                                 Console.WriteLine("! Failed at '{0}' failed sample {1}", testcase.Name, i);
                                 nFailedTestcases++;
-                                gFailedTotal++;
+                                FailedTotal++;
                             }
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("! Test {0} failed sample{1} failed with exception '{2}'", 
+                            Console.WriteLine("! Test {0} failed sample{1} failed with exception '{2}'",
                                 testcase.Name, i, e.Message);
                             nExTestcases++;
-                            gExTotal++;
+                            ExTotal++;
                         }
                         nTestcases++;
-                        gTestTotal++;
+                        TestTotal++;
                         i++;
                     }
                 }
 
-                Console.WriteLine(": Testcase '{0}' finished with {1} failed case(s), {2} exceptional case(s) out of totally {3} test(s)", 
+                Console.WriteLine(
+                    ": Testcase '{0}' finished with {1} failed case(s), {2} exceptional case(s) out of totally {3} test(s)",
                     testcase.Name, nFailedTestcases, nExTestcases, nTestcases);
             }
-            Console.WriteLine(": Test completed with {0} failed case(s), {1} exceptional case(s) out of totally {2} test(s)", gFailedTotal, gExTotal, gTestTotal);
+            Console.WriteLine(
+                ": Test completed with {0} failed case(s), {1} exceptional case(s) out of totally {2} test(s)",
+                FailedTotal, ExTotal, TestTotal);
         }
-    }   /* class TesxtualTestcase */
+    } /* class TesxtualTestcase */
 
     public static class IntegratedTest
     {
@@ -325,37 +334,37 @@ namespace QSharp.String.Compiler
 
 #if SWITCH_SyntaxParser_Backtracking
             SyntaxParser_Backtracking_Test.MainTest();
-            nFailed += TextualTestcase.gFailedTotal;
-            nEx += TextualTestcase.gExTotal;
-            nTests += TextualTestcase.gTestTotal;
+            nFailed += TextualTestcase.FailedTotal;
+            nEx += TextualTestcase.ExTotal;
+            nTests += TextualTestcase.TestTotal;
 #endif
 
 #if SWITCH_SyntaxParser_RecursiveDescent
             SyntaxParser_RecursiveDescent_Test.MainTest();
-            nFailed += TextualTestcase.gFailedTotal;
-            nEx += TextualTestcase.gExTotal;
-            nTests += TextualTestcase.gTestTotal;
+            nFailed += TextualTestcase.FailedTotal;
+            nEx += TextualTestcase.ExTotal;
+            nTests += TextualTestcase.TestTotal;
 #endif
 
 #if SWITCH_SyntaxParser_LL1_Test
             SyntaxParser_LL1_Test.MainTest();
-            nFailed += TextualTestcase.gFailedTotal;
-            nEx += TextualTestcase.gExTotal;
-            nTests += TextualTestcase.gTestTotal;
+            nFailed += TextualTestcase.FailedTotal;
+            nEx += TextualTestcase.ExTotal;
+            nTests += TextualTestcase.TestTotal;
 #endif
 
 #if SWITCH_SyntaxParser_LRTable_Test
             SyntaxParser_LRTable_Test.MainTest();
-            nFailed += TextualTestcase.gFailedTotal;
-            nEx += TextualTestcase.gExTotal;
-            nTests += TextualTestcase.gTestTotal;
+            nFailed += TextualTestcase.FailedTotal;
+            nEx += TextualTestcase.ExTotal;
+            nTests += TextualTestcase.TestTotal;
 #endif
 
 #if SWITCH_SyntaxParser_LR0_Test
             SyntaxParser_LR0_Test.MainTest();
-            nFailed += TextualTestcase.gFailedTotal;
-            nEx += TextualTestcase.gExTotal;
-            nTests += TextualTestcase.gTestTotal;
+            nFailed += TextualTestcase.FailedTotal;
+            nEx += TextualTestcase.ExTotal;
+            nTests += TextualTestcase.TestTotal;
 #endif
 
             Console.WriteLine("=== Final Report ===");
@@ -363,8 +372,8 @@ namespace QSharp.String.Compiler
             Console.WriteLine(" {0} exceptional cases", nEx);
             Console.WriteLine(" {0} failed cases", nFailed);
         }
-    }   /* class IntegratedTest */
+    } /* class IntegratedTest */
 
-}   /* namespace QSharp.String.Compiler */
+} /* namespace QSharp.String.Compiler */
 
 #endif
