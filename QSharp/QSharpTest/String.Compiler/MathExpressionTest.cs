@@ -7,7 +7,7 @@ namespace QSharpTest.String.Compiler
     {
         private readonly string[] _bnf =
         {
-            @"Lang -> ExpVal", 
+            @"Lang -> AExpVal", 
             
             @"AExpBool-> ExpBool | QExpBool",                   // any boolean expression, quoted or not
             @"QExpBool-> '(' ExpBool ')' | '(' QExpBool ')'",   // quoted boolean expression
@@ -15,11 +15,11 @@ namespace QSharpTest.String.Compiler
             
             @"AExpVal -> ExpVal | QExpVal",                     // value expresion, quoted or not
             @"QExpVal -> '(' ExpVal ')' | '(' QExpVal ')'",     // quoted value expression
-            @"ExpVal -> ExpAdd | '_'",        // unquoted value expression
+            @"ExpVal -> ExpMul | ExpAdd | ExpNeg | Val",        // unquoted value expression
             
             @"AExp -> Exp | QExp",                              // any expression, quoted or not
             @"QExp -> '(' Exp ')' | '(' QExp ')'",              // quoted expression
-            @"Exp-> ExpBool | ExpMul | ExpAdd",                 // any expression, unquoted
+            @"Exp-> ExpBool | ExpVal",                          // any expression, unquoted
 
             @"AExpMul -> QExpMul | ExpMul",
             @"QExpMul -> '(' QExpMul ')' | '(' ExpMul ')'",
@@ -61,7 +61,7 @@ namespace QSharpTest.String.Compiler
             @"Val -> Var | Const",                    // unquoted value
         
             @"Var -> LetterUl ANUl",
-            // TODO this cannot contain LetterUl ANUl any more for LR0 (need to figure out why)
+            // TODO this cannot contain LetterUl ANUl any more (need to figure out why)
             @"ANUl -> Digit ANUl | Letter ANUl | '_' ANUl | ",   // alphanumeric string that can have underline characters and can be empty
             @"LetterUl -> Letter | '_'",                         // letter or underline
             @"Letter -> 'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'|'M'|'N'|'O'|'P'|'Q'|'R'|'S'|'T'|'U'|'V'|'W'|'X'|'Y'|'Z'|'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h'|'i'|'j'|'k'|'l'|'m'|'n'|'o'|'p'|'q'|'r'|'s'|'t'|'u'|'v'|'w'|'x'|'y'|'z'",
