@@ -265,8 +265,8 @@ namespace QSharp.String.Compiler
 
             public State Go(State state, Bnf.ISymbol x)
             {
-                State newState = new State();   // empty set initially
-                foreach (Item item in state)
+                var newState = new State();   // empty set initially
+                foreach (var item in state)
                 {
                     Bnf.ISymbol y = item.NextSymbol;
                     /**
@@ -340,15 +340,15 @@ namespace QSharp.String.Compiler
 
         public void Create(Bnf bnf, AddToList addToList)
         {
-            StateOperation so = new StateOperation(bnf);
+            var so = new StateOperation(bnf);
 
-            Queue<State> q = new Queue<State>();
-            List<State> tempList = new List<State>();
+            var q = new Queue<State>();
+            var tempList = new List<State>();
             MyStates.Clear();
 
             // Create the starting node
             MyStart = new State();
-            foreach (Bnf.Production production in bnf.P[0])
+            foreach (var production in bnf.P[0])
             {
                 MyStart.Add(new Item(production, 0));
             }
@@ -582,7 +582,7 @@ namespace QSharp.String.Compiler
              */
             public void Absorb(State that)
             {
-                for (int i = 0; i < Count && i < that.Count; i++)
+                for (var i = 0; i < Count && i < that.Count; i++)
                 {
                     this[i].Follower.Unionize(that[i].Follower);
                 }
@@ -590,8 +590,8 @@ namespace QSharp.String.Compiler
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (Item item in this)
+                var sb = new StringBuilder();
+                foreach (var item in this)
                 {
                     sb.Append(item);
                     sb.Append("\r\treesize");
@@ -674,10 +674,10 @@ namespace QSharp.String.Compiler
                      * </remarks>
                      */
                     var vnB = (Bnf.Nonterminal)item.Prod[item.Dot];
-                    foreach (Bnf.Production p in BnfSpec.P[vnB.Index])
+                    foreach (var p in BnfSpec.P[vnB.Index])
                     {
-                        Item newItem = new Item(p, 0, b);
-                        int nOldCount = state.Count;
+                        var newItem = new Item(p, 0, b);
+                        var nOldCount = state.Count;
                         state.Add(newItem);
                         if (state.Count > nOldCount && newItem.NeedEnqueue())
                         {
@@ -690,10 +690,10 @@ namespace QSharp.String.Compiler
 
             public State Go(State state, Bnf.ISymbol x)
             {
-                State newState = new State();   // empty set initially
-                foreach (Item item in state)
+                var newState = new State();   // empty set initially
+                foreach (var item in state)
                 {
-                    Bnf.ISymbol y = item.NextSymbol;
+                    var y = item.NextSymbol;
                     /**
                      * <remarks>
                      *  Check y in case 

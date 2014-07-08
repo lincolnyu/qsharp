@@ -82,7 +82,7 @@ namespace QSharp.String.Compiler
                     return ParsingResult.Succeeded;
                 }
 
-                if (action.CanShift && myIProd == -1)
+                if (action.CanShift && MyIProd == -1)
                 {
                     if (action.CanReduce)
                     {
@@ -90,32 +90,32 @@ namespace QSharp.String.Compiler
                     }
 
                     stream.Move(1);
-                    myAStack.Push(a);
-                    myStateStack.Push(action.IShift);
+                    MyAStack.Push(a);
+                    MyStateStack.Push(action.IShift);
                     return ParsingResult.Pending;
                 }
 
                 if (action.CanReduce)
                 {
-                    if (myIProd < 0)
+                    if (MyIProd < 0)
                     {
-                        myIProd = 0;
+                        MyIProd = 0;
                     }
 
-                    Bnf.Production prod = action.Prods[myIProd];
-                    if (myIProd + 1 < action.Prods.Count)
+                    Bnf.Production prod = action.Prods[MyIProd];
+                    if (MyIProd + 1 < action.Prods.Count)
                     {
                         PushTry(stream);
                     }
 
-                    if (myAStack.Count < prod.Count)
+                    if (MyAStack.Count < prod.Count)
                     {
                         throw new QException("Inconsistent parsing");
                     }
                     for (int i = prod.Count - 1; i >= 0; i--)
                     {
-                        myStateStack.Pop();
-                        Bnf.ISymbol popped = myAStack.Pop();
+                        MyStateStack.Pop();
+                        Bnf.ISymbol popped = MyAStack.Pop();
                         if (popped.CompareTo(prod[i]) != 0)
                         {
                             throw new QException("Inconsistent parsing");
@@ -136,9 +136,9 @@ namespace QSharp.String.Compiler
                         throw new QException("Inconsistent parsing");
                     }
                     
-                    myStateStack.Push(iNextState);
-                    myAStack.Push(ap);
-                    myIProd = -1;
+                    MyStateStack.Push(iNextState);
+                    MyAStack.Push(ap);
+                    MyIProd = -1;
 
                     return ParsingResult.Pending;
                 }

@@ -5,6 +5,7 @@
 //using QSharp.Scheme.Classical.Trees;
 using QSharpTest.Scheme.Classical.Hash;
 //using QSharpTest.Scheme.Classical.Trees;
+using QSharpTest.String.Compiler;
 
 namespace QSharpTest
 {
@@ -29,12 +30,18 @@ namespace QSharpTest
             return;
 #endif
 
-            //QSharp.String.Compiler.IntegratedTest.TestEntry();
+
+            var met = new MathExpressionTest();
+            met.Test();
+
+#if false
+    //QSharp.String.Compiler.IntegratedTest.TestEntry();
             
             var t = new SplitOrderedHashConcurrentTest();
             //t.SoHashLinearAddItemPressureTest();
             //t.SoHashDynamicAddItemPressureTest();
             t.SoHashLinearClearPressureTest();
+#endif
         }
     }
 }

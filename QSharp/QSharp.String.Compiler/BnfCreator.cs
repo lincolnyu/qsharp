@@ -130,7 +130,7 @@ namespace QSharp.String.Compiler
             public IToken Parse(ITokenStream stream)
             {
                 IToken token = null;
-                foreach (IStreamParser parser in MyParsers)
+                foreach (var parser in MyParsers)
                 {
                     token = parser.Parse(stream);
                     if (token != null)
@@ -325,7 +325,7 @@ namespace QSharp.String.Compiler
             var production = new Bnf.Production();
             while (true)
             {
-                IToken se = dc.ParseOnly(new SymbolType(), stream);
+                var se = dc.ParseOnly(new SymbolType(), stream);
                 var sp = se as SymbolPackage;
 
                 if (sp == null)
@@ -364,7 +364,7 @@ namespace QSharp.String.Compiler
             var bnf = new Bnf();
             var prodLines = new List<Bnf.ProductionLine>();
 
-            for (int i = 0; i < reg.Count; i++)
+            for (var i = 0; i < reg.Count; i++)
             {
                 prodLines.Add(new Bnf.ProductionLine(bnf, reg[i]));
             }
@@ -405,9 +405,9 @@ namespace QSharp.String.Compiler
                 // it's now at the character after '->'
                 while (true)
                 {
-                    Bnf.Production production = CreateProduction(reg, dc, ref ts, stream);
+                    var production = CreateProduction(reg, dc, ref ts, stream);
 
-                    int iProduction = ListIndexer<Bnf.IPhrase>.Index(
+                    var iProduction = ListIndexer<Bnf.IPhrase>.Index(
                         prodLines[iProdLine].Items, production);
                     if (iProduction < 0)
                     {   // only add when not existing
@@ -415,10 +415,10 @@ namespace QSharp.String.Compiler
                         prodLines[iProdLine].Items.Insert(iProduction, production);
                     }
 
-                    CharToken token = stream.Read() as CharToken;
+                    var token = stream.Read() as CharToken;
                     if (token == null)
                     {   // end of stream
-                        foreach (Bnf.ProductionLine pdl in prodLines)
+                        foreach (var pdl in prodLines)
                         {
                             pdl.TendChildren();
                         }
@@ -427,7 +427,7 @@ namespace QSharp.String.Compiler
                     }
                     if (token == '\n')
                     {   // new line of productions 
-                        Lexical.CharSet returnMarkAndBlank = new Lexical.CharSet('\n', ' ', '\t');
+                        var returnMarkAndBlank = new Lexical.CharSet('\n', ' ', '\t');
                         Lexical.SkipWhen(stream, returnMarkAndBlank);
                         break;
                     }
@@ -448,9 +448,9 @@ namespace QSharp.String.Compiler
         {
             bnf = null;
 
-            TokenStream.Position storedPos = (TokenStream.Position)stream.Pos.Clone();
+            var storedPos = (TokenStream.Position)stream.Pos.Clone();
 
-            NonterminalRegistry reg = CollectNonterminals(dc, stream);
+            var reg = CollectNonterminals(dc, stream);
             if (reg == null)
             {   // empty BNF
                 return false;

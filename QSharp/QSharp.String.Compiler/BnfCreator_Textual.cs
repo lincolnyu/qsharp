@@ -108,7 +108,7 @@ namespace QSharp.String.Compiler
         /* from IComparableParser */
         public virtual int CompareTo(IComparableParser rhs)
         {
-            TextualTerminal thatTerminal = rhs as TextualTerminal;
+            var thatTerminal = rhs as TextualTerminal;
             if (thatTerminal != null)
             {
                 return 0;
@@ -276,13 +276,13 @@ namespace QSharp.String.Compiler
 
         public IToken Parse(ITokenStream stream)
         {
-            StringBuilder sT = new StringBuilder();
+            var sT = new StringBuilder();
             Lexical.SkipBlanks(stream);
 
-            int stage = 0;
+            var stage = 0;
             while (true)
             {
-                CharToken token = stream.Read() as CharToken;
+                var token = stream.Read() as CharToken;
                 if (token == null)
                 {
                     if (stage == 0)

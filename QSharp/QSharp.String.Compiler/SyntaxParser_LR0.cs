@@ -27,16 +27,15 @@ namespace QSharp.String.Compiler
             protected Stack<Bnf.ISymbol> AStack = new Stack<Bnf.ISymbol>();
             protected Stack<int> StateStack = new Stack<int>();
 
-            public Reduction(int nRIndex, TokenStream.Position pos,
-                Stack<Bnf.ISymbol> aStack, Stack<int> stateStack)
+            public Reduction(int nRIndex, TokenStream.Position pos, IEnumerable<Bnf.ISymbol> aStack, IEnumerable<int> stateStack)
             {
                 RIndex = nRIndex;
                 Pos = pos;
-                foreach (Bnf.ISymbol symbol in aStack)
+                foreach (var symbol in aStack)
                 {
                     AStack.Push(symbol);
                 }
-                foreach (int iState in stateStack)
+                foreach (var iState in stateStack)
                 {
                     StateStack.Push(iState);
                 }
@@ -77,18 +76,18 @@ namespace QSharp.String.Compiler
          *  with each other (Specifically, myStateStack is one deeper that myAStack)
          * </remarks>
          */
-        protected Stack<int> myStateStack = new Stack<int>();
-        protected Stack<Bnf.ISymbol> myAStack = new Stack<Bnf.ISymbol>();
-        protected Stack<Reduction> myRedcStack = new Stack<Reduction>();
-        protected int myIProd = 0;
+        protected Stack<int> MyStateStack = new Stack<int>();
+        protected Stack<Bnf.ISymbol> MyAStack = new Stack<Bnf.ISymbol>();
+        protected Stack<Reduction> MyRedcStack = new Stack<Reduction>();
+        protected int MyIProd = 0;
 
         public void PushTry(ITokenStream stream)
         {
 #if DEBUG_LR
             System.Console.WriteLine("Pushing try.");
 #endif
-            myRedcStack.Push(new Reduction(myIProd + 1, stream.Pos.Clone() as TokenStream.Position,
-                myAStack, myStateStack));
+            MyRedcStack.Push(new Reduction(MyIProd + 1, stream.Pos.Clone() as TokenStream.Position,
+                MyAStack, MyStateStack));
         }
 
         public bool PopTry(ITokenStream stream)
@@ -96,7 +95,7 @@ namespace QSharp.String.Compiler
 #if DEBUG_LR
             System.Console.Write("Popping try...");
 #endif
-            if (myRedcStack.Count <= 0)
+            if (MyRedcStack.Count <= 0)
             {
 #if DEBUG_LR
                 System.Console.WriteLine("failed");
@@ -107,37 +106,37 @@ namespace QSharp.String.Compiler
             System.Console.WriteLine("ok");
 #endif
 
-            Reduction redc = myRedcStack.Pop();
-            myIProd = redc.RIndex;
+            Reduction redc = MyRedcStack.Pop();
+            MyIProd = redc.RIndex;
             stream.Pos = redc.Pos;
-            redc.Restore(myAStack, myStateStack);
+            redc.Restore(MyAStack, MyStateStack);
 
             return true;
         }
 
         protected int GetStateAtTop()
         {
-            if (myStateStack.Count == 0)
+            if (MyStateStack.Count == 0)
             {
                 return -1;
             }
-            int iState = myStateStack.Pop();
-            myStateStack.Push(iState);
+            int iState = MyStateStack.Pop();
+            MyStateStack.Push(iState);
             return iState;
         }
 
         public void Reset()
         {
-            myStateStack.Clear();
-            myAStack.Clear();
+            MyStateStack.Clear();
+            MyAStack.Clear();
 
             if (Table != null)
             {
-                myStateStack.Push(0);
+                MyStateStack.Push(0);
             }
 
-            myRedcStack.Clear();
-            myIProd = -1;
+            MyRedcStack.Clear();
+            MyIProd = -1;
         }
 
 #if DEBUG_LR
@@ -216,7 +215,7 @@ namespace QSharp.String.Compiler
 
             public override string ToString()
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 if (CanShift)
                 {
                     sb.Append('S');
@@ -224,7 +223,7 @@ namespace QSharp.String.Compiler
                 if (CanReduce)
                 {
                     sb.Append('R');
-                    foreach (Bnf.Production prod in Prods)
+                    foreach (var prod in Prods)
                     {
                         sb.Append('[');
                         sb.Append(prod.Owner.Left.Index);
@@ -346,12 +345,12 @@ namespace QSharp.String.Compiler
 
         protected Bnf.ISymbol GetSymbolAtTop()
         {
-            if (myAStack.Count <= 0)
+            if (MyAStack.Count <= 0)
             {
                 return null;
             }
-            Bnf.ISymbol symbol = myAStack.Pop();
-            myAStack.Push(symbol);
+            Bnf.ISymbol symbol = MyAStack.Pop();
+            MyAStack.Push(symbol);
             return symbol;
         }
 
@@ -383,7 +382,7 @@ namespace QSharp.String.Compiler
 
             var action = MyTable.Actions[iState];
 
-            if (action.CanShift && myIProd == -1)
+            if (action.CanShift && MyIProd == -1)
             {
                 var a = stream.Read() as Bnf.Terminal;
                 var iNextState = -1;
@@ -410,9 +409,9 @@ namespace QSharp.String.Compiler
                     }
 
                     stream.Move(1);
-                    myAStack.Push(a);
-                    myStateStack.Push(iNextState);
-                    myIProd = -1;
+                    MyAStack.Push(a);
+                    MyStateStack.Push(iNextState);
+                    MyIProd = -1;
 
                     return ParsingResult.Pending;
                 }
@@ -420,25 +419,25 @@ namespace QSharp.String.Compiler
 
             if (action.CanReduce)
             {
-                if (myIProd < 0)
+                if (MyIProd < 0)
                 {
-                    myIProd = 0;
+                    MyIProd = 0;
                 }
 
-                Bnf.Production prod = action.Prods[myIProd];
-                if (myIProd + 1 < action.Prods.Count)
+                var prod = action.Prods[MyIProd];
+                if (MyIProd + 1 < action.Prods.Count)
                 {
                     PushTry(stream);
                 }
 
-                if (myAStack.Count < prod.Count)
+                if (MyAStack.Count < prod.Count)
                 {
                     throw new QException("Inconsistent parsing");
                 }
-                for (int i = prod.Count - 1; i >= 0; i--)
+                for (var i = prod.Count - 1; i >= 0; i--)
                 {
-                    myStateStack.Pop();
-                    Bnf.ISymbol popped = myAStack.Pop();
+                    MyStateStack.Pop();
+                    var popped = MyAStack.Pop();
                     if (popped.CompareTo(prod[i]) != 0)
                     {
                         throw new QException("Inconsistent parsing");
@@ -450,7 +449,7 @@ namespace QSharp.String.Compiler
                 {
                     throw new QException("State stack error");
                 }
-                Bnf.Nonterminal ap = prod.Owner.Left;
+                var ap = prod.Owner.Left;
 
                 /**
                  * <remarks>
@@ -477,16 +476,17 @@ namespace QSharp.String.Compiler
                     return ParsingResult.Failed;
                 }
 
-                int iNextState = MyTable.GMap[iState, ap];
+                var iNextState = MyTable.GMap[iState, ap];
 
                 if (iNextState < 0)
                 {
-                    throw new QException("Inconsistent parsing");
+                    //throw new QException("Inconsistent parsing");
+                    return ParsingResult.Failed;
                 }
-                myStateStack.Push(iNextState);
-                myAStack.Push(ap);
+                MyStateStack.Push(iNextState);
+                MyAStack.Push(ap);
 
-                myIProd = -1;
+                MyIProd = -1;
                 return ParsingResult.Pending;
             }
 
