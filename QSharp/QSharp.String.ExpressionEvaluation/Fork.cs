@@ -40,6 +40,11 @@ namespace QSharp.String.ExpressionEvaluation
             return false;
         }
 
+        public void AddChild(Node newChild)
+        {
+            Children.Add(newChild);
+        }
+
         #endregion
     }
 }
