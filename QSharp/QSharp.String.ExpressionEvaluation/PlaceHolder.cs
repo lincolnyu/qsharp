@@ -31,8 +31,16 @@ namespace QSharp.String.ExpressionEvaluation
 
         #endregion
 
-        #region Methods
+        #region Constructors
 
+        public PlaceHolder()
+        {
+            Children = new LinkedList<Node>();
+        }
+
+        #endregion
+
+        #region Methods
 
         #region IHasChild members
 

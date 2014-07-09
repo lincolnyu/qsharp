@@ -35,7 +35,27 @@ namespace QSharp.String.ExpressionEvaluation
         private void NodeToString(Node node, StringBuilder sb)
         {
             sb.Append('{');
-            var nt = node.NodeType.ToString();
+            string nt;
+            switch (node.NodeType)
+            {
+                case Node.Type.BinaryOperator:
+                    nt = "B";
+                    break;
+                case Node.Type.UnaryOperator:
+                    nt = "U";
+                    break;
+                case Node.Type.Constant:
+                    nt = "C";
+                    break;
+                case Node.Type.Symbol:
+                    nt = "S";
+                    break;
+                case Node.Type.Function:
+                    nt = "F";
+                    break;
+                default:
+                    throw new Exception("Unknown node type");
+            }
             sb.Append(nt);
             sb.Append(';');
             if (node.Content.EndsWith("@"))
