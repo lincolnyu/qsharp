@@ -35,6 +35,7 @@ namespace QSharp.String.ExpressionEvaluation
             if (i < Children.Count)
             {
                 Children[i] = newChild;
+                newChild.Parent = this;
                 return true;
             }
             return false;
@@ -43,6 +44,7 @@ namespace QSharp.String.ExpressionEvaluation
         public void AddChild(Node newChild)
         {
             Children.Add(newChild);
+            newChild.Parent = this;
         }
 
         #endregion

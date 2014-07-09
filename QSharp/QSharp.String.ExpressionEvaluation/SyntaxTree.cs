@@ -161,10 +161,20 @@ namespace QSharp.String.ExpressionEvaluation
                     token = new Token
                     {
                         Content = ")",
-                        TokenType = Token.Type.LeftBracket
+                        TokenType = Token.Type.RightBracket
                     };
                     i++;
                     lastIsEntity = true;
+                }
+                else if (c == ',')
+                {
+                    token = new Token
+                    {
+                        Content = ",",
+                        TokenType = Token.Type.Comma
+                    };
+                    i++;
+                    lastIsEntity = false;
                 }
                 else if (c == '"')
                 {

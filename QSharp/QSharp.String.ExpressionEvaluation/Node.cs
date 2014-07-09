@@ -6,6 +6,7 @@
 
         public enum Type
         {
+            None,
             Constant,
             Symbol,
             Function,

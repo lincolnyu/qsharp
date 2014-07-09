@@ -58,6 +58,7 @@ namespace QSharp.String.ExpressionEvaluation
             if (node != null)
             {
                 node.Value = newChild;
+                newChild.Parent = this;
                 return true;
             }
 
@@ -67,6 +68,7 @@ namespace QSharp.String.ExpressionEvaluation
         public void AddChild(Node child)
         {
             Children.AddLast(child);
+            child.Parent = this;
         }
 
         #endregion
@@ -77,7 +79,7 @@ namespace QSharp.String.ExpressionEvaluation
         public Node Close()
         {
             var parentHasChild = (IHasChild)Parent;
-            var concluded = DischargeNode();
+            var concluded = Solidify();
 
             parentHasChild.ReplaceChild(this, concluded);
 
@@ -100,6 +102,7 @@ namespace QSharp.String.ExpressionEvaluation
             }
             
             Content = token.Content;
+            IsAttractor = false;
         }
 
         public Node Debracket()
@@ -117,9 +120,9 @@ namespace QSharp.String.ExpressionEvaluation
 
         public Node DischargeAtomForFork(string content, Type nodeType)
         {
-            var node = DischargeNode();
+            var node = Solidify();
             Children.Clear();
-            Children.AddLast(node);
+            AddChild(node);
 
             NodeType = nodeType;
             Content = content;
@@ -127,8 +130,7 @@ namespace QSharp.String.ExpressionEvaluation
             return node;
         }
 
-
-        private Node DischargeNode()
+        public Node Solidify()
         {
             Node concluded;
             if (Children.Count > 0)
@@ -136,10 +138,9 @@ namespace QSharp.String.ExpressionEvaluation
                 var fork = new Fork();
                 foreach (var child in Children)
                 {
-                    fork.Children.Add(child);
+                    fork.AddChild(child);
                 }
                 concluded = fork;
-
             }
             else
             {

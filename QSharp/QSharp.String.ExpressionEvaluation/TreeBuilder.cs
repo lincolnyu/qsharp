@@ -101,13 +101,15 @@ namespace QSharp.String.ExpressionEvaluation
                 }
                 LastToken = token;
             }
+
+            Root = ((PlaceHolder) Root).Solidify();
         }
 
         private void ConsumeLeftBracket()
         {
             if (AtomicNode != null)
             {
-                AddFunction(LastToken);
+                AddFunction();
                 AtomicNode = null;
             }
             else if (LastTokenType == Token.Type.LeftBracket)
@@ -138,11 +140,25 @@ namespace QSharp.String.ExpressionEvaluation
             {
                 // function concludes
 
-                var concludedParameter = ParameterCell.Close();
+                var omitted = ParameterCell.IsAttractor;
 
-                var functionHolder = (PlaceHolder)concludedParameter.Parent;
-                functionHolder.Close();
+                var functionHolder = (PlaceHolder)ParameterCell.Parent;
+
+                if (omitted)
+                {
+                    functionHolder.Children.RemoveLast();
+                }
+                else
+                {
+                    ParameterCell.Close();
+                }
+
+                if (!functionHolder.IsBracketKeeper)
+                {
+                    functionHolder.Close();
+                }
                 AtomicNode = functionHolder;
+                Attractor = null;
 
                 // Find the upper parameter cell
                 PopParameterCell();
@@ -150,12 +166,16 @@ namespace QSharp.String.ExpressionEvaluation
             else
             {
                 NearestBracketKeeper.RightBracketCount++;
-                AtomicNode = NearestBracketKeeper;
+                
                 if (NearestBracketKeeper.LeftBracketCount == NearestBracketKeeper.RightBracketCount)
                 {
-                    NearestBracketKeeper.Debracket();
+                    AtomicNode = NearestBracketKeeper.Debracket();
                     // Find the next bracket keeper
                     PopBracketKeeper();
+                }
+                else
+                {
+                    AtomicNode = NearestBracketKeeper;
                 }
             }
         }
@@ -179,16 +199,12 @@ namespace QSharp.String.ExpressionEvaluation
             ParameterCell = newParameter;
         }
 
-        private void AddBinaryOperator(Token token)
+
+        private Node FindInsertPoint(Node startNode, int priority)
         {
-            if (Attractor != null || AtomicNode == null)
-            {
-                throw new Exception("Unexpected binary operator");
-            }
-            
             // find the place to insert the operator
-            var p = AtomicNode;
-            var prioThis = GetBinaryOperatorPriority(token.Content);
+            var p = startNode;
+
             for (; p != null; p = p.Parent)
             {
                 if (p is PlaceHolder) // parameter, bracket keeper
@@ -198,12 +214,26 @@ namespace QSharp.String.ExpressionEvaluation
                 if (p.Parent.NodeType == Node.Type.BinaryOperator)
                 {
                     var prioCurrParent = GetBinaryOperatorPriority(p.Parent.Content);
-                    if (prioThis < prioCurrParent)
+                    if (priority < prioCurrParent)
                     {
                         break;
                     }
                 }
             }
+
+            return p;
+        }
+
+        private void AddBinaryOperator(Token token)
+        {
+            if (Attractor != null || AtomicNode == null)
+            {
+                throw new Exception("Unexpected binary operator");
+            }
+            
+            // find the place to insert the operator
+            var prioThis = GetBinaryOperatorPriority(token.Content);
+            var p = FindInsertPoint(AtomicNode, prioThis);
 
             var placeHolderToUse = p as PlaceHolder;
             var rhsHolder = new PlaceHolder { IsAttractor = true };
@@ -216,7 +246,7 @@ namespace QSharp.String.ExpressionEvaluation
             {
                 var opNode = new Fork {NodeType = Node.Type.BinaryOperator, Content = token.Content};
                 Rotate(p, opNode);
-                opNode.Children.Add(rhsHolder);
+                opNode.AddChild(rhsHolder);
             }
             Attractor = rhsHolder;
             AtomicNode = null;
@@ -236,18 +266,17 @@ namespace QSharp.String.ExpressionEvaluation
             }
 
             Attractor = new PlaceHolder { IsAttractor = true };
-            unaryHolder.Children.AddLast(Attractor);
+            unaryHolder.AddChild(Attractor);
         }
 
 
         /// <summary>
         ///  
         /// </summary>
-        /// <param name="token">Token contains the function name</param>
-        private void AddFunction(Token token)
+        private void AddFunction()
         {
             // find entry node
-            var functionHolder = GetEntryNodeForFunction(token);
+            var functionHolder = GetEntryNodeForFunction();
 
             var parameterHolder = new PlaceHolder {IsParemeterCell = true, IsAttractor = true};
             functionHolder.AddChild(parameterHolder);
@@ -261,9 +290,16 @@ namespace QSharp.String.ExpressionEvaluation
             if (Attractor != null)
             {
                 Attractor.Attract(token);
+
+                Node symbolNode = Attractor;
+                // see if the attractor can be solidifed
+                if (!Attractor.IsBracketKeeper && !Attractor.IsParemeterCell && !Attractor.IsRootKeeper)
+                {
+                    symbolNode = Attractor.Close();
+                }
                 
                 // updates Atomic node
-                for (var p = (Node)Attractor; p != null; p = p.Parent)
+                for (var p = symbolNode; p != null; p = p.Parent)
                 {
                     var pAsPlaceHolder = p as PlaceHolder;
                     if (pAsPlaceHolder != null && (pAsPlaceHolder.IsBracketKeeper || pAsPlaceHolder.IsParemeterCell)
@@ -281,24 +317,29 @@ namespace QSharp.String.ExpressionEvaluation
             throw new Exception("Unexpected symbol");
         }
 
-        private PlaceHolder GetEntryNodeForFunction(Token token)
+        private PlaceHolder GetEntryNodeForFunction()
         {
             Debug.Assert(AtomicNode != null);
-            var placeHolderToUse = AtomicNode as PlaceHolder;
+            
+            var prioThis = GetFunctionPriority();
+            var insertPoint = FindInsertPoint(AtomicNode, prioThis);
+
+            var placeHolderToUse = insertPoint as PlaceHolder;
+
             if (placeHolderToUse != null)
             {
                 // reuse the place holder
-                placeHolderToUse.DischargeAtomForFork(token.Content, Node.Type.Function);
+                placeHolderToUse.DischargeAtomForFork("", Node.Type.Function);
                 return placeHolderToUse;
             }
             
             var functionHolder = new PlaceHolder
             {
-                Content = token.Content,
+                Content = "",
                 NodeType = Node.Type.Function
             };
 
-            Rotate(AtomicNode, functionHolder);
+            Rotate(insertPoint, functionHolder);
 
             return functionHolder;
         }
@@ -310,7 +351,6 @@ namespace QSharp.String.ExpressionEvaluation
 
             var newNodeAsParent = (IHasChild) newNode;
             newNodeAsParent.AddChild(original);
-            original.Parent = newNode;
         }
 
         /// <summary>
@@ -361,12 +401,17 @@ namespace QSharp.String.ExpressionEvaluation
             }
         }
 
+        private int GetFunctionPriority()
+        {
+            return 1;
+        }
+
         private int GetBinaryOperatorPriority(string operatorContent)
         {
             switch (operatorContent)
             {
                 case ".":
-                    return 1;
+                    return 0;
                 case "*":
                 case "/":
                     return 2;
