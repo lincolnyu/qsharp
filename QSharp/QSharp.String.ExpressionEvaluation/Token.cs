@@ -7,8 +7,8 @@
         public enum Type
         {
             None,
-            LeftParenthesis,
-            RightParenthesis,
+            LeftBracket,
+            RightBracket,
             Constant,   // numeric value or string
             Symbol,     // variable name, funciton name or array name
             Comma,      // for function

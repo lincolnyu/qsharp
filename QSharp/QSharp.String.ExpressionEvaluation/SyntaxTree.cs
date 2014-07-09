@@ -1,87 +1,313 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace QSharp.String.ExpressionEvaluation
 {
     public class SyntaxTree
     {
+        #region Properties
+
+        public Node Root { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        #region object members
+
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        ///  Format: {nodetype;content;{subnode1-info}{subnode2-info}...}
+        /// </remarks>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            NodeToString(Root, sb);
+            return sb.ToString();
+        }
+
+        #endregion
+
+        private void NodeToString(Node node, StringBuilder sb)
+        {
+            sb.Append('{');
+            var nt = node.NodeType.ToString();
+            sb.Append(nt);
+            sb.Append(';');
+            if (node.Content.EndsWith("@"))
+            {
+                // a string
+                foreach (var c in node.Content)
+                {
+                    if (c == ';')
+                    {
+                        sb.Append('\\');
+                    }
+                    sb.Append(c);
+                }
+            }
+            else
+            {
+                // a number or a symbol
+                sb.Append(node.Content);
+            }
+            // kids
+            var fork = node as Fork;
+            if (fork != null)
+            {
+                sb.Append(';');
+                foreach (var child in fork.Children)
+                {
+                    NodeToString(child, sb);
+                }
+            }
+            sb.Append('}');
+        }
+
         public void Parse(string expression)
         {
             var tokens = Tokenize(expression);
-            Parse(tokens);
+            var treeBuilder = new TreeBuilder();
+            treeBuilder.Parse(tokens);
+            Root = treeBuilder.Root;
         }
 
-        private IList<Token> Tokenize(string expression)
+        private IEnumerable<Token> Tokenize(string expression)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Parse(IList<Token> tokens)
-        {
-            var lastWasHead = false;
-            var leftParentheses = 0;
-            Node lastNode = null;
-            PlaceHolder lastPlaceHolder;
-            var lastTokenType = Token.Type.None;
-            var lastOpOrder = -1;
-            for (var i = 0; i < tokens.Count; i++)
+            var lastIsEntity = false;
+            var tokens = new LinkedList<Token>();
+            for (var i = 0; i < expression.Length;)
             {
-                var token = tokens[i];
-
-                switch (token.TokenType)
+                i = SkipSpaces(expression, i);
+                var c = expression[i];
+                Token token;
+                if (char.IsLetter(c) || c == '_')
                 {
-                    case Token.Type.LeftParenthesis:
-                        if (lastTokenType == Token.Type.Symbol)
-                        {
-                            // function
-                        }
-                        else
-                        {
-                            // charge leaf placeholder
-                        }
-                        break;
-                    case Token.Type.RightParenthesis:
-                        break;
-                    case Token.Type.Symbol:
-
-                        break;
-                    case Token.Type.Constant:
-                        // add it to the current cell
-                        break;
-                    case Token.Type.Operator:
-                        if (lastTokenType == Token.Type.None ||
-                            lastTokenType == Token.Type.LeftParenthesis ||
-                            lastTokenType == Token.Type.Comma || 
-                            lastTokenType == Token.Type.Operator)
-                        {
-                            // unary operator: it's guaranteed in an empty cell
-                            // TODO if operator, check tokens before last
-
-                            // create a operator node in the cell and create an acceptor under it
-                        }
-                        else
-                        {
-                            // binary operator: from closed node up find one whose priority is lower or is a cell
-                            // shift its content left, take its place, retain the node's place cell property
-                            // and create an acceptor on the right
-                        }
-
-                        break;
+                    // symbol
+                    string symbol;
+                    i = ConsumeWhen(expression, i, c1 => char.IsLetterOrDigit(c1) || c1 == '_', out symbol);
+                    switch (symbol.ToLower())
+                    {
+                        case "and":
+                            token = new Token
+                            {
+                                Content = "&&",
+                                TokenType = Token.Type.Symbol
+                            };
+                            lastIsEntity = false;
+                            break;
+                        case "or":
+                            token = new Token
+                            {
+                                Content = "||",
+                                TokenType = Token.Type.Symbol
+                            };
+                            lastIsEntity = false;
+                            break;
+                        case "not":
+                            token = new Token
+                            {
+                                Content = "!",
+                                TokenType = Token.Type.Symbol
+                            };
+                            lastIsEntity = false;
+                            break;
+                        default:
+                            token = new Token
+                            {
+                                Content = symbol,
+                                TokenType = Token.Type.Symbol
+                            };
+                            lastIsEntity = true;
+                            break;
+                    }
                 }
+                else if (c == '(')
+                {
+                    token = new Token
+                    {
+                        Content = "(",
+                        TokenType = Token.Type.LeftBracket
+                    };
+                    i++;
+                    lastIsEntity = false;
+                }
+                else if (c == ')')
+                {
+                    token = new Token
+                    {
+                        Content = ")",
+                        TokenType = Token.Type.LeftBracket
+                    };
+                    i++;
+                    lastIsEntity = true;
+                }
+                else if (c == '"')
+                {
+                    // TODO string
+                    string s;
+                    i = GetString(expression, i, out s);
+                    token = new Token
+                    {
+                        Content = s + "@", // string type indicator
+                        TokenType = Token.Type.Constant
+                    };
 
-                lastTokenType = token.TokenType;
-
+                    lastIsEntity = true;
+                }
+                else if (char.IsDigit(c) || c =='.' && !lastIsEntity)
+                {
+                    // number
+                    string number;
+                    i = GetNumber(expression, i, out number);
+                    token = new Token
+                    {
+                        Content = number,
+                        TokenType = Token.Type.Constant
+                    };
+                    lastIsEntity = true;
+                }
+                else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '.' && lastIsEntity)
+                {
+                    // single-character operators
+                    token = new Token
+                    {
+                        Content = new string(c,1),
+                        TokenType = Token.Type.Operator
+                    };
+                    i++;
+                    lastIsEntity = false;
+                }
+                else if (c == '<' || c == '>')
+                {
+                    var charNum = 1;
+                    if (i + 1 < expression.Length)
+                    {
+                        var next = expression[i];
+                        if (next == '=')
+                        {
+                            i++;
+                            charNum++;
+                        }
+                    }
+                    i++;
+                    token = new Token
+                    {
+                        Content = expression.Substring(i-charNum, charNum),
+                        TokenType = Token.Type.Operator
+                    };
+                    lastIsEntity = false;
+                }
+                else if (c == '&' || c == '|' || c == '=')
+                {
+                    // NOTE we allow both '=' and '==' and interpret them the same
+                    // NOTE which means bit operation is not supported yet, but it's easy to extend
+                    token = new Token
+                    {
+                        Content = new string(c,2),
+                        TokenType = Token.Type.Operator
+                    };
+                    if (i + 1 < expression.Length)
+                    {
+                        var next = expression[i];
+                        if (next == c)
+                        {
+                            i++;
+                        }
+                    }
+                    i++;
+                }
+                else
+                {
+                    throw new Exception("Unexpected character"); // TODO more details
+                }
+                tokens.AddLast(token);
             }
+            return tokens;
         }
 
-        private void RotateLeft(Node original, Node newNode)
+        private int SkipSpaces(string s, int i)
         {
-            var origAsPH = original as PlaceHolder;
-            if (origAsPH != null)
-            {
-
-                return;
-            }
+            return ConsumeWhen(s, i, char.IsWhiteSpace);
         }
+
+        private int GetString(string s, int i, out string sval)
+        {
+            // now at '"'
+            var sb = new StringBuilder();
+            for (i++; i < s.Length; i++)
+            {
+                var c = s[i];
+                if (c == '\\')
+                {
+                    if (i+1 < s.Length)
+                    {
+                        c = s[++i];
+                    }
+                    sb.Append(c);
+                }
+                else if (c == '"')
+                {
+                    sval = sb.ToString();
+                    return i+1;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            sval = sb.ToString();
+            return i;
+        }
+
+        private int GetNumber(string s, int i, out string number)
+        {
+            var dotUsed = false;
+            return ConsumeWhen(s, i, c =>
+            {
+                if (char.IsDigit(c))
+                {
+                    return true;
+                }
+                if (c == '.')
+                {
+                    if (dotUsed)
+                    {
+                        return false;
+                    }
+                    dotUsed = true;
+                    return true;
+                }
+                return false;
+            }, out number);
+        }
+
+        private int ConsumeWhen(string s, int i, Predicate<char> allow)
+        {
+            for (; i < s.Length && allow(s[i]); i++)
+            {
+            }
+
+            return i;
+        }
+
+        private int ConsumeWhen(string s, int i, Predicate<char> allow, out string retrieved)
+        {
+            var sb = new StringBuilder();
+
+            for (; i < s.Length && allow(s[i]); i++)
+            {
+                sb.Append(s[i]);
+            }
+
+            retrieved = sb.ToString();
+            return i;
+        }
+
+        #endregion
     }
 }
