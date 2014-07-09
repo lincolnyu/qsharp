@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QSharp.String.ExpressionEvaluation
 {
-    public class PlaceHolder : Node, IHasChild
+    public class NodeBuilder : Node, IHasChild
     {
         #region Properties
 
@@ -33,7 +33,7 @@ namespace QSharp.String.ExpressionEvaluation
 
         #region Constructors
 
-        public PlaceHolder()
+        public NodeBuilder()
         {
             Children = new LinkedList<Node>();
         }

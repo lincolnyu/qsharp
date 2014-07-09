@@ -10,11 +10,11 @@ namespace QSharp.String.ExpressionEvaluation
 
         public Node Root { get; set; }
 
-        public PlaceHolder NearestBracketKeeper { get; set; }
+        public NodeBuilder NearestBracketKeeper { get; set; }
 
-        public PlaceHolder ParameterCell { get; set; }
+        public NodeBuilder ParameterCell { get; set; }
 
-        public PlaceHolder Attractor { get; set; }
+        public NodeBuilder Attractor { get; set; }
 
         public Node AtomicNode { get; set; }
 
@@ -31,7 +31,7 @@ namespace QSharp.String.ExpressionEvaluation
 
         public TreeBuilder()
         {
-            var rootHolder = new PlaceHolder {IsRootKeeper = true};
+            var rootHolder = new NodeBuilder {IsRootKeeper = true};
             Root = rootHolder;
             NearestBracketKeeper = rootHolder;
             Attractor = rootHolder;
@@ -102,7 +102,7 @@ namespace QSharp.String.ExpressionEvaluation
                 LastToken = token;
             }
 
-            Root = ((PlaceHolder) Root).Solidify();
+            Root = ((NodeBuilder) Root).Solidify();
         }
 
         private void ConsumeLeftBracket()
@@ -142,7 +142,7 @@ namespace QSharp.String.ExpressionEvaluation
 
                 var omitted = ParameterCell.IsAttractor;
 
-                var functionHolder = (PlaceHolder)ParameterCell.Parent;
+                var functionHolder = (NodeBuilder)ParameterCell.Parent;
 
                 if (omitted)
                 {
@@ -192,7 +192,7 @@ namespace QSharp.String.ExpressionEvaluation
             var functionHolder = (IHasChild)ParameterCell.Parent;
             ParameterCell.Close();
 
-            var newParameter = new PlaceHolder {IsParemeterCell = true, IsAttractor = true};
+            var newParameter = new NodeBuilder {IsParemeterCell = true, IsAttractor = true};
             functionHolder.AddChild(newParameter);
 
             Attractor = newParameter;
@@ -207,7 +207,7 @@ namespace QSharp.String.ExpressionEvaluation
 
             for (; p != null; p = p.Parent)
             {
-                if (p is PlaceHolder) // parameter, bracket keeper
+                if (p is NodeBuilder) // parameter, bracket keeper
                 {
                     break;
                 }
@@ -235,8 +235,8 @@ namespace QSharp.String.ExpressionEvaluation
             var prioThis = GetBinaryOperatorPriority(token.Content);
             var p = FindInsertPoint(AtomicNode, prioThis);
 
-            var placeHolderToUse = p as PlaceHolder;
-            var rhsHolder = new PlaceHolder { IsAttractor = true };
+            var placeHolderToUse = p as NodeBuilder;
+            var rhsHolder = new NodeBuilder { IsAttractor = true };
             if (placeHolderToUse != null)
             {
                 placeHolderToUse.DischargeAtomForFork(token.Content, Node.Type.BinaryOperator);
@@ -254,7 +254,7 @@ namespace QSharp.String.ExpressionEvaluation
 
         private void AttractUnaryOperator(Token token)
         {
-            PlaceHolder unaryHolder;
+            NodeBuilder unaryHolder;
             if (Attractor != null && AtomicNode == null)
             {
                 Attractor.Attract(token);
@@ -265,7 +265,7 @@ namespace QSharp.String.ExpressionEvaluation
                 throw new Exception("Unexpected unary operator");
             }
 
-            Attractor = new PlaceHolder { IsAttractor = true };
+            Attractor = new NodeBuilder { IsAttractor = true };
             unaryHolder.AddChild(Attractor);
         }
 
@@ -278,7 +278,7 @@ namespace QSharp.String.ExpressionEvaluation
             // find entry node
             var functionHolder = GetEntryNodeForFunction();
 
-            var parameterHolder = new PlaceHolder {IsParemeterCell = true, IsAttractor = true};
+            var parameterHolder = new NodeBuilder {IsParemeterCell = true, IsAttractor = true};
             functionHolder.AddChild(parameterHolder);
 
             Attractor = parameterHolder;
@@ -301,7 +301,7 @@ namespace QSharp.String.ExpressionEvaluation
                 // updates Atomic node
                 for (var p = symbolNode; p != null; p = p.Parent)
                 {
-                    var pAsPlaceHolder = p as PlaceHolder;
+                    var pAsPlaceHolder = p as NodeBuilder;
                     if (pAsPlaceHolder != null && (pAsPlaceHolder.IsBracketKeeper || pAsPlaceHolder.IsParemeterCell)
                         || p.Parent == null || p.Parent.NodeType != Node.Type.UnaryOperator)
                     {
@@ -317,14 +317,14 @@ namespace QSharp.String.ExpressionEvaluation
             throw new Exception("Unexpected symbol");
         }
 
-        private PlaceHolder GetEntryNodeForFunction()
+        private NodeBuilder GetEntryNodeForFunction()
         {
             Debug.Assert(AtomicNode != null);
             
             var prioThis = GetFunctionPriority();
             var insertPoint = FindInsertPoint(AtomicNode, prioThis);
 
-            var placeHolderToUse = insertPoint as PlaceHolder;
+            var placeHolderToUse = insertPoint as NodeBuilder;
 
             if (placeHolderToUse != null)
             {
@@ -333,7 +333,7 @@ namespace QSharp.String.ExpressionEvaluation
                 return placeHolderToUse;
             }
             
-            var functionHolder = new PlaceHolder
+            var functionHolder = new NodeBuilder
             {
                 Content = "",
                 NodeType = Node.Type.Function
@@ -365,7 +365,7 @@ namespace QSharp.String.ExpressionEvaluation
             }
             for (var p = ParameterCell.Parent; p != null; p = p.Parent)
             {
-                var pAsPlaceHolder = p as PlaceHolder;
+                var pAsPlaceHolder = p as NodeBuilder;
                 if (pAsPlaceHolder != null && (pAsPlaceHolder.IsBracketKeeper || pAsPlaceHolder.IsRootKeeper))
                 {
                     return (pAsPlaceHolder != NearestBracketKeeper);
@@ -379,20 +379,20 @@ namespace QSharp.String.ExpressionEvaluation
             var p = ParameterCell.Parent;
             for (; p != null; p = p.Parent)
             {
-                var pAsPlaceHolder = p as PlaceHolder;
+                var pAsPlaceHolder = p as NodeBuilder;
                 if (pAsPlaceHolder != null && pAsPlaceHolder.IsParemeterCell)
                 {
                     break;
                 }
             }
-            ParameterCell = (PlaceHolder)p;
+            ParameterCell = (NodeBuilder)p;
         }
 
         private void PopBracketKeeper()
         {
             for (var p = NearestBracketKeeper.Parent; p != null; p = p.Parent)
             {
-                var pAsPlaceHolder = p as PlaceHolder;
+                var pAsPlaceHolder = p as NodeBuilder;
                 if (pAsPlaceHolder != null && (pAsPlaceHolder.IsBracketKeeper || pAsPlaceHolder.IsRootKeeper))
                 {
                     NearestBracketKeeper = pAsPlaceHolder;

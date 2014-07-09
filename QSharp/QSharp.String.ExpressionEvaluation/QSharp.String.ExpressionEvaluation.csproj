@@ -43,7 +43,7 @@
     <Compile Include="IHasChild.cs" />
     <Compile Include="Leaf.cs" />
     <Compile Include="Node.cs" />
-    <Compile Include="PlaceHolder.cs" />
+    <Compile Include="NodeBuilder.cs" />
     <Compile Include="SyntaxTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Token.cs" />
