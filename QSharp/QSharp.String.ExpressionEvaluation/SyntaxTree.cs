@@ -136,6 +136,15 @@ namespace QSharp.String.ExpressionEvaluation
                             };
                             lastIsEntity = false;
                             break;
+                        case "true":
+                        case "false":
+                            token = new Token
+                            {
+                                Content = symbol.ToLower(),
+                                TokenType = Token.Type.Constant
+                            };
+                            lastIsEntity = true;
+                            break;
                         default:
                             token = new Token
                             {
