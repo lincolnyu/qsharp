@@ -100,7 +100,7 @@ namespace QSharp.String.ExpressionEvaluation
                     NodeType = Type.UnaryOperator;
                     break;
             }
-            
+
             Content = token.Content;
             IsAttractor = false;
         }
@@ -111,9 +111,9 @@ namespace QSharp.String.ExpressionEvaluation
             {
                 throw new Exception("Unexpected open attractor");
             }
-            if (IsParemeterCell)
+            if (IsParemeterCell || IsRootKeeper)
             {
-                return this; // retained for parameter which is not done yet
+                return this; // retained for parameter/root which is not done yet
             }
             return Close();
         }

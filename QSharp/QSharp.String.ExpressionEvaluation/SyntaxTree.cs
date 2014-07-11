@@ -100,7 +100,7 @@ namespace QSharp.String.ExpressionEvaluation
         {
             var lastIsEntity = false;
             var tokens = new LinkedList<Token>();
-            for (var i = 0; i < expression.Length;)
+            for (var i = 0; i < expression.Length; )
             {
                 i = SkipSpaces(expression, i);
                 var c = expression[i];
@@ -116,7 +116,7 @@ namespace QSharp.String.ExpressionEvaluation
                             token = new Token
                             {
                                 Content = "&&",
-                                TokenType = Token.Type.Symbol
+                                TokenType = Token.Type.Operator
                             };
                             lastIsEntity = false;
                             break;
@@ -124,7 +124,7 @@ namespace QSharp.String.ExpressionEvaluation
                             token = new Token
                             {
                                 Content = "||",
-                                TokenType = Token.Type.Symbol
+                                TokenType = Token.Type.Operator
                             };
                             lastIsEntity = false;
                             break;
@@ -132,7 +132,7 @@ namespace QSharp.String.ExpressionEvaluation
                             token = new Token
                             {
                                 Content = "!",
-                                TokenType = Token.Type.Symbol
+                                TokenType = Token.Type.Operator
                             };
                             lastIsEntity = false;
                             break;
@@ -189,7 +189,7 @@ namespace QSharp.String.ExpressionEvaluation
 
                     lastIsEntity = true;
                 }
-                else if (char.IsDigit(c) || c =='.' && !lastIsEntity)
+                else if (char.IsDigit(c) || c == '.' && !lastIsEntity)
                 {
                     // number
                     string number;
@@ -206,7 +206,7 @@ namespace QSharp.String.ExpressionEvaluation
                     // single-character operators
                     token = new Token
                     {
-                        Content = new string(c,1),
+                        Content = new string(c, 1),
                         TokenType = Token.Type.Operator
                     };
                     i++;
@@ -227,7 +227,7 @@ namespace QSharp.String.ExpressionEvaluation
                     i++;
                     token = new Token
                     {
-                        Content = expression.Substring(i-charNum, charNum),
+                        Content = expression.Substring(i - charNum, charNum),
                         TokenType = Token.Type.Operator
                     };
                     lastIsEntity = false;
@@ -238,12 +238,12 @@ namespace QSharp.String.ExpressionEvaluation
                     // NOTE which means bit operation is not supported yet, but it's easy to extend
                     token = new Token
                     {
-                        Content = new string(c,2),
+                        Content = new string(c, 2),
                         TokenType = Token.Type.Operator
                     };
                     if (i + 1 < expression.Length)
                     {
-                        var next = expression[i];
+                        var next = expression[i + 1];
                         if (next == c)
                         {
                             i++;
@@ -274,7 +274,7 @@ namespace QSharp.String.ExpressionEvaluation
                 var c = s[i];
                 if (c == '\\')
                 {
-                    if (i+1 < s.Length)
+                    if (i + 1 < s.Length)
                     {
                         c = s[++i];
                     }
@@ -283,7 +283,7 @@ namespace QSharp.String.ExpressionEvaluation
                 else if (c == '"')
                 {
                     sval = sb.ToString();
-                    return i+1;
+                    return i + 1;
                 }
                 else
                 {
