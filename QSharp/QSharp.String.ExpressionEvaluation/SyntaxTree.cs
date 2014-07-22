@@ -155,6 +155,16 @@ namespace QSharp.String.ExpressionEvaluation
                             break;
                     }
                 }
+                else if (c == '!')
+                {
+                    token = new Token
+                    {
+                        Content = "!",
+                        TokenType = Token.Type.Operator
+                    };
+                    i++;
+                    lastIsEntity = false;
+                }
                 else if (c == '(')
                 {
                     token = new Token
@@ -226,7 +236,7 @@ namespace QSharp.String.ExpressionEvaluation
                     var charNum = 1;
                     if (i + 1 < expression.Length)
                     {
-                        var next = expression[i];
+                        var next = expression[i + 1];
                         if (next == '=')
                         {
                             i++;
