@@ -13,7 +13,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile151</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -43,10 +43,6 @@
       <Project>{cc875a57-ad64-4afd-b242-5e868390bd57}</Project>
       <Name>QSharp.Shared.RT</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
-    <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvlTree.cs" />

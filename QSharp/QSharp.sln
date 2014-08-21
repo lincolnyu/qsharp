@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharpTest", "QSharpTest\QSharpTest.csproj", "{9D366B80-049D-4734-BA87-78FBA06B4876}"
 EndProject
@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Tre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Sequential.RT", "QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.RT.csproj", "{3FB8608B-0AB5-44CC-820A-F2DC23200553}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj", "{EF827FC9-BC40-4FFF-9E5B-B07EC14414F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj", "{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,10 +143,10 @@ Global
 		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FB8608B-0AB5-44CC-820A-F2DC23200553}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF827FC9-BC40-4FFF-9E5B-B07EC14414F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF827FC9-BC40-4FFF-9E5B-B07EC14414F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF827FC9-BC40-4FFF-9E5B-B07EC14414F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF827FC9-BC40-4FFF-9E5B-B07EC14414F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

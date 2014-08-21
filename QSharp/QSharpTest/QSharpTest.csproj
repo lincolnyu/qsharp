@@ -210,10 +210,6 @@
       <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
       <Name>QSharp.String.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
-      <Project>{ef827fc9-bc40-4fff-9e5b-b07ec14414f1}</Project>
-      <Name>QSharp.String.ExpressionEvaluation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
       <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>
       <Name>QSharp.String.Rex</Name>
