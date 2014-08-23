@@ -25,12 +25,18 @@ namespace QSharp.String.ExpressionEvaluation
             get { return LastToken != null? LastToken.TokenType : Token.Type.None; }
         }
 
+        public ITokenizer Precedence
+        {
+            get; private set;
+        }
+
         #endregion
 
         #region Constructors
 
-        public TreeBuilder()
+        public TreeBuilder(ITokenizer precedence)
         {
+            Precedence = precedence;
             var rootHolder = new NodeBuilder {IsRootKeeper = true};
             Root = rootHolder;
             NearestBracketKeeper = rootHolder;
@@ -213,7 +219,7 @@ namespace QSharp.String.ExpressionEvaluation
                 }
                 if (p.Parent.NodeType == Node.Type.BinaryOperator)
                 {
-                    var prioCurrParent = GetBinaryOperatorPriority(p.Parent.Content);
+                    var prioCurrParent = Precedence.GetBinaryOperatorPrecedence(p.Parent.Content);
                     if (priority < prioCurrParent)
                     {
                         break;
@@ -232,7 +238,7 @@ namespace QSharp.String.ExpressionEvaluation
             }
             
             // find the place to insert the operator
-            var prioThis = GetBinaryOperatorPriority(token.Content);
+            var prioThis = Precedence.GetBinaryOperatorPrecedence(token.Content);
             var p = FindInsertPoint(AtomicNode, prioThis);
 
             var placeHolderToUse = p as NodeBuilder;
@@ -320,8 +326,8 @@ namespace QSharp.String.ExpressionEvaluation
         private NodeBuilder GetEntryNodeForFunction()
         {
             Debug.Assert(AtomicNode != null);
-            
-            var prioThis = GetFunctionPriority();
+
+            var prioThis = Precedence.FunctionPrecedence;
             var insertPoint = FindInsertPoint(AtomicNode, prioThis);
 
             var placeHolderToUse = insertPoint as NodeBuilder;
@@ -399,38 +405,6 @@ namespace QSharp.String.ExpressionEvaluation
                     break;
                 }
             }
-        }
-
-        private int GetFunctionPriority()
-        {
-            return 1;
-        }
-
-        private int GetBinaryOperatorPriority(string operatorContent)
-        {
-            switch (operatorContent)
-            {
-                case ".":
-                    return 0;
-                case "*":
-                case "/":
-                    return 2;
-                case "+":
-                case "-":
-                    return 3;
-                case "!=":
-                case "==":
-                case ">":
-                case "<":
-                case ">=":
-                case "<=":
-                    return 4;
-                case "&&":
-                    return 5;
-                case "||":
-                    return 6;
-            }
-            throw new Exception("Unknown operator");
         }
 
         #endregion

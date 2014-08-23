@@ -5,6 +5,15 @@ namespace QSharp.String.ExpressionEvaluation
 {
     public class NodeBuilder : Node, IHasChild
     {
+        #region Constructors
+
+        public NodeBuilder()
+        {
+            Children = new LinkedList<Node>();
+        }
+
+        #endregion
+
         #region Properties
 
         public bool IsRootKeeper { get; set; }
@@ -28,15 +37,6 @@ namespace QSharp.String.ExpressionEvaluation
         public int RightBracketCount { get; set; }
 
         public LinkedList<Node> Children { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        public NodeBuilder()
-        {
-            Children = new LinkedList<Node>();
-        }
 
         #endregion
 

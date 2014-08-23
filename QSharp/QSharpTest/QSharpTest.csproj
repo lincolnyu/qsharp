@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QSharp.Scheme.Mathematics\UnlimitedIntegerTest.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashDyn.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashLinear.cs" />
     <Compile Include="Scheme.Classical.Hash\IAccessibleSoHash.cs" />
@@ -171,7 +172,7 @@
       <Name>QSharp.Scheme.Classical.Trees</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj">
-      <Project>{757e114f-88a3-438b-a694-233b20427c92}</Project>
+      <Project>{f9e4a9b9-9712-40cf-860e-bdf96009f861}</Project>
       <Name>QSharp.Scheme.Mathematics</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj">
@@ -209,6 +210,10 @@
     <ProjectReference Include="..\QSharp.String.Compiler\QSharp.String.Compiler.csproj">
       <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
       <Name>QSharp.String.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
+      <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
+      <Name>QSharp.String.ExpressionEvaluation</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
       <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>

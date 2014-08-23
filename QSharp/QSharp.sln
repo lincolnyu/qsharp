@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Gra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Trees", "QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj", "{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Mathematics", "QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj", "{757E114F-88A3-438B-A694-233B20427C92}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Utility", "QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj", "{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Utility.HbSpaceMgmt", "QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj", "{BB89281C-C9C9-42E7-8D68-73E393763E3A}"
@@ -49,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Seq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj", "{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Arithmetic", "QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj", "{97003447-C035-4D24-BB27-B731635CE146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Mathematics", "QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj", "{F9E4A9B9-9712-40CF-860E-BDF96009F861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,10 +77,6 @@ Global
 		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B54BA8F-402B-4F12-ABBE-03A1A831B1B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{757E114F-88A3-438B-A694-233B20427C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{757E114F-88A3-438B-A694-233B20427C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{757E114F-88A3-438B-A694-233B20427C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{757E114F-88A3-438B-A694-233B20427C92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18EC37A0-27E0-4B8A-9841-CE4893D8DE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -147,6 +145,14 @@ Global
 		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97003447-C035-4D24-BB27-B731635CE146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97003447-C035-4D24-BB27-B731635CE146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97003447-C035-4D24-BB27-B731635CE146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97003447-C035-4D24-BB27-B731635CE146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
