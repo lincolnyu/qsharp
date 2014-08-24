@@ -52,13 +52,56 @@ namespace QSharpTest.QSharp.Scheme.Mathematics
                     var bv = rand.Next((i == blen-1)? 1 : 0, 10000);
                     b.Add((ushort)bv);
                 }
-                if (t == 22)
-                {
-                    t = 22;
-                }
+              
                 var succeeded = TestDivision(a, b);
                 Assert.IsTrue(succeeded, "Inconsistency found at test {0}", t);
             }
+        }
+
+        [TestMethod]
+        public void RandomTestEuclid()
+        {
+            var rand = new Random(123);
+            for (var t = 0; t < 1000; t++)
+            {
+                var alen = rand.Next(3, 200);
+                var blen = rand.Next(3, 200);
+                var a = new List<ushort>();
+                var b = new List<ushort>();
+                for (var i = 0; i < alen; i++)
+                {
+                    var av = rand.Next((i == alen - 1) ? 1 : 0, 10000);
+                    a.Add((ushort)av);
+                }
+                for (var i = 0; i < blen; i++)
+                {
+                    var bv = rand.Next((i == blen - 1) ? 1 : 0, 10000);
+                    b.Add((ushort)bv);
+                }
+               
+                TestEuclid(a, b);
+            }
+        }
+
+        private void TestEuclid(IList<ushort> a, IList<ushort> b)
+        {
+            var c = UnlimitedIntegerHelper.EuclidAuto(a, b);
+            ValidateNumber(c);
+
+            IList<ushort> q1, q2, r;
+            UnlimitedIntegerHelper.Divide(a, c, out q1, out r);
+            ValidateNumber(q1);
+            ValidateNumber(r);
+            Assert.IsTrue(UnlimitedIntegerHelper.IsZero(r), "Common factor is supposed to divide into number a");
+
+            UnlimitedIntegerHelper.Divide(b, c, out q2, out r);
+            ValidateNumber(q2);
+            ValidateNumber(r);
+            Assert.IsTrue(UnlimitedIntegerHelper.IsZero(r), "Common factor is supposed to divide into number b");
+
+            var p = UnlimitedIntegerHelper.EuclidAuto(q1, q2);
+            ValidateNumber(p);
+            Assert.IsTrue(UnlimitedIntegerHelper.Equals(p, 1), "Quotients are supposed to be relative prime");
         }
 
         private bool TestDivision(IList<ushort> dividend, IList<ushort> divisor)
@@ -66,11 +109,29 @@ namespace QSharpTest.QSharp.Scheme.Mathematics
             IList<ushort> quotient, remainder;
             UnlimitedIntegerHelper.Divide(dividend, divisor, out quotient, out remainder);
 
+            ValidateNumber(quotient);
+            ValidateNumber(remainder);
+
             var prod = UnlimitedIntegerHelper.Multiply(divisor, quotient);
+            ValidateNumber(prod);
+
             var recreated = UnlimitedIntegerHelper.Add(prod, remainder);
+            ValidateNumber(recreated);
 
             var comp = UnlimitedIntegerHelper.Compare(dividend, recreated);
             return comp == 0;
+        }
+
+        private static void ValidateNumber(IList<ushort> value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            if (value.Count > 0)
+            {
+                Assert.IsTrue(value[value.Count - 1] > 0);
+            }
         }
 
         #endregion
