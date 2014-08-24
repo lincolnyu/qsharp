@@ -244,6 +244,52 @@ namespace QSharp.Scheme.Mathematics
         }
 
         /// <summary>
+        ///  Compares two quantities with the speicifed block shift
+        /// </summary>
+        /// <param name="a">The first value to compare</param>
+        /// <param name="b">The second value to compare</param>
+        /// <param name="blockDiff">The start block advantage of first over the second</param>
+        /// <returns>
+        ///  Positive (normally 1) when <paramref name="a"/> is greater than <paramref name="b"/>;
+        ///  negative the other way around or zero if they ar equal
+        /// </returns>
+        public static int Comapre(IList<ushort> a, IList<ushort> b, int blockDiff)
+        {
+            var comp = (a.Count + blockDiff).CompareTo(b.Count);
+            if (comp != 0)
+            {
+                return comp;
+            }
+
+            if (blockDiff > 0)
+            {
+                for (var i = b.Count - 1; i >= 0; i--)
+                {
+                    var av = GetListItem(a, i - blockDiff);
+                    comp = av.CompareTo(b[i]);
+                    if (comp != 0)
+                    {
+                        return comp;
+                    }
+                }
+            }
+            else
+            {
+                for (var i = a.Count - 1; i >= 0; i--)
+                {
+                    var bv = GetListItem(b, i + blockDiff);
+                    comp = a[i].CompareTo(bv);
+                    if (comp != 0)
+                    {
+                        return comp;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         ///  Performs an euclid algorithm on the numbers to return their maximum  common factor
         ///  <paramref name="a"/> and <paramref name="b"/> can be in arbitrary order
         /// </summary>
@@ -283,10 +329,6 @@ namespace QSharp.Scheme.Mathematics
             {
                 IList<ushort> q, r;
                 Divide(a, bb, out q, out r);
-                if (r.Count == 1 && r[0] == 0)
-                {
-                    r = r;
-                }
                 if (IsZero(r))
                 {
                     break;
@@ -318,6 +360,19 @@ namespace QSharp.Scheme.Mathematics
         }
 
         /// <summary>
+        ///  Copies a list
+        /// </summary>
+        /// <param name="source">The list to copy from</param>
+        /// <returns>The list copied to</returns>
+        public static IList<ushort> Copy(IList<ushort> source)
+        {
+            var copy = new List<ushort>();
+            CopyList(source, copy, source.Count);
+            return copy;
+        }
+
+
+        /// <summary>
         ///  Determines if a number is equal to the specified value of unsigned integer type
         /// </summary>
         /// <param name="v">The number represented by list</param>
@@ -330,14 +385,31 @@ namespace QSharp.Scheme.Mathematics
         }
 
         /// <summary>
-        ///  Converts a value of unsigned integer type to a number represented by list
+        ///  Converts a value of unsigned integer type to a list based number
         /// </summary>
         /// <param name="val">The unsigned integer value to convert to list</param>
-        /// <returns>The number as list</returns>
+        /// <returns>The list based number</returns>
         public static IList<ushort> Convert(uint val)
         {
             var list = new List<ushort>();
             AddIntBlock(list, 0, val);
+            return list;
+        }
+
+        /// <summary>
+        ///  Converts a value of 64-bit integer type to a list based number
+        /// </summary>
+        /// <param name="val">The unsigned integer value to conver to the list based number</param>
+        /// <returns>The list based number</returns>
+        public static IList<ushort> Convert(ulong val)
+        {
+            var list = new List<ushort>();
+            for (var i = 0; val > 0; i++)
+            {
+                var a = (ushort)(val % 10000);
+                SetListItem(list, i, a);
+                val /= 10000;
+            }
             return list;
         }
 
@@ -482,7 +554,7 @@ namespace QSharp.Scheme.Mathematics
         /// <returns>The block value</returns>
         private static ushort GetListItem(IList<ushort> l, int index)
         {
-            if (index >= l.Count)
+            if (index >= l.Count || index < 0)
             {
                 return 0;
             }

@@ -83,6 +83,14 @@ namespace QSharpTest.QSharp.Scheme.Mathematics
             }
         }
 
+        [TestMethod]
+        public void SimpleTestRational()
+        {
+            var r = new Rational(-327, 47);
+            var r2 = r + 1;
+            Assert.IsTrue(r2 == new Rational(-280,47));
+        }
+
         private void TestEuclid(IList<ushort> a, IList<ushort> b)
         {
             var c = UnlimitedIntegerHelper.EuclidAuto(a, b);
