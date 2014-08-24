@@ -207,6 +207,115 @@ namespace QSharp.Scheme.Mathematics
 
         #endregion
 
+        public static Rational CreateFromString(string s)
+        {
+            var r = new Rational();
+            r.FromString(s);
+            return r;
+        }
+
+        public void FromString(string s)
+        {
+            s = s.Replace(" ", "");
+            if (s == "")
+            {
+                SetToZero();
+                return;
+            }
+            if (s[0] == '-')
+            {
+                Negative = true;
+                s = s.Substring(1);
+            }
+
+            var dec = s.IndexOf('/');
+
+            IList<ushort> num;
+            int numbo;
+            if (dec >= 0)
+            {
+                IList<ushort> denom;
+                int denombo;
+                LoadListFromString(s.Substring(0, dec), out num, out numbo);
+                LoadListFromString(s.Substring(dec + 1, s.Length - dec - 1), out denom, out denombo);
+                Numerator = num;
+                Denominator = denom;
+                DecimalAdjustment = numbo - denombo;
+            }
+            else
+            {
+                LoadListFromString(s, out num, out numbo);
+                Numerator = num;
+                Denominator = new List<ushort>{1};
+                DecimalAdjustment = numbo;
+            }
+
+            Decompress();
+            SetNewNumeratorAndDenominator(Numerator, Denominator);
+        }
+
+        private void LoadListFromString(string s, out IList<ushort> list, out int blockOffset)
+        {
+            list = new List<ushort>();
+            var dp = s.IndexOf('.');
+            var dp2 = s.LastIndexOf('.');
+            if (dp != dp2)
+            {
+                throw new ArgumentException("Invalid decimal number containing multiple decimal points");
+            }
+            
+            var digitsAfterDp = s.Length - dp-1;
+            blockOffset = (digitsAfterDp + 3) / 4;
+
+            var r = digitsAfterDp % 4;
+            if (r > 0)
+            {
+                var sr = s.Substring(s.Length - r);
+                var isr = ushort.Parse(sr);
+                for (var c = 0; c < 4 - r; c++)
+                {
+                    isr *= 10;
+                }
+                list.Add(isr);
+                digitsAfterDp -= r;
+            }
+
+            int i;
+            for (i = dp + 1 + digitsAfterDp-4; i >= dp+1; i -= 4)
+            {
+                var ss = s.Substring(i, 4);
+                var iss = ushort.Parse(ss);
+                list.Add(iss);
+            }
+            System.Diagnostics.Debug.Assert(blockOffset == list.Count);
+            for (i = dp; i > 0; i -= 4)
+            {
+                var ii = Math.Max(i-4, 0);
+                var ss = s.Substring(ii, i-ii);
+                var iss = ushort.Parse(ss);
+                list.Add(iss);
+            }
+        }
+
+        public void SetToZero()
+        {
+            Negative = false;
+            DecimalAdjustment = 0;
+            Numerator.Clear();
+            Denominator.Clear();
+            Denominator.Add(1);
+        }
+
+        public void SetToOne()
+        {
+            Negative = false;
+            DecimalAdjustment = 0;
+            Numerator.Clear();
+            Numerator.Add(1);
+            Denominator.Clear();
+            Denominator.Add(1);
+        }
+
         public Rational Clone()
         {
             var r = new Rational
@@ -379,10 +488,7 @@ namespace QSharp.Scheme.Mathematics
         {
             if (UnlimitedIntegerHelper.IsZero(numerator))
             {
-                Negative = false;
-                Numerator = new List<ushort>();
-                Denominator = new List<ushort>{1};
-                DecimalAdjustment = 0;
+                SetToZero();
                 return;
             }
 
@@ -401,6 +507,7 @@ namespace QSharp.Scheme.Mathematics
                 Numerator = numerator;
                 Denominator = denominator;
             }
+
             Compress();
         }
 

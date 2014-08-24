@@ -91,6 +91,13 @@ namespace QSharpTest.QSharp.Scheme.Mathematics
             Assert.IsTrue(r2 == new Rational(-280,47));
         }
 
+        [TestMethod]
+        public void SimpleTestRational2()
+        {
+            var r = Rational.CreateFromString("-123.456/173.4659");
+            Assert.IsTrue(r == new Rational(-1234560,1734659));
+        }
+
         private void TestEuclid(IList<ushort> a, IList<ushort> b)
         {
             var c = UnlimitedIntegerHelper.EuclidAuto(a, b);
