@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using QSharp.Scheme.Mathematics.Algebra;
 
-namespace QSharp.Scheme.Mathematics
+namespace QSharp.Scheme.Mathematics.Analytical
 {
-    public class Rational : IEquatable<Rational>, IComparable<Rational>
+    public class Rational : IArithmeticElement, IFieldType<Rational>, IEquatable<Rational>, IComparable<Rational>, IClonable<Rational>
     {
         #region Delegates
 
@@ -30,7 +31,7 @@ namespace QSharp.Scheme.Mathematics
             }
             if (numerator < 0)
             {
-                Negative = true;
+                IsNegative = true;
                 numerator = -numerator;
             }
 
@@ -48,7 +49,7 @@ namespace QSharp.Scheme.Mathematics
             }
             if (numerator < 0)
             {
-                Negative = true;
+                IsNegative = true;
                 numerator = -numerator;
             }
 
@@ -64,7 +65,7 @@ namespace QSharp.Scheme.Mathematics
         /// <summary>
         ///  If it's a negative value (as the information is not contained in any other fields
         /// </summary>
-        public bool Negative { get; set; }
+        public bool IsNegative { get; set; }
 
         /// <summary>
         ///  sequence that represents the value of the numerator
@@ -81,6 +82,17 @@ namespace QSharp.Scheme.Mathematics
         ///  a factor of 10000 to the power of the value (postive or nagative) when compressed
         /// </summary>
         public int DecimalAdjustment { get; set; }
+
+        /// <summary>
+        ///  Determines if the rational value is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get
+            {
+                return UnlimitedIntegerHelper.IsZero(Numerator);
+            }
+        }
 
         #endregion
 
@@ -110,7 +122,7 @@ namespace QSharp.Scheme.Mathematics
 
             if (Numerator.Count > 0)
             {
-                if (Negative)
+                if (IsNegative)
                 {
                     sb.Append("-");
                 }
@@ -147,7 +159,7 @@ namespace QSharp.Scheme.Mathematics
             {
                 return false;
             }
-            if (Negative != other.Negative)
+            if (IsNegative != other.IsNegative)
             {
                 return false;
             }
@@ -178,13 +190,13 @@ namespace QSharp.Scheme.Mathematics
 
         public int CompareTo(Rational other)
         {
-            if (Negative != other.Negative)
+            if (IsNegative != other.IsNegative)
             {
-                return Negative ? -1 : 1;
+                return IsNegative ? -1 : 1;
             }
 
-            var thisIsZero = IsZero();
-            var thatIsZero = other.IsZero();
+            var thisIsZero = IsZero;
+            var thatIsZero = other.IsZero;
             if (thisIsZero != thatIsZero)
             {
                 return thisIsZero ? -1 : 1;// the other must be positive, as zeros are marked as non negative
@@ -207,6 +219,101 @@ namespace QSharp.Scheme.Mathematics
 
         #endregion
 
+        #region IArithmeticElement members
+
+        public IArithmeticElement Add(IArithmeticElement other)
+        {
+            var r2 = other as Rational;
+            if (r2 != null)
+            {
+                return Add(r2);
+            }
+            throw new NotSupportedException();
+        }
+
+        public IArithmeticElement Subtract(IArithmeticElement other)
+        {
+            var r2 = other as Rational;
+            if (r2 != null)
+            {
+                return Subtract(r2);
+            }
+            throw new NotSupportedException();
+        }
+
+        public IArithmeticElement Multiply(IArithmeticElement other)
+        {
+            var r2 = other as Rational;
+            if (r2 != null)
+            {
+                return Multiply(r2);
+            }
+            throw new NotSupportedException();
+        }
+
+        public IArithmeticElement Divide(IArithmeticElement other)
+        {
+            var r2 = other as Rational;
+            if (r2 != null)
+            {
+                return Divide(r2);
+            }
+            throw new NotSupportedException();
+        }
+
+        IArithmeticElement IArithmeticElement.Negate()
+        {
+            return Negate();
+        }
+
+        #endregion
+
+        #region IFieldType<Rational> members
+
+        public Rational Add(Rational other)
+        {
+            var r = Clone();
+            r.AddSelf(other);
+            return r;
+        }
+
+        public Rational Subtract(Rational other)
+        {
+            var r = Clone();
+            r.SubtractSelf(other);
+            return r;
+        }
+
+        public Rational Multiply(Rational other)
+        {
+            var r = Clone();
+            r.MultiplySelf(other);
+            return r;
+        }
+
+        public Rational Divide(Rational other)
+        {
+            var r = Clone();
+            r.DivideSelf(other);
+            return r;
+        }
+
+        public Rational Negate()
+        {
+            var c = Clone();
+            c.IsNegative = !c.IsNegative;
+            return c;
+        }
+
+        public Rational Invert()
+        {
+            var c = Clone();
+            c.InvertSelf();
+            return c;
+        }
+
+        #endregion
+
         public static Rational CreateFromString(string s)
         {
             var r = new Rational();
@@ -224,7 +331,7 @@ namespace QSharp.Scheme.Mathematics
             }
             if (s[0] == '-')
             {
-                Negative = true;
+                IsNegative = true;
                 s = s.Substring(1);
             }
 
@@ -299,7 +406,7 @@ namespace QSharp.Scheme.Mathematics
 
         public void SetToZero()
         {
-            Negative = false;
+            IsNegative = false;
             DecimalAdjustment = 0;
             Numerator.Clear();
             Denominator.Clear();
@@ -308,7 +415,7 @@ namespace QSharp.Scheme.Mathematics
 
         public void SetToOne()
         {
-            Negative = false;
+            IsNegative = false;
             DecimalAdjustment = 0;
             Numerator.Clear();
             Numerator.Add(1);
@@ -320,7 +427,7 @@ namespace QSharp.Scheme.Mathematics
         {
             var r = new Rational
             {
-                Negative = Negative,
+                IsNegative = IsNegative,
                 DecimalAdjustment = DecimalAdjustment,
                 Numerator = UnlimitedIntegerHelper.Copy(Numerator),
                 Denominator = UnlimitedIntegerHelper.Copy(Denominator)
@@ -328,14 +435,9 @@ namespace QSharp.Scheme.Mathematics
             return r;
         }
 
-        public bool IsZero()
+        public void AddSelf(Rational other)
         {
-            return UnlimitedIntegerHelper.IsZero(Numerator);
-        }
-
-        public void Add(Rational other)
-        {
-            if (Negative == other.Negative)
+            if (IsNegative == other.IsNegative)
             {
                 AddOrSubtract(other, UnlimitedIntegerHelper.Add);
             }
@@ -345,9 +447,9 @@ namespace QSharp.Scheme.Mathematics
             }
         }
 
-        public void Subtract(Rational other)
+        public void SubtractSelf(Rational other)
         {
-            if (Negative == other.Negative)
+            if (IsNegative == other.IsNegative)
             {
                 AddOrSubtract(other, SubtractOperation);
             }
@@ -357,7 +459,7 @@ namespace QSharp.Scheme.Mathematics
             }
         }
 
-        public void Multiply(Rational other)
+        public void MultiplySelf(Rational other)
         {
             Decompress();
             other.Decompress();
@@ -373,7 +475,7 @@ namespace QSharp.Scheme.Mathematics
             SetNewNumeratorAndDenominator(ac, bd);
         }
 
-        public void Divide(Rational other)
+        public void DivideSelf(Rational other)
         {
             Decompress();
             other.Decompress();
@@ -389,7 +491,7 @@ namespace QSharp.Scheme.Mathematics
             SetNewNumeratorAndDenominator(ad, bc);
         }
 
-        public void Inverse()
+        public void InvertSelf()
         {
             var t = Numerator;
             Numerator = Denominator;
@@ -398,9 +500,9 @@ namespace QSharp.Scheme.Mathematics
             DecimalAdjustment = -DecimalAdjustment;
         }
 
-        public void Negate()
+        public void NegateSelf()
         {
-            Negative = !Negative;
+            IsNegative = !IsNegative;
         }
 
         public void Compress()
@@ -462,7 +564,7 @@ namespace QSharp.Scheme.Mathematics
                 return UnlimitedIntegerHelper.Subtract(a, b);
             }
 
-            Negate(); // flip the negative sign as the reality is opposite the assumption
+            NegateSelf(); // flip the negative sign as the reality is opposite the assumption
             return UnlimitedIntegerHelper.Subtract(b, a);
         }
 
@@ -518,36 +620,58 @@ namespace QSharp.Scheme.Mathematics
         public static Rational operator +(Rational a, Rational b)
         {
             var r = a.Clone();
-            r.Add(b);
+            r.AddSelf(b);
             return r;
         }
 
         public static Rational operator -(Rational a, Rational b)
         {
             var r = a.Clone();
-            r.Subtract(b);
+            r.SubtractSelf(b);
             return r;
         }
 
         public static Rational operator *(Rational a, Rational b)
         {
             var r = a.Clone();
-            r.Multiply(b);
+            r.MultiplySelf(b);
             return r;
         }
 
         public static Rational operator /(Rational a, Rational b)
         {
             var r = a.Clone();
-            r.Divide(b);
+            r.DivideSelf(b);
             return r;
         }
 
         public static Rational operator -(Rational a)
         {
             var r = a.Clone();
-            r.Negate();
+            r.NegateSelf();
             return r;
+        }
+
+        public static Rational operator ^(Rational a, int b)
+        {
+            if (b == 0)
+            {
+                if (a.IsZero)
+                {
+                    throw new ArgumentException("Zero to the power of zero");
+                }
+                return 1;
+            }
+            Rational ret = 1;
+            for (;b > 0; b--)
+            {
+                ret *= a;
+            }
+            for (; b < 0; b++)
+            {
+                ret /= a;
+            }
+            return ret;
         }
 
         public static bool operator ==(Rational a, Rational b)

@@ -1,11 +1,29 @@
-﻿namespace QSharp.Scheme.Mathematics
+﻿using System;
+using QSharp.Scheme.Mathematics.Algebra;
+
+namespace QSharp.Scheme.Mathematics.Numerical
 {
     /// <summary>
     ///  A class that represents a complex number
     /// </summary>
-    public class Complex
+    public class Complex : IFieldType<Complex>, IArithmeticElement, IClonable<Complex>
     {
         #region Properties
+
+        #region IHasZero members
+
+        /// <summary>
+        ///  Whether it's a zero
+        /// </summary>
+        public bool IsZero 
+        {
+            get
+            {
+                return Math.Abs(Real) < double.Epsilon && Math.Abs(Imag) < double.Epsilon;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         ///  The real part of the complex number
@@ -22,7 +40,7 @@
         /// </summary>
         public double Modulus
         {
-            get { return System.Math.Sqrt(Real*Real + Imag*Imag); }
+            get { return Math.Sqrt(Real*Real + Imag*Imag); }
         }
 
         /// <summary>
@@ -87,6 +105,57 @@
 
         #region Methods
 
+        #region IArithmeticType members
+
+        public IArithmeticElement Add(IArithmeticElement other)
+        {
+            var o = other as Complex;
+            if (o != null)
+            {
+                return Add(o);
+            }
+            throw new NotSupportedException();// not yet supported
+        }
+
+        public IArithmeticElement Subtract(IArithmeticElement other)
+        {
+            var o = other as Complex;
+            if (o != null)
+            {
+                return Subtract(o);
+            }
+            throw new NotSupportedException();// not yet supported
+        }
+
+        public IArithmeticElement Multiply(IArithmeticElement other)
+        {
+            var o = other as Complex;
+            if (o != null)
+            {
+                return Multiply(o);
+            }
+            throw new NotSupportedException();// not yet supported
+        }
+
+        public IArithmeticElement Divide(IArithmeticElement other)
+        {
+            var o = other as Complex;
+            if (o != null)
+            {
+                return Divide(o);
+            }
+            throw new NotSupportedException();// not yet supported
+        }
+
+        IArithmeticElement IArithmeticElement.Negate()
+        {
+            return Negate();
+        }
+
+        #endregion
+
+        #region IFieldType<Complex> members
+
         /// <summary>
         ///  Returns the result of adding the specified complex number to the current
         /// </summary>
@@ -98,6 +167,59 @@
         }
 
         /// <summary>
+        ///  Returns the result of subtracting the specified complex number from the current
+        /// </summary>
+        /// <param name="rhs">The subtrahend</param>
+        /// <returns>The result</returns>
+        public Complex Subtract(Complex rhs)
+        {
+            return new Complex(Real - rhs.Real, Imag - rhs.Imag);
+        }
+
+        /// <summary>
+        ///  Returns the result of multiplying the current by the specified complex number
+        /// </summary>
+        /// <param name="rhs">The multiplier</param>
+        /// <returns>The result</returns>
+        public Complex Multiply(Complex rhs)
+        {
+            return new Complex(Real * rhs.Real - Imag * rhs.Imag, Imag * rhs.Real + Real * rhs.Imag);
+        }
+
+        /// <summary>
+        ///  Returns the result of dividing the current by the specified complex number
+        /// </summary>
+        /// <param name="rhs">The divi</param>
+        /// <returns>The result</returns>
+        public Complex Divide(Complex rhs)
+        {
+            var invDenom = 1 / (rhs.Real * rhs.Real + rhs.Imag * rhs.Imag);
+            return new Complex((Real * rhs.Real + Imag * rhs.Imag) * invDenom, (Imag * rhs.Real - Real * rhs.Imag) * invDenom);
+        }
+
+        /// <summary>
+        ///  Returns the negative of the current
+        /// </summary>
+        /// <returns>The negative</returns>
+        public Complex Negate()
+        {
+            return new Complex(-Real, -Imag);
+        }
+
+
+        #endregion
+
+        #region IClonable<Complex> members
+
+        public Complex Clone()
+        {
+            var clone = new Complex(Real, Imag);
+            return clone;
+        }
+
+        #endregion
+
+        /// <summary>
         ///  Adds a complex number to the current and returns the current
         /// </summary>
         /// <param name="rhs">The addend</param>
@@ -107,16 +229,6 @@
             Real += rhs.Real;
             Imag += rhs.Imag;
             return this;
-        }
-
-        /// <summary>
-        ///  Returns the result of subtracting the specified complex number from the current
-        /// </summary>
-        /// <param name="rhs">The subtrahend</param>
-        /// <returns>The result</returns>
-        public Complex Subtract(Complex rhs)
-        {
-            return new Complex(Real - rhs.Real, Imag - rhs.Imag);
         }
 
         /// <summary>
@@ -132,16 +244,6 @@
         }
 
         /// <summary>
-        ///  Returns the result of multiplying the current by the specified complex number
-        /// </summary>
-        /// <param name="rhs">The multiplier</param>
-        /// <returns>The result</returns>
-        public Complex Multiply(Complex rhs)
-        {
-            return new Complex(Real * rhs.Real - Imag * rhs.Imag, Imag * rhs.Real + Real * rhs.Imag);
-        }
-
-        /// <summary>
         ///  Multiplies the current by the specified complex number and return the current
         /// </summary>
         /// <param name="rhs">The multiplier</param>
@@ -153,17 +255,6 @@
             Real = tmpr;
             Imag = tmpi;
             return this;
-        }
-
-        /// <summary>
-        ///  Returns the result of dividing the current by the specified complex number
-        /// </summary>
-        /// <param name="rhs">The divi</param>
-        /// <returns>The result</returns>
-        public Complex Divide(Complex rhs)
-        {
-            var invDenom = 1 / (rhs.Real * rhs.Real + rhs.Imag * rhs.Imag);
-            return new Complex((Real * rhs.Real + Imag * rhs.Imag) * invDenom, (Imag * rhs.Real - Real * rhs.Imag) * invDenom);
         }
 
         /// <summary>
@@ -312,15 +403,6 @@
             var factor = rhs/(Real*Real + Imag*Imag);
             ConjugateSelf().MultiplySelf(factor);
             return this;
-        }
-
-        /// <summary>
-        ///  Returns the negative of the current
-        /// </summary>
-        /// <returns>The negative</returns>
-        public Complex Negate()
-        {
-            return new Complex(-Real, -Imag);
         }
 
         /// <summary>
@@ -560,8 +642,8 @@
         /// <returns>The complex number</returns>
         public static Complex Polar(double arg)
         {
-            var real = System.Math.Cos(arg);
-            var imag = System.Math.Sin(arg);
+            var real = Math.Cos(arg);
+            var imag = Math.Sin(arg);
             return new Complex(real, imag);
         }
 

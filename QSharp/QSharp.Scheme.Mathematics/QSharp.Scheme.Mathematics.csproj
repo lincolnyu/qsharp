@@ -37,11 +37,16 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Complex.cs" />
-    <Compile Include="Factoring.cs" />
+    <Compile Include="Algebra\IArithmeticElement.cs" />
+    <Compile Include="Algebra\IClonable.cs" />
+    <Compile Include="Algebra\IFieldType.cs" />
+    <Compile Include="Algebra\IHasZero.cs" />
+    <Compile Include="Algebra\IRingType.cs" />
+    <Compile Include="Analytical\Rational.cs" />
+    <Compile Include="Analytical\UnlimitedIntegerHelper.cs" />
+    <Compile Include="Numerical\Complex.cs" />
+    <Compile Include="Numerical\Factoring.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rational.cs" />
-    <Compile Include="UnlimitedIntegerHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

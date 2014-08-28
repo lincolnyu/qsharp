@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace QSharp.Scheme.Mathematics
+namespace QSharp.Scheme.Mathematics.Analytical
 {
     public static class UnlimitedIntegerHelper
     {

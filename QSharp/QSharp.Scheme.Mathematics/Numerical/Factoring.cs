@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace QSharp.Scheme.Mathematics
+namespace QSharp.Scheme.Mathematics.Numerical
 {
     /// <summary>
     ///  A class that works to provide factoring related functionalities on integers
@@ -16,12 +16,18 @@ namespace QSharp.Scheme.Mathematics
         public static IList<int> GetPrimesTo(this int n)
         {
             if (n == 1)
+            {
                 return new List<int>();
+            }
             if (n == 2)
+            {
                 return new List<int> {2};
+            }
             var primes = GetPrimesTo(n - 1);
             if (n%2 == 0)
+            {
                 return primes;
+            }
             foreach (var prime in primes)
             {
                 if (n%prime == 0)

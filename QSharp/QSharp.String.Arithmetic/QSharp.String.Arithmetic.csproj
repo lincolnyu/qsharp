@@ -35,15 +35,21 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj">
+      <Project>{F9E4A9B9-9712-40CF-860E-BDF96009F861}</Project>
+      <Name>QSharp.Scheme.Mathematics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
       <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
       <Name>QSharp.String.ExpressionEvaluation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArithmeticHelper.cs" />
-    <Compile Include="Expander.cs" />
+    <Compile Include="Fraction.cs" />
+    <Compile Include="FractionBuilder.cs" />
+    <Compile Include="ParaPolynomial.cs" />
     <Compile Include="Monomial.cs" />
+    <Compile Include="MonomialComparer.cs" />
     <Compile Include="Polynomial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
