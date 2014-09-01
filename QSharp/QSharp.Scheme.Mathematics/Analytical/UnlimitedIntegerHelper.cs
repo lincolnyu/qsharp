@@ -121,6 +121,7 @@ namespace QSharp.Scheme.Mathematics.Analytical
                 else
                 {
                     Divide(a, basePos, b, quotient, basePos, r, basePos);
+                    ClearIfZero(r);
                 }
 
                 if (ReferenceEquals(r, rbuf1))
@@ -227,6 +228,27 @@ namespace QSharp.Scheme.Mathematics.Analytical
             }
 
             SetListItem(q, qstart, iq);
+        }
+
+        /// <summary>
+        ///  Clears the list if the value it represents is zero
+        /// </summary>
+        /// <param name="l">The list to check</param>
+        private static void ClearIfZero(IList<ushort> l)
+        {
+            var zero = true;
+            foreach (var v in l)
+            {
+                if (v > 0)
+                {
+                    zero = true;
+                    break;
+                }
+            }
+            if (zero)
+            {
+                l.Clear();
+            }
         }
 
         /// <summary>
@@ -411,6 +433,30 @@ namespace QSharp.Scheme.Mathematics.Analytical
                 val /= 10000;
             }
             return list;
+        }
+
+        /// <summary>
+        ///  Converts a list based unlimited integer to a normal integer if possible
+        /// </summary>
+        /// <param name="l">The list based unlimited integer</param>
+        /// <param name="val">The normal integer</param>
+        /// <returns>True if conversion can be done</returns>
+        public static bool TryConvertToInt(IList<ushort> l, out int val)
+        {
+            val = 0;
+            try
+            {
+                foreach (var u in l)
+                {
+                    val *= 10000;
+                    val += u;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>

@@ -181,7 +181,7 @@ namespace QSharp.String.ExpressionEvaluation
                     };
                     lastIsEntity = true;
                 }
-                else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '.' && lastIsEntity)
+                else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '.' && lastIsEntity)
                 {
                     // single-character operators
                     token = new Token

@@ -370,8 +370,14 @@ namespace QSharp.Scheme.Mathematics.Analytical
             {
                 throw new ArgumentException("Invalid decimal number containing multiple decimal points");
             }
-            
-            var digitsAfterDp = s.Length - dp-1;
+
+            if (dp < 0)
+            {
+                s = s + ".";
+                dp = s.Length - 1;
+            }
+
+            var digitsAfterDp = s.Length - dp - 1;
             blockOffset = (digitsAfterDp + 3) / 4;
 
             var r = digitsAfterDp % 4;
@@ -388,7 +394,7 @@ namespace QSharp.Scheme.Mathematics.Analytical
             }
 
             int i;
-            for (i = dp + 1 + digitsAfterDp-4; i >= dp+1; i -= 4)
+            for (i = dp + 1 + digitsAfterDp - 4; i >= dp + 1; i -= 4)
             {
                 var ss = s.Substring(i, 4);
                 var iss = ushort.Parse(ss);

@@ -85,6 +85,7 @@
     <Compile Include="Scheme.Classical.Sequential\MaxSublistMatchTest.cs" />
     <Compile Include="Scheme.Classical.Trees\AvlTreeTest.cs" />
     <Compile Include="Scheme.Classical.Trees\RbTreeTest.cs" />
+    <Compile Include="String.Arithmetic\FractionTest.cs" />
     <Compile Include="String.Compiler\MathExpressionTest.cs" />
     <Compile Include="String.Compiler\StringCompilerConsoleTest.cs" />
     <Compile Include="String.ExpressionEvaluation\MainTest.cs" />
@@ -206,6 +207,10 @@
     <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj">
       <Project>{afcb6760-0fbf-4a80-9310-3c0f7dcef67b}</Project>
       <Name>QSharp.Signal.Visual</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj">
+      <Project>{97003447-C035-4D24-BB27-B731635CE146}</Project>
+      <Name>QSharp.String.Arithmetic</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Compiler\QSharp.String.Compiler.csproj">
       <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>

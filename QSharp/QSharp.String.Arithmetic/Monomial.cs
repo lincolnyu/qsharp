@@ -45,6 +45,10 @@ namespace QSharp.String.Arithmetic
         {
             var coef = (IClonable<IArithmeticElement>) Coefficient;
             var clone = new Monomial {TotalDegree = TotalDegree, Coefficient = coef.Clone()};
+            foreach (var p in Factors)
+            {
+                clone.Factors.Add(p.Key, p.Value);
+            }
             return clone;
         }
 
