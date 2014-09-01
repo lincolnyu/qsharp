@@ -133,12 +133,15 @@ namespace QSharp.Scheme.Mathematics.Analytical
                     sb.AppendFormat("{0:0000}", Numerator[i]);
                 }
 
-                sb.Append("/");
-
-                sb.Append(Denominator[Denominator.Count - 1]);
-                for (var i = Denominator.Count - 2; i >= 0; i--)
+                if (Denominator.Count != 1 || Denominator[0] != 1)
                 {
-                    sb.AppendFormat("{0:0000}", Denominator[i]);
+                    sb.Append("/");
+
+                    sb.Append(Denominator[Denominator.Count - 1]);
+                    for (var i = Denominator.Count - 2; i >= 0; i--)
+                    {
+                        sb.AppendFormat("{0:0000}", Denominator[i]);
+                    }
                 }
             }
             else

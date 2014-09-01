@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using QSharp.Scheme.Mathematics.Algebra;
 using QSharp.Scheme.Mathematics.Analytical;
 
@@ -43,6 +44,29 @@ namespace QSharp.String.Arithmetic
         #endregion
 
         #region Methods
+
+        #region object members
+
+        public override string ToString()
+        {
+            var first = true;
+            var sb = new StringBuilder();
+            foreach (var m in Monomials.Reverse())
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    sb.Append("+");
+                }
+                sb.Append(m.Value);
+            }
+            return sb.ToString();
+        }
+
+        #endregion
 
         #region IRingType<Polynomial>
 

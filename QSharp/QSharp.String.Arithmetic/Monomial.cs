@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using QSharp.Scheme.Mathematics.Algebra;
 using QSharp.Scheme.Mathematics.Analytical;
 
@@ -38,6 +39,40 @@ namespace QSharp.String.Arithmetic
         #endregion
 
         #region Methods
+
+        #region object members
+
+        public override string ToString()
+        {
+            var c = Coefficient.ToString();
+            var addStar = true;
+            if (c == "1" && Factors.Count > 0)
+            {
+                c = "";
+                addStar = false;
+            }
+            var sb = new StringBuilder(c);
+            foreach (var fp in Factors)
+            {
+                if (!addStar)
+                {
+                    addStar = true;
+                }
+                else
+                {
+                    sb.Append("*");
+                }
+                sb.Append(fp.Key);
+                if (fp.Value != 1)
+                {
+                    sb.Append("^");
+                    sb.Append(fp.Value);
+                }
+            }
+            return sb.ToString();
+        }
+
+        #endregion
 
         #region IClonable<Monomial> members
 
