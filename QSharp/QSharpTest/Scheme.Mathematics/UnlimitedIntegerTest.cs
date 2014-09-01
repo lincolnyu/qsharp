@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QSharp.Scheme.Mathematics.Analytical;
 
-namespace QSharpTest.QSharp.Scheme.Mathematics
+namespace QSharpTest.Scheme.Mathematics
 {
     [TestClass]
     public class UnlimitedIntegerTest
