@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QSharp.Scheme.Mathematics.Algebra;
@@ -6,7 +7,7 @@ using QSharp.Scheme.Mathematics.Analytical;
 
 namespace QSharp.String.Arithmetic
 {
-    public class Polynomial : IRingType<Polynomial>, IClonable<Polynomial>
+    public class Polynomial : IRingType<Polynomial>, IClonable<Polynomial>, IEquatable<Polynomial>
     {
         #region Constructors
 
@@ -37,7 +38,7 @@ namespace QSharp.String.Arithmetic
         {
             get
             {
-                return Monomials.Values.First().TotalDegree;
+                return Monomials.Count > 0 ? Monomials.Values.Last().TotalDegree : 0;
             }
         }
 
@@ -46,6 +47,19 @@ namespace QSharp.String.Arithmetic
         #region Methods
 
         #region object members
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Polynomial)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Monomials != null ? Monomials.GetHashCode() : 0);
+        }
 
         public override string ToString()
         {
@@ -122,6 +136,33 @@ namespace QSharp.String.Arithmetic
 
         #endregion
 
+        #region IEquatable<Polynomial> members
+
+        public bool Equals(Polynomial other)
+        {
+            if (Monomials.Count != other.Monomials.Count)
+            {
+                return false;
+            }
+
+            var en1 = Monomials.GetEnumerator();
+            var en2 = other.Monomials.GetEnumerator();
+
+            while (en1.MoveNext() && en2.MoveNext())
+            {
+                var m1 = en1.Current;
+                var m2 = en2.Current;
+                if (!m1.Equals(m2))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
         public void NegateSelf()
         {
             foreach (var k in Monomials.Keys)
@@ -165,7 +206,7 @@ namespace QSharp.String.Arithmetic
                     Monomials.Remove(other);
                 }
             }
-            else
+            else if (!other.IsZero)
             {
                 Monomials.Add(other, other);
             }
@@ -182,7 +223,7 @@ namespace QSharp.String.Arithmetic
                     Monomials.Remove(other);
                 }
             }
-            else
+            else if (!other.IsZero)
             {
                 im = other.Negate();
                 Monomials.Add(im, im);
@@ -230,6 +271,26 @@ namespace QSharp.String.Arithmetic
         public static Polynomial operator -(Polynomial a)
         {
             return a.Negate();
+        }
+
+        public static bool operator ==(Polynomial a, Polynomial b)
+        {
+            var aIsNull = ReferenceEquals(a, null);
+            var bIsNull = ReferenceEquals(b, null);
+            if (aIsNull != bIsNull)
+            {
+                return false;
+            }
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Polynomial a, Polynomial b)
+        {
+            return !(a == b);
         }
 
         #endregion

@@ -40,6 +40,15 @@ namespace QSharp.Scheme.Mathematics.Analytical
             SetNewNumeratorAndDenominator(newNum, newDenom);
         }
 
+        public Rational(IEnumerable<ushort> l, bool isNegative = false) : this()
+        {
+            foreach (var i in l)
+            {
+                Numerator.Add(i);
+            }
+            IsNegative = isNegative;
+        }
+
         public Rational(long numerator, ulong denominator = 1)
             : this()
         {
@@ -482,6 +491,8 @@ namespace QSharp.Scheme.Mathematics.Analytical
             var bd = UnlimitedIntegerHelper.Multiply(b, d);
 
             SetNewNumeratorAndDenominator(ac, bd);
+
+            IsNegative = IsNegative != other.IsNegative;
         }
 
         public void DivideSelf(Rational other)
@@ -498,6 +509,8 @@ namespace QSharp.Scheme.Mathematics.Analytical
             var bc = UnlimitedIntegerHelper.Multiply(b, c);
 
             SetNewNumeratorAndDenominator(ad, bc);
+
+            IsNegative = IsNegative != other.IsNegative;
         }
 
         public void InvertSelf()

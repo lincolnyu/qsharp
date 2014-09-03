@@ -115,7 +115,7 @@ namespace QSharp.Scheme.Mathematics.Analytical
 
                 if (eq)
                 {
-                    quotient[basePos] = 1;
+                    SetListItem(quotient, basePos, 1);
                     CutListAtLength(r, basePos);
                 }
                 else
@@ -234,14 +234,14 @@ namespace QSharp.Scheme.Mathematics.Analytical
         ///  Clears the list if the value it represents is zero
         /// </summary>
         /// <param name="l">The list to check</param>
-        private static void ClearIfZero(IList<ushort> l)
+        private static void ClearIfZero(ICollection<ushort> l)
         {
             var zero = true;
             foreach (var v in l)
             {
                 if (v > 0)
                 {
-                    zero = true;
+                    zero = false;
                     break;
                 }
             }
@@ -323,7 +323,12 @@ namespace QSharp.Scheme.Mathematics.Analytical
             var c = Compare(a, b);
             if (c == 0)
             {
-                return new List<ushort>{1};
+                var r = new List<ushort>();
+                foreach (var i in a)
+                {
+                    r.Add(i);
+                }
+                return r;
             }
 
             if (c < 0)
@@ -505,10 +510,10 @@ namespace QSharp.Scheme.Mathematics.Analytical
         /// <param name="a">The minuend</param>
         /// <param name="b">The subtrahend</param>
         /// <param name="d">The difference</param>
-        /// <returns>The valid block count of the difference</returns>
         private static void Subtract(IList<ushort> a, IList<ushort> b, IList<ushort> d)
         {
-            Subtract(a, 0, b, d, 0);
+            var dlen = Subtract(a, 0, b, d, 0);
+            CutListAtLength(d, dlen);
         }
 
         /// <summary>
