@@ -90,6 +90,10 @@ namespace QSharp.Scheme.Mathematics.Analytical
             {
                 var a1 = a.Count - 1;
                 var basePos = a1 - (b.Count - 1);
+                if (basePos < 0)
+                {
+                    break;
+                }
                 var eq = false;
                 if (a[a1] < b[b.Count - 1])
                 {
