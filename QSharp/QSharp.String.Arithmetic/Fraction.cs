@@ -1,4 +1,4 @@
-﻿//#define USE_DP
+﻿#define USE_DP
 
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,10 @@ namespace QSharp.String.Arithmetic
         #region Delegates
 
         private delegate void CleanupMonomial(Monomial m, Monomial gcm);
+
+#if DEBUG
+        public delegate void ReductionPerformedEvent(Polynomial numerator, Polynomial denominator, Fraction result);
+#endif
 
         #endregion
 
@@ -118,6 +122,14 @@ namespace QSharp.String.Arithmetic
 #endif
             set;
         } // for assessment purposes only
+#endif
+
+        #endregion
+
+        #region Events
+
+#if DEBUG
+        public static event ReductionPerformedEvent ReductionPerformed;
 #endif
 
         #endregion
@@ -696,13 +708,11 @@ namespace QSharp.String.Arithmetic
         {
 #if USE_DP
             DpCache.Clear();
+#if DEBUG
             DpCacheHit = 0;
 #endif
+#endif
         }
-
-        public delegate void ReportDelegate(Polynomial num, Polynomial denom);
-
-        public static ReportDelegate Report;
 
         private Fraction ReduceFraction()
         {
@@ -711,10 +721,6 @@ namespace QSharp.String.Arithmetic
                 return this;
             }
 
-            //if (Report != null)
-            //{
-             //   Report(Numerator, Denominator);
-            //}
 #if USE_DP
             var dpQuery = new DpCachedReduction
             {
@@ -724,7 +730,13 @@ namespace QSharp.String.Arithmetic
             DpCachedReduction dpResult;
             if (DpCache.TryGetValue(dpQuery, out dpResult))
             {
+#if DEBUG
                 DpCacheHit++;
+                if (ReductionPerformed != null)
+                {
+                    ReductionPerformed(Numerator, Denominator, dpResult.ReducedResult);
+                }
+#endif
                 return dpResult.ReducedResult;
             }
 #endif
@@ -746,6 +758,12 @@ namespace QSharp.String.Arithmetic
             DpCache[dpQuery] = dpQuery;
 #endif
 
+#if DEBUG
+            if (ReductionPerformed != null)
+            {
+                ReductionPerformed(Numerator, Denominator, ret);
+            }
+#endif
             return ret;
         }
 
