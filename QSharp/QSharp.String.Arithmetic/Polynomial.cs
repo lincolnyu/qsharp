@@ -58,7 +58,11 @@ namespace QSharp.String.Arithmetic
 
         public override int GetHashCode()
         {
-            return (Monomials != null ? Monomials.GetHashCode() : 0);
+            if (Monomials == null || Monomials.Count == 0)
+            {
+                return 0;
+            }
+            return (Monomials.Count*397) ^ Monomials.Values.First().GetHashCode();
         }
 
         public override string ToString()

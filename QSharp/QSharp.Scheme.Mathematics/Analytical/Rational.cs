@@ -121,8 +121,10 @@ namespace QSharp.Scheme.Mathematics.Analytical
 
         public override int GetHashCode()
         {
-// ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
-            return base.GetHashCode();
+            var hc = (Numerator.Count*397) ^ Denominator.Count;
+            var hv = (Numerator[0]*397) ^ Denominator[0];
+            var h = (hc*397) ^ hv;
+            return h;
         }
 
         public override string ToString()

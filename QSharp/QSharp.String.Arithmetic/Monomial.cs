@@ -62,7 +62,14 @@ namespace QSharp.String.Arithmetic
         {
             unchecked
             {
-                return ((Coefficient != null ? Coefficient.GetHashCode() : 0) * 397) ^ (Factors != null ? Factors.GetHashCode() : 0);
+                var fh = 0;
+                if (Factors != null && Factors.Count>0)
+                {
+                    var f = Factors.FirstOrDefault();
+                    fh += f.Value;
+                    fh += f.Key.GetHashCode();
+                }
+                return ((Coefficient != null ? Coefficient.GetHashCode() : 0) * 397) ^ fh;
             }
         }
 

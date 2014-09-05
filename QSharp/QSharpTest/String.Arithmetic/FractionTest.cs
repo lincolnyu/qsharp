@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QSharp.String.Arithmetic;
 using QSharp.String.ExpressionEvaluation;
 
@@ -47,7 +48,7 @@ namespace QSharpTest.String.Arithmetic
         public void SampleTest2EA()
         {
             const string input = "(a*b*x^5+a*x^4+3*a*b*x^4+3*a*x^3+a*b*x^3+a*x^2)/(x^2+3*d)";
-            const string expected = "(a*b*x^5+3*a*b*x^4+a*x^4+a*b*x^3+3*a*x^3+a*x^2)/(x^2+3*d)";
+            const string expected = "(a*b*x^5+3*a*b*x^4+a*b*x^3+a*x^4+3*a*x^3+a*x^2)/(x^2+3*d)";
             PerformTest(input, expected);
         }
 
@@ -104,9 +105,12 @@ namespace QSharpTest.String.Arithmetic
             var t = new SyntaxTree();
             t.Parse(input);
 
+            Fraction.ResetCache();
             var f = FractionBuilder.Build(t.Root);
+            Console.WriteLine("CacheHit = {0}", Fraction.DpCacheHit);
 
             var fs = f.ToString();
+            Console.WriteLine("fs = {0}", fs);
             Assert.IsTrue(fs == expected);
         }
 

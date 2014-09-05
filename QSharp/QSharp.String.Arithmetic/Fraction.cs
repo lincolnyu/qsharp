@@ -38,7 +38,10 @@ namespace QSharp.String.Arithmetic
             {
                 unchecked
                 {
-                    return ((Numerator != null ? Numerator.GetHashCode() : 0) * 397) ^ (Denominator != null ? Denominator.GetHashCode() : 0);
+                    var hcNum = (Numerator != null ? Numerator.GetHashCode() : 0)*397;
+                    var hcDenom = Denominator != null ? Denominator.GetHashCode() : 0;
+                    var hc = hcNum ^ hcDenom;
+                    return hc;
                 }
             }
 
@@ -57,6 +60,8 @@ namespace QSharp.String.Arithmetic
         #region Fields
 
         public static readonly Dictionary<DpCachedReduction, DpCachedReduction> DpCache = new Dictionary<DpCachedReduction, DpCachedReduction>();
+
+        public static int DpCacheHit;
 
         #endregion
 
@@ -492,6 +497,12 @@ namespace QSharp.String.Arithmetic
             return true;
         }
 
+        public static void ResetCache()
+        {
+            DpCache.Clear();
+            DpCacheHit = 0;
+        }
+
         private Fraction ReduceFraction()
         {
             if (Numerator.Degree == 0 || Denominator.Degree == 0)
@@ -507,6 +518,7 @@ namespace QSharp.String.Arithmetic
             DpCachedReduction dpResult;
             if (DpCache.TryGetValue(dpQuery, out dpResult))
             {
+                DpCacheHit++;
                 return dpResult.Reduced;
             }
 
