@@ -70,6 +70,20 @@ namespace QSharp.String.Arithmetic
             return ret;
         }
 
+        public ParaPolynomial AddRushed(ParaPolynomial other)
+        {
+            var maxDegree = Math.Max(Degree, other.Degree);
+            var ret = new ParaPolynomial(Variable);
+
+            for (var i = 0; i < maxDegree; i++)
+            {
+                var c = GetCoefficent(i).AddRushed(other.GetCoefficent(i));
+                ret.SetCoefficient(i, c);
+            }
+
+            return ret;
+        }
+
         public ParaPolynomial Subtract(ParaPolynomial other)
         {
             var maxDegree = Math.Max(Degree, other.Degree);
@@ -78,6 +92,20 @@ namespace QSharp.String.Arithmetic
             for (var i = 0; i < maxDegree; i++)
             {
                 var c = GetCoefficent(i) - other.GetCoefficent(i);
+                ret.SetCoefficient(i, c);
+            }
+
+            return ret;
+        }
+
+        public ParaPolynomial SubtractRushed(ParaPolynomial other)
+        {
+            var maxDegree = Math.Max(Degree, other.Degree);
+            var ret = new ParaPolynomial(Variable);
+
+            for (var i = 0; i < maxDegree; i++)
+            {
+                var c = GetCoefficent(i).SubtractRushed(other.GetCoefficent(i));
                 ret.SetCoefficient(i, c);
             }
 
@@ -96,6 +124,29 @@ namespace QSharp.String.Arithmetic
                     var k = i + j;
                     var f = ret.GetCoefficent(k);
                     f += c1*c2;
+                    ret.SetCoefficient(k, f, false);
+                }
+            }
+            // remove zeros
+            while (Coefficients.Count > 0 && Coefficients[Coefficients.Count - 1].IsZero)
+            {
+                Coefficients.RemoveAt(Coefficients.Count - 1);
+            }
+            return ret;
+        }
+
+        public ParaPolynomial MultiplyRushed(ParaPolynomial other)
+        {
+            var ret = new ParaPolynomial(Variable);
+            for (var i = 0; i < Coefficients.Count; i++)
+            {
+                var c1 = GetCoefficent(i);
+                for (var j = 0; j < other.Coefficients.Count; j++)
+                {
+                    var c2 = other.GetCoefficent(j);
+                    var k = i + j;
+                    var f = ret.GetCoefficent(k);
+                    f = f.AddRushed(c1.MultiplyRushed(c2));
                     ret.SetCoefficient(k, f, false);
                 }
             }
@@ -241,6 +292,35 @@ namespace QSharp.String.Arithmetic
                 var prod = divisor.Multiply(para);
 
                 remainder = remainder.Subtract(prod);
+            }
+        }
+
+        /// <summary>
+        ///  Divides the current meta-polynomial by the specified meta-polynomial with respect to the same term
+        ///  and returns the quotient and remainder, assuming the specified one is no greater than the current
+        /// </summary>
+        /// <param name="divisor"></param>
+        /// <param name="quotient"></param>
+        /// <param name="remainder"></param>
+        public void DivideRushed(ParaPolynomial divisor, out ParaPolynomial quotient,
+            out ParaPolynomial remainder)
+        {
+            quotient = new ParaPolynomial(Variable);
+            remainder = Clone();
+
+            var c = divisor.Coefficients[divisor.Coefficients.Count - 1];
+
+            while (remainder.Coefficients.Count >= divisor.Coefficients.Count)
+            {
+                var c1 = remainder.Coefficients[remainder.Coefficients.Count - 1];
+                var q = c1.DivideRushed(c);
+                var para = new ParaPolynomial(Variable);
+                para.SetCoefficient(remainder.Coefficients.Count - divisor.Coefficients.Count, q);
+                quotient = quotient.AddRushed(para);
+
+                var prod = divisor.MultiplyRushed(para);
+
+                remainder = remainder.SubtractRushed(prod);
             }
         }
 

@@ -281,6 +281,42 @@ namespace QSharp.String.Arithmetic
 
         #endregion
 
+        public Fraction AddRushed(Fraction other)
+        {
+            var numerator = Numerator * other.Denominator + Denominator * other.Numerator;
+            var denominator = Denominator * other.Denominator;
+
+            var r = new Fraction { Numerator = numerator, Denominator = denominator };
+            return r;
+        }
+
+        public Fraction SubtractRushed(Fraction other)
+        {
+            var numerator = Numerator * other.Denominator - Denominator * other.Numerator;
+            var denominator = Denominator * other.Denominator;
+
+            var r = new Fraction { Numerator = numerator, Denominator = denominator };
+            return r;
+        }
+
+        public Fraction MultiplyRushed(Fraction other)
+        {
+            var numerator = Numerator * other.Numerator;
+            var denominator = Denominator * other.Denominator;
+
+            var r = new Fraction { Numerator = numerator, Denominator = denominator };
+            return r;
+        }
+
+        public Fraction DivideRushed(Fraction other)
+        {
+            var numerator = Numerator * other.Denominator;
+            var denominator = Denominator * other.Numerator;
+
+            var r = new Fraction { Numerator = numerator, Denominator = denominator };
+            return r;
+        }
+
         public void NegateSelf()
         {
             Numerator.NegateSelf();
@@ -555,7 +591,7 @@ namespace QSharp.String.Arithmetic
             {
                 ParaPolynomial r;
                 ParaPolynomial q;
-                pa.Divide(pb, out q, out r);
+                pa.DivideRushed(pb, out q, out r);
                 pa = pb;
                 pb = r;
             }
