@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define USE_DP
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,17 +11,25 @@ namespace QSharp.String.Arithmetic
 {
     public class Fraction : IFieldType<Fraction>, IClonable<Fraction>, IEquatable<Fraction>
     {
+        #region Delegates
+
+        private delegate void CleanupMonomial(Monomial m, Monomial gcm);
+
+        #endregion
+
         #region Nested types
+
+#if USE_DP
 
         public class DpCachedReduction
         {
-            #region Fields
+            #region Properties
 
-            public Polynomial Numerator;
+            public Polynomial Numerator { get; set; }
 
-            public Polynomial Denominator;
+            public Polynomial Denominator { get; set; }
 
-            public Fraction Reduced;
+            public Fraction ReducedResult { get; set; }
 
             #endregion
 
@@ -55,13 +65,16 @@ namespace QSharp.String.Arithmetic
             #endregion
         }
 
+#endif
+
         #endregion
 
         #region Fields
 
+#if USE_DP
         public static readonly Dictionary<DpCachedReduction, DpCachedReduction> DpCache = new Dictionary<DpCachedReduction, DpCachedReduction>();
 
-        public static int DpCacheHit;
+#endif
 
         #endregion
 
@@ -95,6 +108,17 @@ namespace QSharp.String.Arithmetic
         public Polynomial Numerator { get; private set; }
 
         public Polynomial Denominator { get; private set; }
+
+#if DEBUG
+        public static int DpCacheHit 
+        {
+            get; 
+#if USE_DP
+            private 
+#endif
+            set;
+        } // for assessment purposes only
+#endif
 
         #endregion
 
@@ -265,33 +289,208 @@ namespace QSharp.String.Arithmetic
         public static void GetGreatestCommonFactor(Polynomial a, Polynomial b, out Polynomial gcd, out Polynomial qa,
             out Polynomial qb)
         {
+            // step 1: single variables as common factors
+            Monomial ma, mb;
+            Polynomial qpa, qpb;
+            GetCommonMonomial(a, out ma, out qpa);
+            GetCommonMonomial(b, out mb, out qpb);
+
+            // setp 2: find the common factors of the polynomials
+            Monomial gcm;
+            Monomial qma, qmb;
+            GetMonomialsCommonMonomial(ma, mb, out gcm, out qma, out qmb);
+
+            GetCommonFactorWithoutCommonMonomial(qpa, qpb, out gcd, out qa, out qb);
+
+            gcd *=gcm;
+            qa *= qma;
+            qb *= qmb;
+        }
+
+        private static void GetCommonMonomial(Polynomial a, out Monomial ma, out Polynomial qa)
+        {
+            ma = new Monomial {Coefficient = (Rational) 1};
+            var first = true;
+            foreach (var m in a.Monomials.Values.Reverse())
+            {
+                if (first)
+                {
+                    if (m.Factors.Count == 0)
+                    {
+                        qa = a;
+                        return;
+                    }
+                    foreach (var f in m.Factors)
+                    {
+                        ma.Factors[f.Key] = f.Value;
+                    }
+                    first = false;
+                }
+                else
+                {
+                    var factorsToChange = new Dictionary<string, int>();
+                    var keysToRemove = new HashSet<string>();
+                    foreach (var f in ma.Factors)
+                    {
+                        int index;
+                        if (m.Factors.TryGetValue(f.Key, out index))
+                        {
+                            if (index < f.Value)
+                            {
+                                factorsToChange[f.Key] = index;
+                            }
+                        }
+                        else
+                        {
+                            keysToRemove.Add(f.Key);
+                        }
+                    }
+                    foreach (var keyToRemove in keysToRemove)
+                    {
+                        ma.Factors.Remove(keyToRemove);
+                    }
+                    foreach (var f in factorsToChange)
+                    {
+                        ma.Factors[f.Key] = f.Value;
+                    }
+                }
+            }
+            qa = a.Clone();
+            foreach (var m in qa.Monomials.Values)
+            {
+                foreach (var f in ma.Factors)
+                {
+                    var oldi = m.Factors[f.Key];
+                    var newi = oldi - f.Value;
+                    if (newi > 0)
+                    {
+                        m.Factors[f.Key] = newi;
+                    }
+                    else
+                    {
+                        m.Factors.Remove(f.Key);
+                    }
+                }
+            }
+        }
+
+        private static void GetMonomialsCommonMonomial(Monomial a, Monomial b, out Monomial gcm, 
+            out Monomial qa, out Monomial qb)
+        {
+            var keys = a.Factors.Keys.Intersect(b.Factors.Keys);
+            gcm = new Monomial {Coefficient = (Rational) 1};
+            foreach (var key in keys)
+            {
+                gcm.Factors[key] = Math.Min(a.Factors[key], b.Factors[key]);
+            }
+
+            CleanupMonomial remove = delegate(Monomial m, Monomial g)
+            {
+                var keysToRemove = new HashSet<string>();
+                var keysToChange = new Dictionary<string, int>();
+                foreach (var f in m.Factors)
+                {
+                    int gval;
+                    if (g.Factors.TryGetValue(f.Key, out gval))
+                    {
+                        var d = f.Value - gval;
+                        if (d > 0)
+                        {
+                            keysToChange[f.Key] = d;
+                        }
+                        else
+                        {
+                            keysToRemove.Add(f.Key);
+                        }
+                    }
+                }
+                foreach (var key in keysToRemove)
+                {
+                    m.Factors.Remove(key);
+                }
+                foreach (var f in keysToChange)
+                {
+                    m.Factors[f.Key] = f.Value;
+                }
+            };
+            qa = a.Clone();
+            qb = b.Clone();
+            remove(qa, gcm);
+            remove(qb, gcm);
+        }
+
+        private static void GetCommonFactorWithoutCommonMonomial(Polynomial a, Polynomial b, out Polynomial gcd, 
+            out Polynomial qa, out Polynomial qb)
+        {
             gcd = (Rational)1;
             qa = a;
             qb = b;
 
             var usedx = new HashSet<string>();
+            HashSet<string> vs = null;
+
+            var checkAFirstOrB = 0;// 1 a first; -1 b first
 
             while (true)
             {
-                var vs = new HashSet<string>();
-                foreach (var m in a.Monomials.Values)
+                if (vs == null)
                 {
-                    foreach (var f in m.Factors.Keys)
+                    vs = new HashSet<string>();
+
+                    // get the term with minimum factors
+                    var minFactors = int.MaxValue;
+                    Monomial minfm = null;
+                    var toCheckAFirstOrB = 0;
+                    if (checkAFirstOrB >= 0)
+                    {
+                        foreach (var m in a.Monomials.Values)
+                        {
+                            if (m.Factors.Count > 0 && m.Factors.Count < minFactors)
+                            {
+                                minFactors = m.Factors.Count;
+                                minfm = m;
+                                toCheckAFirstOrB = 1;
+                            }
+                        }
+                    }
+                    if (checkAFirstOrB <= 0)
+                    {
+                        foreach (var m in b.Monomials.Values)
+                        {
+                            if (m.Factors.Count > 0 && m.Factors.Count < minFactors)
+                            {
+                                minFactors = m.Factors.Count;
+                                minfm = m;
+                                toCheckAFirstOrB = -1;
+                            }
+                        }
+                    }
+                    checkAFirstOrB = toCheckAFirstOrB;
+
+                    if (minfm == null)
+                    {
+                        break;
+                    }
+
+                    foreach (var f in minfm.Factors.Keys)
                     {
                         vs.Add(f);
                     }
-                }
 
-                var vsb = new HashSet<string>();
-                foreach (var m in b.Monomials.Values)
-                {
-                    foreach (var f in m.Factors.Keys)
+                    var nowCheckP = (checkAFirstOrB > 0) ? b : a;
+
+                    var vs2= new HashSet<string>();
+                    foreach (var m in nowCheckP.Monomials.Values)
                     {
-                        vsb.Add(f);
+                        foreach (var f in m.Factors.Keys)
+                        {
+                            vs2.Add(f);
+                        }
                     }
+
+                    vs.IntersectWith(vs2);
                 }
 
-                vs.IntersectWith(vsb);
                 vs.ExceptWith(usedx);
 
                 if (vs.Count == 0)
@@ -301,20 +500,15 @@ namespace QSharp.String.Arithmetic
 
                 var x = vs.First();
 
-                GetGreatestCommonFactorVsX(a, b, x, out gcd, out qa, out qb);
+                var nontrivial = GetGreatestCommonFactorVsX(a, b, x, out gcd, out qa, out qb);
+                if (nontrivial)
+                {
+                    vs = null;  // to recalculate
+                }
 
                 usedx.Add(x);
                 a = qa;
                 b = qb;
-            }
-
-            if (ReferenceEquals(qa, a))
-            {
-                qa = a.Clone();
-            }
-            if (ReferenceEquals(qb, b))
-            {
-                qb = b.Clone();
             }
         }
 
@@ -326,7 +520,7 @@ namespace QSharp.String.Arithmetic
             return lcm;
         }
 
-        private static void GetGreatestCommonFactorVsX(Polynomial a, Polynomial b, string x, 
+        private static bool GetGreatestCommonFactorVsX(Polynomial a, Polynomial b, string x, 
             out Polynomial gcd, out Polynomial qa, out Polynomial qb)
         {
             var pa = new ParaPolynomial(x);
@@ -359,7 +553,7 @@ namespace QSharp.String.Arithmetic
                 gcd = (Rational) 1;
                 qa = a;
                 qb = b;
-                return;
+                return false;
             }
 
             EliminateCommonDenominator(pa);
@@ -388,6 +582,7 @@ namespace QSharp.String.Arithmetic
                 qb = fqb.Numerator;
             }
             gcd = pa.ToFraction().Numerator;
+            return true;
         }
 
         private static void EliminateCommonDenominator(ParaPolynomial pa)
@@ -497,11 +692,17 @@ namespace QSharp.String.Arithmetic
             return true;
         }
 
-        public static void ResetCache()
+        public static void ResetDpCache()
         {
+#if USE_DP
             DpCache.Clear();
             DpCacheHit = 0;
+#endif
         }
+
+        public delegate void ReportDelegate(Polynomial num, Polynomial denom);
+
+        public static ReportDelegate Report;
 
         private Fraction ReduceFraction()
         {
@@ -510,6 +711,11 @@ namespace QSharp.String.Arithmetic
                 return this;
             }
 
+            //if (Report != null)
+            //{
+             //   Report(Numerator, Denominator);
+            //}
+#if USE_DP
             var dpQuery = new DpCachedReduction
             {
                 Numerator = Numerator,
@@ -519,8 +725,9 @@ namespace QSharp.String.Arithmetic
             if (DpCache.TryGetValue(dpQuery, out dpResult))
             {
                 DpCacheHit++;
-                return dpResult.Reduced;
+                return dpResult.ReducedResult;
             }
+#endif
 
             Polynomial dummy, newNumerator, newDenominator;
             if (Numerator.Degree < Denominator.Degree)
@@ -534,8 +741,10 @@ namespace QSharp.String.Arithmetic
 
             var ret = new Fraction {Numerator = newNumerator, Denominator = newDenominator};
 
-            dpQuery.Reduced = ret;
+#if USE_DP
+            dpQuery.ReducedResult = ret;
             DpCache[dpQuery] = dpQuery;
+#endif
 
             return ret;
         }

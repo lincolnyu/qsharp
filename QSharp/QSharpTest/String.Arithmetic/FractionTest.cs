@@ -19,7 +19,7 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
-        [TestMethod]
+        [TestMethod] // nearly endless execution
         public void SampleTest2()
         {
             const string input = "(a*b*x^3+a*x^2+c*b*x+c)/(a*x^4+3*a*x^3+a*x^2+c*x^2+3*c*x+c)";
@@ -44,7 +44,7 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
-        [TestMethod]
+        [TestMethod] // nearly endless execution
         public void SampleTest2EA()
         {
             const string input = "(a*b*x^5+a*x^4+3*a*b*x^4+3*a*x^3+a*b*x^3+a*x^2)/(x^2+3*d)";
@@ -100,18 +100,36 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
+        private static int TotalReduction = 0;
+
         private void PerformTest(string input, string expected)
         {
+            var startTime = DateTime.Now;
+            
             var t = new SyntaxTree();
             t.Parse(input);
 
-            Fraction.ResetCache();
+            Fraction.Report = Report;
+            TotalReduction = 0;
+            Fraction.ResetDpCache();
             var f = FractionBuilder.Build(t.Root);
             Console.WriteLine("CacheHit = {0}", Fraction.DpCacheHit);
+            Fraction.Report = null;
 
             var fs = f.ToString();
+            Console.WriteLine("TotalReduction  ={0}", TotalReduction);
             Console.WriteLine("fs = {0}", fs);
+            
+            var endTime = DateTime.Now;
+            Console.WriteLine("Time taken {0}s",(endTime-startTime).TotalSeconds);
+            
             Assert.IsTrue(fs == expected);
+        }
+
+        private void Report(Polynomial num, Polynomial denom)
+        {
+            Console.WriteLine("({0})/({1})", num, denom);
+            TotalReduction++;
         }
 
         #endregion
