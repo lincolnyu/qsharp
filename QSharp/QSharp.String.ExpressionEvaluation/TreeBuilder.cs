@@ -260,19 +260,19 @@ namespace QSharp.String.ExpressionEvaluation
 
         private void AttractUnaryOperator(Token token)
         {
-            NodeBuilder unaryHolder;
             if (Attractor != null && AtomicNode == null)
             {
                 Attractor.Attract(token);
-                unaryHolder = Attractor;
+
+                var newAttractor = new NodeBuilder { IsAttractor = true };
+                Attractor.AddChild(newAttractor);
+                Attractor.Close(); // NOTE it should be closed here right?
+                Attractor = newAttractor;
             }
             else
             {
                 throw new Exception("Unexpected unary operator");
             }
-
-            Attractor = new NodeBuilder { IsAttractor = true };
-            unaryHolder.AddChild(Attractor);
         }
 
 

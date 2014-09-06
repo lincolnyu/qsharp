@@ -737,6 +737,10 @@ namespace QSharp.String.Arithmetic
             }
 
             val = inum/idenom;
+            if (r.IsNegative)
+            {
+                val = -val;
+            }
             return true;
         }
 

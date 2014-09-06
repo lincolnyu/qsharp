@@ -26,5 +26,55 @@ namespace QSharpTest.String.ExpressionEvaluation
             st.Parse(expression);
             Assert.IsTrue(st.ToString() == expected);
         }
+
+        [TestMethod]
+        public void Test003()
+        {
+            const string expression = "x^-2";
+            const string expected = "{B;^;{S;x}{U;-;{C;2}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
+
+        [TestMethod]
+        public void Test003_Weak()
+        {
+            const string expression = "x^(-2)";
+            const string expected = "{B;^;{S;x}{U;-;{C;2}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
+
+        [TestMethod]
+        public void Test003_2()
+        {
+            const string expression = "x*-2";
+            const string expected = "{B;*;{S;x}{U;-;{C;2}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
+
+        [TestMethod]
+        public void Test003_A()
+        {
+            const string expression = "x^-2+1";
+            const string expected = "{B;+;{B;^;{S;x}{U;-;{C;2}}}{C;1}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
+
+        [TestMethod]
+        public void Test003_B()
+        {
+            const string expression = "x^-(2+b)";
+            const string expected = "{B;^;{S;x}{U;-;{B;+;{C;2}{S;b}}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
     }
 }

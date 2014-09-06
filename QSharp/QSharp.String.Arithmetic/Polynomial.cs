@@ -169,11 +169,11 @@ namespace QSharp.String.Arithmetic
 
         public void NegateSelf()
         {
-            foreach (var k in Monomials.Keys)
+            foreach (var f in Monomials)
             {
-                var newCoef = k.Coefficient.Negate();
-                k.Coefficient = newCoef;
-                // TODO verify that this changes the number in the collection
+                var newCoef = f.Value.Coefficient.Negate();
+                f.Key.Coefficient = newCoef;
+                f.Value.Coefficient = newCoef;
             }
         }
 

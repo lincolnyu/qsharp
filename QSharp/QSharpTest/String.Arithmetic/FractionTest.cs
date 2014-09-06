@@ -106,6 +106,30 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
+        [TestMethod]
+        public void SampleTest4()
+        {
+            const string input = "(b*(1-2*b*t^2/(a+b*t^2)+b^2*t^4/(a+b*t^2)^2)+a*b^2*t^2/(a+b*t^2)^2)*(1/b+t^2/a)";
+            const string expected = "1";
+            PerformTest(input, expected);
+        }
+
+        [TestMethod]
+        public void SampleTest5()
+        {
+            const string input = "x^-2+1";
+            const string expected = "(x^2+1)/x^2";
+            PerformTest(input, expected);
+        }
+
+        [TestMethod]
+        public void SampleTest5_A()
+        {
+            const string input = "x^(-2)";
+            const string expected = "1/x^2";
+            PerformTest(input, expected);
+        }
+
         private void PerformTest(string input, string expected)
         {
             var startTime = DateTime.Now;
