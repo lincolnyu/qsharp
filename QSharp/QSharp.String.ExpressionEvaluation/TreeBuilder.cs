@@ -266,7 +266,10 @@ namespace QSharp.String.ExpressionEvaluation
 
                 var newAttractor = new NodeBuilder { IsAttractor = true };
                 Attractor.AddChild(newAttractor);
-                Attractor.Close(); // NOTE it should be closed here right?
+                if (!Attractor.IsBracketKeeper && !Attractor.IsParemeterCell && !Attractor.IsRootKeeper)
+                {
+                    Attractor.Close(); // NOTE it should be closed here right?
+                }
                 Attractor = newAttractor;
             }
             else

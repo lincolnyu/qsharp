@@ -17,6 +17,16 @@ namespace QSharpTest.String.ExpressionEvaluation
         }
 
         [TestMethod]
+        public void Test001B()
+        {
+            const string expression = "a+(_ab1c*x+1)*(2+a11)";
+            const string expected = "{B;+;{S;a}{B;*;{B;+;{B;*;{S;_ab1c}{S;x}}{C;1}}{B;+;{C;2}{S;a11}}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            Assert.IsTrue(st.ToString() == expected);
+        }
+
+        [TestMethod]
         public void Test002()
         {
             const string expression = "a+(_1bc.a(1,b*2).c+1)*(-2+a11())";

@@ -130,6 +130,14 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
+        [TestMethod]
+        public void Test_Lorentz()
+        {
+            const string input = "(t-x*v/c^2)^2/(1-(v/c)^2)-(x-v*t)^2/(1-(v/c)^2)/c^2";
+            const string expected = "(c^2*t^2+-1*x^2)/c^2";
+            PerformTest(input, expected);
+        }
+
         private void PerformTest(string input, string expected)
         {
             var startTime = DateTime.Now;
