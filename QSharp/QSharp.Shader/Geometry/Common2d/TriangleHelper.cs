@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QSharp.Shader.Geometry.Common2d
+namespace QSharp.Shader.Geometry.Common2D
 {
     /// <summary>
     ///  a class that contains a set of helping methods for triangle related calculation
@@ -49,12 +49,12 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  references:
         ///   http://www.blackpawn.com/texts/pointinpoly/default.html
         /// </remarks>
-        public static bool IsInTriangle(this IVertex2d vP, IVertex2d vA, IVertex2d vB, IVertex2d vC)
+        public static bool IsInTriangle(this IVertex2D vP, IVertex2D vA, IVertex2D vB, IVertex2D vC)
         {
             // gets the vectors
-            var v0 = new Vector2d(vA, vC);
-            var v1 = new Vector2d(vA, vB);
-            var v2 = new Vector2d(vA, vP);
+            var v0 = new Vector2D(vA, vC);
+            var v1 = new Vector2D(vA, vB);
+            var v2 = new Vector2D(vA, vP);
 
             // computes the dot products
             double dot00 = v0 * v0;
@@ -77,7 +77,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="vP">the vertex to test to see if it's inside the triangle</param>
         /// <param name="triangle">the triangle to see if the vertex is in</param>
         /// <returns>true if the vertex is inside the triangle</returns>
-        public static bool IsInTriangle(this IVertex2d vP, ITriangle2d triangle)
+        public static bool IsInTriangle(this IVertex2D vP, ITriangle2D triangle)
         {
             return vP.IsInTriangle(triangle.Vertex1, triangle.Vertex2, triangle.Vertex3);
         }
@@ -90,7 +90,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="b">common inner end of the two radiant lines</param>
         /// <param name="c">outer end of the second radiant line</param>
         /// <returns>the angle formed by swiping from the first radiant line to the second</returns>
-        public static double GetAngle(IVertex2d a, IVertex2d b, IVertex2d c)
+        public static double GetAngle(IVertex2D a, IVertex2D b, IVertex2D c)
         {
             double baX = a.X - b.X;
             double baY = a.Y - b.Y;
@@ -115,13 +115,13 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="vC">third vertex</param>
         /// <param name="epsilon">minimum sinusoid of an angle in the triangle considered to be able to validate the triangle</param>
         /// <returns>if the three vertices are considered to be able to form a triangle</returns>
-        public static bool IsTriangle(IVertex2d vA, IVertex2d vB, IVertex2d vC, double epsilon)
+        public static bool IsTriangle(IVertex2D vA, IVertex2D vB, IVertex2D vC, double epsilon)
         {
             double partA = vA.X * vC.Y + vB.X * vA.Y + vC.X * vB.Y;
             double partB = vA.X * vB.Y + vB.X * vC.Y + vC.X * vA.Y;
             double area = Math.Abs(partA - partB);
-            var vAB = new Vector2d(vA, vB);
-            var vAC = new Vector2d(vA, vC);
+            var vAB = new Vector2D(vA, vB);
+            var vAC = new Vector2D(vA, vC);
             double sinA = area / (vAB.Length * vAC.Length);
             return sinA > epsilon;
         }
@@ -137,7 +137,7 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  'Overlapping' if they overlap
         ///  'Separate' if the are separate
         /// </returns>
-        public static TriangleRelation Intersect(this ITriangle2d triangle, IEdge2d edge, double epsilon)
+        public static TriangleRelation Intersect(this ITriangle2D triangle, IEdge2D edge, double epsilon)
         {
             return Intersect(triangle.Edge23, triangle.Edge31, triangle.Edge12, edge, epsilon);
         }
@@ -156,8 +156,8 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  'Overlapping' if they overlap
         ///  'Separate' if the are separate
         /// </returns>
-        public static TriangleRelation Intersect(IVertex2d vt1, IVertex2d vt2, IVertex2d vt3, 
-            IVertex2d ve1, IVertex2d ve2, double epsilon)
+        public static TriangleRelation Intersect(IVertex2D vt1, IVertex2D vt2, IVertex2D vt3, 
+            IVertex2D ve1, IVertex2D ve2, double epsilon)
         {
             return Intersect(new EdgeComputer(vt2, vt3), new EdgeComputer(vt3, vt1), new EdgeComputer(vt1, vt2),
                              new EdgeComputer(ve1, ve2), epsilon);
@@ -176,7 +176,7 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  'Overlapping' if they overlap
         ///  'Separate' if the are separate
         /// </returns>
-        public static TriangleRelation Intersect(IEdge2d et23, IEdge2d et31, IEdge2d et12, IEdge2d edge, double epsilon)
+        public static TriangleRelation Intersect(IEdge2D et23, IEdge2D et31, IEdge2D et12, IEdge2D edge, double epsilon)
         {
             var edges = new[] { et23, et31, et12 };
             foreach (var e in edges)
@@ -205,7 +205,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="triangle2">the second triangle</param>
         /// <param name="epsilon">the minimum distance between edges or points of the triangles for them to be considered overlapping</param>
         /// <returns>a value of the enumeration indicating the relationship of the two triangles</returns>
-        public static TriangleRelation Intersect(this ITriangle2d triangle1, ITriangle2d triangle2, double epsilon)
+        public static TriangleRelation Intersect(this ITriangle2D triangle1, ITriangle2D triangle2, double epsilon)
         {
             return Intersect(triangle1.Edge23, triangle1.Edge31, triangle1.Edge12,
                 triangle2.Edge23, triangle2.Edge31, triangle2.Edge12, epsilon);
@@ -220,7 +220,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="v23">the thrid vertex of the second triangle</param>
         /// <param name="epsilon">the minimum distance between edges or points of the triangles for them to be considered overlapping</param>
         /// <returns>a value of the enumeration indicating the relationship of the two triangles</returns>
-        public static TriangleRelation Intersect(this ITriangle2d triangle, IVertex2d v21, IVertex2d v22, IVertex2d v23, double epsilon)
+        public static TriangleRelation Intersect(this ITriangle2D triangle, IVertex2D v21, IVertex2D v22, IVertex2D v23, double epsilon)
         {
             return Intersect(triangle.Edge23, triangle.Edge31, triangle.Edge12,
                              new EdgeComputer(v22, v23), new EdgeComputer(v23, v21), new EdgeComputer(v21, v22), epsilon);
@@ -237,8 +237,8 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="v23">the third vertex of the second triangle</param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static TriangleRelation Intersect(IVertex2d v11, IVertex2d v12, IVertex2d v13, 
-            IVertex2d v21, IVertex2d v22, IVertex2d v23, double epsilon)
+        public static TriangleRelation Intersect(IVertex2D v11, IVertex2D v12, IVertex2D v13, 
+            IVertex2D v21, IVertex2D v22, IVertex2D v23, double epsilon)
         {
             return Intersect(new EdgeComputer(v12, v13),
                              new EdgeComputer(v13, v11),
@@ -251,8 +251,8 @@ namespace QSharp.Shader.Geometry.Common2d
 
         }
 
-        public static TriangleRelation Intersect(IEdge2d e123, IEdge2d e131, IEdge2d e112, 
-            IEdge2d e223, IEdge2d e231, IEdge2d e212, double epsilon)
+        public static TriangleRelation Intersect(IEdge2D e123, IEdge2D e131, IEdge2D e112, 
+            IEdge2D e223, IEdge2D e231, IEdge2D e212, double epsilon)
         {
             // the triangles are considered overlapping if and only if any edges of the two triangles intersect
             // this includes but is not limited to cases where two triangles share the same joining vertex

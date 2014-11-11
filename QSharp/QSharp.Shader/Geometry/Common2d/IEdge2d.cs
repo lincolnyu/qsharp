@@ -1,4 +1,4 @@
-﻿namespace QSharp.Shader.Geometry.Common2d
+﻿namespace QSharp.Shader.Geometry.Common2D
 {
     /// <summary>
     ///  interface that represents a 2D edge
@@ -6,17 +6,17 @@
     ///  be same as the order in which the vertices in the triangle appear
     ///  which is counterclockwise
     /// </summary>
-    public interface IEdge2d
+    public interface IEdge2D
     {
         /// <summary>
         ///  the first vertex of the edge
         /// </summary>
-        IVertex2d Vertex1 { get; }
+        IVertex2D Vertex1 { get; }
 
         /// <summary>
         ///  the second vertex of the edge
         /// </summary>
-        IVertex2d Vertex2 { get; }
+        IVertex2D Vertex2 { get; }
 
         /// <summary>
         ///  returns if the specified vertex is on the edge (line segment) with specified
@@ -28,7 +28,7 @@
         ///  for the vertex to be considered to be on edge
         /// </param>
         /// <returns>true if the vertex is on the edge</returns>
-        bool Contains(IVertex2d vertex, double epsilon);
+        bool Contains(IVertex2D vertex, double epsilon);
 
         /// <summary>
         ///  returns the length of the edge

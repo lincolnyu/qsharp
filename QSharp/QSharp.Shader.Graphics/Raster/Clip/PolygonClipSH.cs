@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using QSharp.Shader.Geometry.Common2d;
+using QSharp.Shader.Geometry.Common2D;
 
 namespace QSharp.Shader.Graphics.Raster.Clip
 {
@@ -18,9 +18,9 @@ namespace QSharp.Shader.Graphics.Raster.Clip
         /// <param name="subjectPolygon">The polygon to clip</param>
         /// <param name="clipPolygon">The clipping polygon whose vertices have to come in counter-clockwise order</param>
         /// <returns>The clipped polygon</returns>
-        public static IList<Vertex2d> Clip(IList<Vertex2d> subjectPolygon, IList<Vertex2d> clipPolygon)
+        public static IList<Vertex2D> Clip(IList<Vertex2D> subjectPolygon, IList<Vertex2D> clipPolygon)
         {
-            var result = new List<Vertex2d>();
+            var result = new List<Vertex2D>();
             
             for (var i = 0; i < clipPolygon.Count; i++ )
             {
@@ -33,7 +33,7 @@ namespace QSharp.Shader.Graphics.Raster.Clip
                 var b = clipEdgePt1.X - clipEdgePt0.X;
                 var c = -b * clipEdgePt0.Y - a * clipEdgePt0.X;
 
-                var input = new Vertex2d[result.Count];
+                var input = new Vertex2D[result.Count];
                 result.CopyTo(input);
                 result.Clear();
 
@@ -48,7 +48,7 @@ namespace QSharp.Shader.Graphics.Raster.Clip
                         var denom = 1 / (d1 - d0);
                         var x = (inputPt0.X * d1 - inputPt1.X * d0) * denom;
                         var y = (inputPt0.Y * d1 - inputPt1.Y * d0) * denom;
-                        result.Add(new Vertex2d(x, y));
+                        result.Add(new Vertex2D(x, y));
                     }
                     if (d1 > 0)
                     {

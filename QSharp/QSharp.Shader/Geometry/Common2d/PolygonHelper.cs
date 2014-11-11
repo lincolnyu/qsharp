@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace QSharp.Shader.Geometry.Common2d
+namespace QSharp.Shader.Geometry.Common2D
 {
     /// <summary>
     ///  A helper class that provides functions for polygon related calculation
@@ -23,7 +23,7 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  1. http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
         ///  2. http://lincolnyutech.blogspot.com.au/2012/04/exercises-of-chapter-1-part-1.html
         /// </remarks>
-        public static double GetSignedPolgyonArea(IList<Vertex2d> polygon)
+        public static double GetSignedPolgyonArea(IList<Vertex2D> polygon)
         {
             double res = 0;
             for (var i = 0; i < polygon.Count; i++)

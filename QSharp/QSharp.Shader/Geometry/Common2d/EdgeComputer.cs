@@ -1,24 +1,24 @@
 ﻿using System;
 
-namespace QSharp.Shader.Geometry.Common2d
+namespace QSharp.Shader.Geometry.Common2D
 {
     /// <summary>
     ///  a class instance of which represents a concrete edge with a 
     ///  couple of mathematical characteristics associated with the edge
     ///  for the convenience of edge related calculation
     /// </summary>
-    public class EdgeComputer : IEdge2d
+    public class EdgeComputer : IEdge2D
     {
         #region Fields
 
-        private readonly Vector2d _vector;
+        private readonly Vector2D _vector;
 
         #endregion
 
         #region Properties
 
-        public IVertex2d Vertex1 { get; protected set; }
-        public IVertex2d Vertex2 { get; protected set; }
+        public IVertex2D Vertex1 { get; protected set; }
+        public IVertex2D Vertex2 { get; protected set; }
 
         public double A { get; protected set; }
         public double B { get; protected set; }
@@ -34,7 +34,7 @@ namespace QSharp.Shader.Geometry.Common2d
         public double Length { get; protected set; }
         public double SquaredLength { get; protected set; }
 
-        public Vector2d Vector
+        public Vector2D Vector
         {
             get { return _vector; }
         }
@@ -48,7 +48,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// </summary>
         /// <param name="v1">first end of the edge</param>
         /// <param name="v2">the other end of the edge</param>
-        public EdgeComputer(IVertex2d v1, IVertex2d v2)
+        public EdgeComputer(IVertex2D v1, IVertex2D v2)
         {
             Vertex1 = v1;
             Vertex2 = v2;
@@ -64,14 +64,14 @@ namespace QSharp.Shader.Geometry.Common2d
             Length = Math.Sqrt(SquaredLength);
             InvSqLen = 1 / SquaredLength;
             InvLen = 1 / Length;
-            _vector = new Vector2d(A, -B);
+            _vector = new Vector2D(A, -B);
         }
 
         /// <summary>
         ///  instantiates an edge computer with the specified edge
         /// </summary>
         /// <param name="edge">the edge the edge computer works for</param>
-        public EdgeComputer(IEdge2d edge)
+        public EdgeComputer(IEdge2D edge)
             : this(edge.Vertex1, edge.Vertex2)
         {
         }
@@ -84,7 +84,7 @@ namespace QSharp.Shader.Geometry.Common2d
         /// <param name="x2">x component of the location of the other end</param>
         /// <param name="y2">y component of the location of the other end</param>
         public EdgeComputer(double x1, double y1, double x2, double y2)
-            : this (new Vertex2d(x1, y1), new Vertex2d(x2, y2)) 
+            : this (new Vertex2D(x1, y1), new Vertex2D(x2, y2)) 
         {
         }
 
@@ -92,7 +92,7 @@ namespace QSharp.Shader.Geometry.Common2d
 
         #region Methods
 
-        public double GetProjectedX(IVertex2d v)
+        public double GetProjectedX(IVertex2D v)
         {
             return (BB * v.X - AB * v.Y - AC) * InvSqLen;
         }
@@ -102,7 +102,7 @@ namespace QSharp.Shader.Geometry.Common2d
             return (BB * x - AB * y - AC) * InvSqLen;
         }
 
-        public double GetProjectedY(IVertex2d v)
+        public double GetProjectedY(IVertex2D v)
         {
             return (AA * v.Y - AB * v.X - BC) * InvSqLen;
         }
@@ -112,14 +112,14 @@ namespace QSharp.Shader.Geometry.Common2d
             return (AA * y - AB * x - BC) * InvSqLen;
         }
 
-        public Vertex2d GetProjected(IVertex2d v)
+        public Vertex2D GetProjected(IVertex2D v)
         {
             double ex = GetProjectedX(v);
             double ey = GetProjectedY(v);
-            return new Vertex2d(ex, ey);
+            return new Vertex2D(ex, ey);
         }
 
-        public double GetDistance(IVertex2d v)
+        public double GetDistance(IVertex2D v)
         {
             return GetDistance(v.X, v.Y);
         }
@@ -129,14 +129,14 @@ namespace QSharp.Shader.Geometry.Common2d
             return Math.Abs(A*x + B*y + C) * InvSqLen;
         }
 
-        public Vector2d GetPerpendicularVectorToPoint(IVertex2d v)
+        public Vector2D GetPerpendicularVectorToPoint(IVertex2D v)
         {
             double ex = GetProjectedX(v);
             double ey = GetProjectedY(v);
-            return new Vector2d(v.X - ex, v.Y - ey);
+            return new Vector2D(v.X - ex, v.Y - ey);
         }
 
-        public double GetInnerProductFromVertex1(IVertex2d v)
+        public double GetInnerProductFromVertex1(IVertex2D v)
         {
             return GetInnerProductFromVertex1(v.X, v.Y);
         }
@@ -148,7 +148,7 @@ namespace QSharp.Shader.Geometry.Common2d
             return Vector.X * v1vx + Vector.Y * v1vy;
         }
 
-        public double GetOuterProduct(IVertex2d v)
+        public double GetOuterProduct(IVertex2D v)
         {
             return GetOuterProduct(v.X, v.Y);
         }
@@ -168,7 +168,7 @@ namespace QSharp.Shader.Geometry.Common2d
             return Vector.X*v1vy - Vector.Y*v1vx;
         }
 
-        public double GetDirectionalDistance(IVertex2d v)
+        public double GetDirectionalDistance(IVertex2D v)
         {
             return GetDirectionalDistance(v.X, v.Y);
         }
@@ -189,7 +189,7 @@ namespace QSharp.Shader.Geometry.Common2d
         ///  for the vertex to be considered to be on edge
         /// </param>
         /// <returns>true if the vertex is on the edge</returns>
-        public bool Contains(IVertex2d vertex, double epsilon)
+        public bool Contains(IVertex2D vertex, double epsilon)
         {
             double dist = GetDistance(vertex);
             if (dist >= epsilon) return false;

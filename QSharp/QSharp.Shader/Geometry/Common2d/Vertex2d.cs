@@ -1,6 +1,6 @@
-﻿namespace QSharp.Shader.Geometry.Common2d
+﻿namespace QSharp.Shader.Geometry.Common2D
 {
-    public class Vertex2d : IVertex2d
+    public class Vertex2D : IVertex2D
     {
         #region Properties
 
@@ -12,7 +12,7 @@
 
         #region Constructors
 
-        public Vertex2d(double x, double y)
+        public Vertex2D(double x, double y)
         {
             X = x;
             Y = y;

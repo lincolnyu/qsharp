@@ -1,11 +1,11 @@
-﻿using QSharp.Shader.Geometry.Common2d;
+﻿using QSharp.Shader.Geometry.Common2D;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
     /// <summary>
     ///  triangle that has indexing capabilities enabled
     /// </summary>
-    public class IndexedTriangle : SpatialObject2d, ITriangle2d
+    public class IndexedTriangle : SpatialObject2d, ITriangle2D
     {
         #region Fields
 
@@ -80,7 +80,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  first vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2d Vertex1
+        public IVertex2D Vertex1
         {
             get { return _v1; }
         }
@@ -88,7 +88,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  second vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2d Vertex2
+        public IVertex2D Vertex2
         {
             get { return _v2; }
         }
@@ -96,7 +96,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  third vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2d Vertex3
+        public IVertex2D Vertex3
         {
             get { return _v3; }
         }
@@ -104,7 +104,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  the edge that links vertices 2 and 3
         /// </summary>
-        public IEdge2d Edge23
+        public IEdge2D Edge23
         {
             get { return _e23; }
         }
@@ -112,7 +112,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  the edge that links vertices 3 and 1
         /// </summary>
-        public IEdge2d Edge31
+        public IEdge2D Edge31
         {
             get { return _e31; }
         }
@@ -120,7 +120,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  the edge that links vertices 1 and 2
         /// </summary>
-        public IEdge2d Edge12
+        public IEdge2D Edge12
         {
             get { return _e12; }
         }
@@ -168,7 +168,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="vertex">the vertex to test</param>
         /// <returns>if the vertex meets the criteria</returns>
-        public bool Contains(IVertex2d vertex)
+        public bool Contains(IVertex2D vertex)
         {
             var iv = vertex as IndexedVertex;
             if (iv != null)
@@ -205,7 +205,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        public IVertex2d GetOpposite(IEdge2d edge)
+        public IVertex2D GetOpposite(IEdge2D edge)
         {
             var ie = edge as IndexedEdge;
             if (ie!= null)
@@ -254,7 +254,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        public IEdge2d GetOpposite(IVertex2d vertex)
+        public IEdge2D GetOpposite(IVertex2D vertex)
         {
             var iv = vertex as IndexedVertex ?? new IndexedVertex(vertex.X, vertex.Y);
 

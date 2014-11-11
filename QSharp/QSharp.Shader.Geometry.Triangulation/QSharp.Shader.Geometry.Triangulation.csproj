@@ -43,22 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Passive\ITrianguleManager.cs" />
-    <Compile Include="Passive\TriangleBucket.cs" />
-    <Compile Include="Passive\TriangleBucketSet.cs" />
-    <Compile Include="Passive\TriangleManager.cs" />
-    <Compile Include="Passive\Triangulariser.cs" />
-    <Compile Include="Proactive\Envelope.cs" />
-    <Compile Include="Proactive\IEnvelope.cs" />
-    <Compile Include="Proactive\ISourceVertexSet.cs" />
-    <Compile Include="Proactive\ITriangleCollector.cs" />
-    <Compile Include="Proactive\IVertexQueue.cs" />
-    <Compile Include="Proactive\SourceVertexSet.cs" />
-    <Compile Include="Proactive\Triangulariser.cs" />
-    <Compile Include="Proactive\Vertex2d.cs" />
-    <Compile Include="Proactive\VertexMap.cs" />
-    <Compile Include="Proactive\VertexQueue.cs" />
-    <Compile Include="Proactive\VertexRow.cs" />
+    <Compile Include="Primitive\Vector2D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +56,7 @@
       <Name>QSharp.Shared</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

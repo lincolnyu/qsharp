@@ -1,8 +1,8 @@
-﻿using QSharp.Shader.Geometry.Common2d;
+﻿using QSharp.Shader.Geometry.Common2D;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
-    public class IndexedVertex : SpatialObject2d, IVertex2d
+    public class IndexedVertex : SpatialObject2d, IVertex2D
     {
         #region Fields
 
