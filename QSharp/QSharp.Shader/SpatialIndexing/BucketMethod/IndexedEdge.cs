@@ -1,5 +1,5 @@
 ﻿using System;
-using QSharp.Shader.Geometry.Common2D;
+using QSharp.Shader.Geometry.Euclid2D;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {

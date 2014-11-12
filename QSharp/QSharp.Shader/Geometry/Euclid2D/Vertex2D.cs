@@ -1,4 +1,4 @@
-﻿namespace QSharp.Shader.Geometry.Common2D
+﻿namespace QSharp.Shader.Geometry.Euclid2D
 {
     public class Vertex2D : IMutableVector2D
     {

@@ -1,4 +1,4 @@
-﻿namespace QSharp.Shader.Geometry.Common2D
+﻿namespace QSharp.Shader.Geometry.Euclid2D
 {
     /// <summary>
     ///  interface that represents a 2D edge

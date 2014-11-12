@@ -1,18 +1,12 @@
 ﻿using System;
-using QSharp.Shader.SpatialIndexing.BucketMethod;
 
-namespace QSharp.Shader.Geometry.Common2D
+namespace QSharp.Shader.Geometry.Euclid2D
 {
     /// <summary>
     ///  a class that involves a couple of helper methods for vertex related calculation
     /// </summary>
     public static class VertexHelper
     {
-        public class Edge
-        {
-            
-        }
-
         /// <summary>
         ///  returns the distance between two vertices
         /// </summary>
@@ -72,8 +66,9 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="edge1">The first edge</param>
         /// <param name="edge2">The second edge</param>
         /// <param name="epsilon">The distance within which two elements are considered overlapping</param>
-        /// <returns>the intersection on both of the edges or null</returns>
-        public static IVector2D GetIntersection(this IEdge2D edge1, IEdge2D edge2, double epsilon)
+        /// <param name="intersection">The intersection on both of the edges or null</param>
+        /// <returns>True if intersection exists</returns>
+        public static bool GetIntersection(this IEdge2D edge1, IEdge2D edge2, double epsilon, IMutableVector2D intersection)
         {
             var e1 = edge1 as EdgeComputer ?? new EdgeComputer(edge1);
             var e2 = edge2 as EdgeComputer ?? new EdgeComputer(edge2);
@@ -81,22 +76,36 @@ namespace QSharp.Shader.Geometry.Common2D
             var dd11 = e1.GetDirectionalDistance(edge2.Vertex1);
             var dd12 = e1.GetDirectionalDistance(edge2.Vertex2);
 
-            if (dd11 > epsilon && dd12 > epsilon) return null;
-            if (dd11 < -epsilon && dd12 < -epsilon) return null;
+            if (dd11 > epsilon && dd12 > epsilon)
+            {
+                return false;
+            }
+            if (dd11 < -epsilon && dd12 < -epsilon)
+            {
+                return false;
+            }
 
             var dd21 = e2.GetDirectionalDistance(edge1.Vertex1);
             var dd22 = e2.GetDirectionalDistance(edge1.Vertex2);
 
-            if (dd21 > epsilon && dd22 > epsilon) return null;
-            if (dd21 < -epsilon && dd22 < -epsilon) return null;
+            if (dd21 > epsilon && dd22 > epsilon)
+            {
+                return false;
+            }
+            if (dd21 < -epsilon && dd22 < -epsilon)
+            {
+                return false;
+            }
 
             double det = e1.B*e2.A - e1.A*e2.B;
             double invdet = 1/det;
             double x = (e1.C * e2.B - e1.B * e2.C) * invdet;
             double y = (e1.A * e2.C - e1.C * e2.A) * invdet;
 
-            var intersection = new IndexedVertex(x, y);
-            return e1.Contains(intersection, epsilon) && e2.Contains(intersection, epsilon) ? intersection : null;
+            intersection.X = x;
+            intersection.Y = y;
+            var intExists = e1.Contains(intersection, epsilon) && e2.Contains(intersection, epsilon);
+            return intExists;
         }
     }
 }

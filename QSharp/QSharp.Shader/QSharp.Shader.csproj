@@ -43,16 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry\Common2D\EdgeComputer.cs" />
-    <Compile Include="Geometry\Common2D\IEdge2D.cs" />
-    <Compile Include="Geometry\Common2D\IVector2D.cs" />
-    <Compile Include="Geometry\Common2D\ITriangle2D.cs" />
-    <Compile Include="Geometry\Common2D\IMutableVector2D.cs" />
-    <Compile Include="Geometry\Common2D\PolygonHelper.cs" />
-    <Compile Include="Geometry\Common2D\TriangleHelper.cs" />
-    <Compile Include="Geometry\Common2D\Vector2D.cs" />
-    <Compile Include="Geometry\Common2D\Vertex2D.cs" />
-    <Compile Include="Geometry\Common2D\VertexHelper.cs" />
+    <Compile Include="Geometry\Euclid2D\EdgeComputer.cs" />
+    <Compile Include="Geometry\Euclid2D\IEdge2D.cs" />
+    <Compile Include="Geometry\Euclid2D\IVector2D.cs" />
+    <Compile Include="Geometry\Euclid2D\ITriangle2D.cs" />
+    <Compile Include="Geometry\Euclid2D\IMutableVector2D.cs" />
+    <Compile Include="Geometry\Euclid2D\PolygonHelper.cs" />
+    <Compile Include="Geometry\Euclid2D\TriangleHelper.cs" />
+    <Compile Include="Geometry\Euclid2D\Vector2D.cs" />
+    <Compile Include="Geometry\Euclid2D\VectorHelper.cs" />
+    <Compile Include="Geometry\Euclid2D\Vertex2D.cs" />
+    <Compile Include="Geometry\Euclid2D\VertexHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2D.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IBucket.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 
-namespace QSharp.Shader.Geometry.Common2D
+namespace QSharp.Shader.Geometry.Euclid2D
 {
     /// <summary>
     ///  a class that contains a set of helping methods for triangle related calculation
@@ -179,12 +180,10 @@ namespace QSharp.Shader.Geometry.Common2D
         public static TriangleRelation Intersect(IEdge2D et23, IEdge2D et31, IEdge2D et12, IEdge2D edge, double epsilon)
         {
             var edges = new[] { et23, et31, et12 };
-            foreach (var e in edges)
+            var dummy = new Vector2D();
+            if (edges.Any(e => edge.GetIntersection(e, epsilon, dummy)))
             {
-                if (edge.GetIntersection(e, epsilon) != null)
-                {
-                    return TriangleRelation.Overlapping;
-                }
+                return TriangleRelation.Overlapping;
             }
 
             var vt1 = et12.Vertex1;
@@ -248,7 +247,6 @@ namespace QSharp.Shader.Geometry.Common2D
                              new EdgeComputer(v21, v22),
                              epsilon
                             );
-
         }
 
         public static TriangleRelation Intersect(IEdge2D e123, IEdge2D e131, IEdge2D e112, 
@@ -260,15 +258,10 @@ namespace QSharp.Shader.Geometry.Common2D
             // this method doesn't distinguish further between the above cases
             var e1S = new[] { e123, e131, e112 };
             var e2S = new[] { e223, e231, e212 };
-            foreach (var e1 in e1S)
+            var dummy = new Vector2D();
+            if (e1S.Any(e1 => e2S.Any(e2 => e1.GetIntersection(e2, epsilon, dummy))))
             {
-                foreach (var e2 in e2S)
-                {
-                    if (e1.GetIntersection(e2, epsilon) != null)
-                    {
-                        return TriangleRelation.Overlapping;
-                    }
-                }
+                return TriangleRelation.Overlapping;
             }
 
             var v11 = e112.Vertex1;

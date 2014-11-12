@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QSharp.Shader.Geometry.Common2D
+namespace QSharp.Shader.Geometry.Euclid2D
 {
     public class Vector2D : IMutableVector2D
     {
@@ -33,6 +33,10 @@ namespace QSharp.Shader.Geometry.Common2D
 
         #region Methods
 
+        public Vector2D()
+        {
+        }
+
         public Vector2D(double x, double y)
         {
             X = x;
@@ -47,7 +51,7 @@ namespace QSharp.Shader.Geometry.Common2D
 
         public double InnerProductWith(Vector2D other)
         {
-            return X * other.X + Y * other.Y;
+            return this.InnerProduct(other);
         }
 
         public Vector2D Add(Vector2D other)

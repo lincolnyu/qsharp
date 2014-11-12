@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace QSharp.Shader.Geometry.Common2D
+namespace QSharp.Shader.Geometry.Euclid2D
 {
     /// <summary>
     ///  A helper class that provides functions for polygon related calculation

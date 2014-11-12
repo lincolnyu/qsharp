@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QSharp.Shader.Geometry.Common2D
+namespace QSharp.Shader.Geometry.Euclid2D
 {
     /// <summary>
     ///  a class instance of which represents a concrete edge with a 
