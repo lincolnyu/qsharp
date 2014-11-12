@@ -5,7 +5,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
     /// <summary>
     ///  triangle that has indexing capabilities enabled
     /// </summary>
-    public class IndexedTriangle : SpatialObject2d, ITriangle2D
+    public class IndexedTriangle : SpatialObject2D, ITriangle2D
     {
         #region Fields
 
@@ -80,7 +80,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  first vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2D Vertex1
+        public IVector2D Vertex1
         {
             get { return _v1; }
         }
@@ -88,7 +88,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  second vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2D Vertex2
+        public IVector2D Vertex2
         {
             get { return _v2; }
         }
@@ -96,7 +96,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <summary>
         ///  third vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        public IVertex2D Vertex3
+        public IVector2D Vertex3
         {
             get { return _v3; }
         }
@@ -168,7 +168,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="vertex">the vertex to test</param>
         /// <returns>if the vertex meets the criteria</returns>
-        public bool Contains(IVertex2D vertex)
+        public bool Contains(IMutableVector2D vertex)
         {
             var iv = vertex as IndexedVertex;
             if (iv != null)
@@ -205,7 +205,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        public IVertex2D GetOpposite(IEdge2D edge)
+        public IVector2D GetOpposite(IEdge2D edge)
         {
             var ie = edge as IndexedEdge;
             if (ie!= null)
@@ -254,7 +254,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        public IEdge2D GetOpposite(IVertex2D vertex)
+        public IEdge2D GetOpposite(IMutableVector2D vertex)
         {
             var iv = vertex as IndexedVertex ?? new IndexedVertex(vertex.X, vertex.Y);
 
@@ -274,7 +274,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="other">the instance this instance is compared to</param>
         /// <returns>an integer indicating the result of the comparison</returns>
-        public new int CompareTo(SpatialObject2d other)
+        public new int CompareTo(SpatialObject2D other)
         {
             int cmp = base.CompareTo(other);
             if (cmp != 0) return cmp;

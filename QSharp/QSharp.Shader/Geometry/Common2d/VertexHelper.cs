@@ -19,7 +19,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="v1"></param>
         /// <param name="v2"></param>
         /// <returns></returns>
-        public static double GetDistance(this IVertex2D v1, IVertex2D v2)
+        public static double GetDistance(this IVector2D v1, IVector2D v2)
         {
             double dx = v2.X - v1.X;
             double dy = v2.Y - v1.Y;
@@ -34,7 +34,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="v2">the second vertex</param>
         /// <param name="epsilon">the distance within which when the two vertices are set they are considered equal</param>
         /// <returns>true if the two vertices are considered equal</returns>
-        public static bool Equal(this IVertex2D v1, IVertex2D v2, double epsilon)
+        public static bool Equal(this IVector2D v1, IVector2D v2, double epsilon)
         {
             return GetDistance(v1, v2) < epsilon;
         }
@@ -46,7 +46,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="edge">the edge</param>
         /// <param name="epsilon">maximum distance from the vertex to the edge for the vertex to be regarded as on the line</param>
         /// <returns>true if the vertex is on the edge</returns>
-        public static bool IsOnEdge(this IVertex2D v, IEdge2D edge, double epsilon)
+        public static bool IsOnEdge(this IVector2D v, IEdge2D edge, double epsilon)
         {
             var edgeComputer = edge as EdgeComputer ?? new EdgeComputer(edge);
 
@@ -60,7 +60,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="v">the vertex to test</param>
         /// <param name="edge">the edge to test against</param>
         /// <returns>the signed difference</returns>
-        public static double GetDirectionalDistanceFromEdge(this IVertex2D v, IEdge2D edge)
+        public static double GetDirectionalDistanceFromEdge(this IVector2D v, IEdge2D edge)
         {
             var edgeComputer = edge as EdgeComputer ?? new EdgeComputer(edge);
             return edgeComputer.GetDirectionalDistance(v);
@@ -73,7 +73,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="edge2">The second edge</param>
         /// <param name="epsilon">The distance within which two elements are considered overlapping</param>
         /// <returns>the intersection on both of the edges or null</returns>
-        public static IVertex2D GetIntersection(this IEdge2D edge1, IEdge2D edge2, double epsilon)
+        public static IVector2D GetIntersection(this IEdge2D edge1, IEdge2D edge2, double epsilon)
         {
             var e1 = edge1 as EdgeComputer ?? new EdgeComputer(edge1);
             var e2 = edge2 as EdgeComputer ?? new EdgeComputer(edge2);
@@ -95,7 +95,7 @@ namespace QSharp.Shader.Geometry.Common2D
             double x = (e1.C * e2.B - e1.B * e2.C) * invdet;
             double y = (e1.A * e2.C - e1.C * e2.A) * invdet;
 
-            IVertex2D intersection = new IndexedVertex(x, y);
+            var intersection = new IndexedVertex(x, y);
             return e1.Contains(intersection, epsilon) && e2.Contains(intersection, epsilon) ? intersection : null;
         }
     }

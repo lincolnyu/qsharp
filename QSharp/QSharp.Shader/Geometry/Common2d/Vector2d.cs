@@ -2,10 +2,36 @@
 
 namespace QSharp.Shader.Geometry.Common2D
 {
-    public class Vector2D
+    public class Vector2D : IMutableVector2D
     {
+        #region Properties
+
+        #region IMutableVector2D members
+
         public double X { get; set; }
         public double Y { get; set; }
+
+        #endregion
+
+        public double SquaredLength
+        {
+            get
+            {
+                return X * X + Y * Y;
+            }
+        }
+
+        public double Length
+        {
+            get
+            {
+                return Math.Sqrt(SquaredLength);
+            }
+        }
+
+        #endregion
+
+        #region Methods
 
         public Vector2D(double x, double y)
         {
@@ -13,7 +39,7 @@ namespace QSharp.Shader.Geometry.Common2D
             Y = y;
         }
 
-        public Vector2D(IVertex2D a, IVertex2D b)
+        public Vector2D(IVector2D a, IVector2D b)
         {
             X = b.X - a.X;
             Y = b.Y - a.Y;
@@ -39,22 +65,6 @@ namespace QSharp.Shader.Geometry.Common2D
             return new Vector2D(X * scale, Y * scale);
         }
 
-        public double SquaredLength
-        {
-            get
-            {
-                return X * X + Y * Y;
-            }
-        }
-
-        public double Length
-        {
-            get
-            {
-                return Math.Sqrt(SquaredLength);
-            }
-        }
-
         public static double operator *(Vector2D vA, Vector2D vB)
         {
             return vA.InnerProductWith(vB);
@@ -74,5 +84,7 @@ namespace QSharp.Shader.Geometry.Common2D
         {
             return v.Multiply(scale);
         }
+
+        #endregion
     }
 }

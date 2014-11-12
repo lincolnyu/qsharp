@@ -11,12 +11,12 @@
         /// <summary>
         ///  the first vertex of the edge
         /// </summary>
-        IVertex2D Vertex1 { get; }
+        IVector2D Vertex1 { get; }
 
         /// <summary>
         ///  the second vertex of the edge
         /// </summary>
-        IVertex2D Vertex2 { get; }
+        IVector2D Vertex2 { get; }
 
         /// <summary>
         ///  returns if the specified vertex is on the edge (line segment) with specified
@@ -28,7 +28,7 @@
         ///  for the vertex to be considered to be on edge
         /// </param>
         /// <returns>true if the vertex is on the edge</returns>
-        bool Contains(IVertex2D vertex, double epsilon);
+        bool Contains(IVector2D vertex, double epsilon);
 
         /// <summary>
         ///  returns the length of the edge

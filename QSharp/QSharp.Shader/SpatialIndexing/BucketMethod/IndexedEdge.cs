@@ -3,7 +3,7 @@ using QSharp.Shader.Geometry.Common2D;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
-    public class IndexedEdge : SpatialObject2d, IEdge2D, IEquatable<IndexedEdge>
+    public class IndexedEdge : SpatialObject2D, IEdge2D, IEquatable<IndexedEdge>
     {
         #region Fields
 
@@ -35,12 +35,12 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
 
         #region Implementation of IEdge2d
 
-        public IVertex2D Vertex1
+        public IVector2D Vertex1
         {
             get { return _v1; }
         }
 
-        public IVertex2D Vertex2
+        public IVector2D Vertex2
         {
             get { return _v2; }
         }
@@ -88,7 +88,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  for the vertex to be considered to be on edge
         /// </param> 
         /// <returns>true if the vertex is on the edge</returns>
-        public bool Contains(IVertex2D vertex, double epsilon)
+        public bool Contains(IVector2D vertex, double epsilon)
         {
             var iv = vertex as IndexedVertex;
 

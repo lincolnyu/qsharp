@@ -1,32 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
-    public class FixedBucketSet2d
+    public class FixedBucketSet2D
     {
         #region Fields
 
-        /// <summary>
-        ///  minimum x component of the bucket set
-        /// </summary>
-        protected double _x0;
-
-        /// <summary>
-        ///  minimum y component of the bucket set
-        /// </summary>
-        protected double _y0;
-
-        /// <summary>
-        ///  width of each bucket
-        /// </summary>
-        protected double _xdimension;
-
-        /// <summary>
-        ///  height of each bucket
-        /// </summary>
-        protected double _ydimension;
-
-        private IBucket[,] _buckets;
+        private readonly Dictionary<int, Dictionary<int, IBucket>> _buckets;
 
         #endregion
 
@@ -34,8 +15,46 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
 
         public IBucket this[int row, int col]
         {
-            get { return _buckets[row, col]; }
+            get
+            {
+                IBucket bucket;
+                if (!TryGetBucket(row, col, out bucket))
+                {
+                    bucket = null;
+                }
+                return bucket;
+            }
         }
+
+        /// <summary>
+        ///  minimum x component of the bucket set
+        /// </summary>
+        public double XMin { get; private set; }
+
+        /// <summary>
+        ///  minimum y component of the bucket set
+        /// </summary>
+        public double YMin { get; private set; }
+
+        /// <summary>
+        ///  width of each bucket
+        /// </summary>
+        public double XSize { get; private set; }
+
+        /// <summary>
+        ///  height of each bucket
+        /// </summary>
+        public double YSize { get; private set; }
+
+        /// <summary>
+        ///  Number of buckets in X direction
+        /// </summary>
+        public int XBucketCount { get; private set; }
+
+        /// <summary>
+        ///  Number of buckets in Y direction
+        /// </summary>
+        public int YBucketCount { get; private set; }
 
         #endregion
 
@@ -46,17 +65,19 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="nx">number of columns</param>
         /// <param name="ny">number of rows</param>
-        /// <param name="x0"></param>
-        /// <param name="y0"></param>
-        /// <param name="xdimension"></param>
-        /// <param name="ydimension"></param>
-        public FixedBucketSet2d(int nx, int ny, double x0, double y0, double xdimension, double ydimension)
+        /// <param name="xmin"></param>
+        /// <param name="ymin"></param>
+        /// <param name="xsize"></param>
+        /// <param name="ysize"></param>
+        public FixedBucketSet2D(int nx, int ny, double xmin, double ymin, double xsize, double ysize)
         {
-            _buckets = new IBucket[ny, nx];
-            _x0 = x0;
-            _y0 = y0;
-            _xdimension = xdimension;
-            _ydimension = ydimension;
+            _buckets = new Dictionary<int, Dictionary<int, IBucket>>();
+            XMin = xmin;
+            YMin = ymin;
+            XSize = xsize;
+            YSize = ysize;
+            XBucketCount = nx;
+            YBucketCount = ny;
         }
 
         #endregion
@@ -71,14 +92,12 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <param name="row">row of the bucket</param>
         /// <param name="col">column of the bucket</param>
         /// <returns>true if a valid bucket is found</returns>
-        public bool GetContainingBucket(double x, double y, out int row, out int col)
+        public bool TryGetBucket(double x, double y, out int row, out int col)
         {
-            col = (int)Math.Floor((x - _x0)/_xdimension);
-            row = (int)Math.Floor((y - _y0)/_ydimension);
+            col = (int)Math.Floor((x - XMin)/XSize);
+            row = (int)Math.Floor((y - YMin)/YSize);
 
-            int ny = _buckets.GetLength(0);
-            int nx = _buckets.GetLength(1);
-            if (col < 0 || row < 0 || col > nx || row > ny)
+            if (col < 0 || row < 0 || col > XBucketCount || row > YBucketCount)
             {
                 return false;
             }
@@ -86,6 +105,31 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             return true;
         }
 
+        public bool TryGetBucket(double x, double y, out IBucket bucket)
+        {
+            int row, col;
+            if (!TryGetBucket(x, y, out row, out col))
+            {
+                bucket = null;
+                return false;
+            }
+            return TryGetBucket(row, col, out bucket);
+        }
+
+        public bool TryGetBucket(int row, int col, out IBucket bucket)
+        {
+             Dictionary<int, IBucket> dict;
+            if (!_buckets.TryGetValue(row, out dict))
+            {
+                bucket = null;
+                return false;
+            }
+            if (!dict.TryGetValue(col, out bucket))
+            {
+                return false;
+            }
+            return true;
+        }
 
         /// <summary>
         ///  returns positions of the four sides of the bucket
@@ -96,12 +140,12 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <param name="ymin">lowest y</param>
         /// <param name="xmax">highest x</param>
         /// <param name="ymax">highest y</param>
-        public void GetBucketDimensions(int row, int col, out double xmin, out double ymin, out double xmax, out double ymax)
+        public void GetBucketSize(int row, int col, out double xmin, out double ymin, out double xmax, out double ymax)
         {
-            xmin = _x0 + col*_xdimension;
-            ymin = _y0 + row*_xdimension;
-            xmax = _x0 + (col+1) * _xdimension;
-            ymax = _y0 + (row + 1)*_ydimension;
+            xmin = XMin + col*XSize;
+            ymin = YMin + row*XSize;
+            xmax = XMin + (col+1) * XSize;
+            ymax = YMin + (row + 1)*YSize;
         }
 
         #endregion

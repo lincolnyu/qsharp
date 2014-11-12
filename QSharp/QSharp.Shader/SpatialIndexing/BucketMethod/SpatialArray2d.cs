@@ -7,7 +7,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
     ///  linear spatial object list that stores 2d spatial objects based on
     ///  their relationship specified by the actual type of the objects added
     /// </summary>
-    public class SpatialArray2d
+    public class SpatialArray2D
     {
         #region Fields
 
@@ -15,7 +15,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  internal list for storing objects ordered as per the relationship 
         ///  specified the spatial object type
         /// </summary>
-        private readonly List<SpatialObject2d> _objects = new List<SpatialObject2d>();
+        private readonly List<SpatialObject2D> _objects = new List<SpatialObject2D>();
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="index">the index of the object to retrieve</param>
         /// <returns>the object with specified index in the array</returns>
-        public SpatialObject2d this[int index]
+        public SpatialObject2D this[int index]
         {
             get { return _objects[index]; } 
         }
@@ -48,7 +48,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  type of the object will be used for ordering and query
         /// </summary>
         /// <param name="spatialObject">the object to add</param>
-        public void AddObject(SpatialObject2d spatialObject)
+        public void AddObject(SpatialObject2D spatialObject)
         {
             int index = _objects.BinarySearch(spatialObject);
             if (index < 0)
@@ -68,7 +68,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  the spatial type
         /// </summary>
         /// <param name="spatialObject">the object that represents the object to remove from the list</param>
-        public void RemoveObject(SpatialObject2d spatialObject)
+        public void RemoveObject(SpatialObject2D spatialObject)
         {
             int index = _objects.BinarySearch(spatialObject);
             if (index < 0)
@@ -88,7 +88,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         ///  the comparison is according to that defined in the spatial object type used also
         ///  for insertion and remval
         /// </returns>
-        public int GetObjectIndex(SpatialObject2d query)
+        public int GetObjectIndex(SpatialObject2D query)
         {
             return _objects.BinarySearch(query);
         }

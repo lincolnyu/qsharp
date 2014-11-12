@@ -8,17 +8,17 @@
         /// <summary>
         ///  first vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        IVertex2D Vertex1 { get; }
+        IVector2D Vertex1 { get; }
 
         /// <summary>
         ///  second vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        IVertex2D Vertex2 { get; }
+        IVector2D Vertex2 { get; }
 
         /// <summary>
         ///  thrid vertex of the triangle appearing in the counterclockwise order
         /// </summary>
-        IVertex2D Vertex3 { get; }
+        IVector2D Vertex3 { get; }
 
         /// <summary>
         ///  the edge that links vertex 2 and 3
@@ -41,7 +41,7 @@
         /// </summary>
         /// <param name="vertex">the vertex to test</param>
         /// <returns>if the vertex meets the criteria</returns>
-        bool Contains(IVertex2D vertex);
+        bool Contains(IMutableVector2D vertex);
 
         /// <summary>
         ///  returns the point opposite the edge
@@ -52,7 +52,7 @@
         ///  edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        IVertex2D GetOpposite(IEdge2D edge);
+        IVector2D GetOpposite(IEdge2D edge);
 
         /// <summary>
         ///  returns the edge opposite the vertex
@@ -63,6 +63,6 @@
         ///  edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        IEdge2D GetOpposite(IVertex2D vertex);
+        IEdge2D GetOpposite(IMutableVector2D vertex);
     }
 }

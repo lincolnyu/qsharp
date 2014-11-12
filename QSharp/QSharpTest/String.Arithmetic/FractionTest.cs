@@ -138,6 +138,22 @@ namespace QSharpTest.String.Arithmetic
             PerformTest(input, expected);
         }
 
+        [TestMethod]
+        public void Test_CircumCenterX()
+        {
+            const string input = "ax/2+ay*(bx^2+by^2-ax*bx-ay*by)/(bx*ay-ax*by)/2";
+            const string expected = "(1/2*ax^2*by+1/2*ay^2*by+-1/2*ay*bx^2+-1/2*ay*by^2)/(ax*by+-1*ay*bx)";
+            PerformTest(input, expected);
+        }
+
+        [TestMethod]
+        public void Test_CircumCenterY()
+        {
+            const string input = "ay/2-ax*(bx^2+by^2-ax*bx-ay*by)/(bx*ay-ax*by)/2";
+            const string expected = "(-1/2*ax^2*bx+1/2*ax*bx^2+1/2*ax*by^2+-1/2*ay^2*bx)/(ax*by+-1*ay*bx)";
+            PerformTest(input, expected);
+        }
+
         private void PerformTest(string input, string expected)
         {
             var startTime = DateTime.Now;

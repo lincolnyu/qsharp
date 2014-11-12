@@ -7,7 +7,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
     ///  representative location to be stored in a spatial indexing enabled 
     ///  collection
     /// </summary>
-    public abstract class SpatialObject2d : IComparable<SpatialObject2d>
+    public abstract class SpatialObject2D : IComparable<SpatialObject2D>
     {
         #region Properties
 
@@ -32,7 +32,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="other">the instance this instance is compared to</param>
         /// <returns>an integer indicating the result of the comparison</returns>
-        public int CompareTo(SpatialObject2d other)
+        public int CompareTo(SpatialObject2D other)
         {
             if (ReferenceEquals(this, other)) return 0;
             int cmp = X.CompareTo(other.X);

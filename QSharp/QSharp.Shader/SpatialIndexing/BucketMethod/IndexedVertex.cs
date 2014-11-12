@@ -2,7 +2,7 @@
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
-    public class IndexedVertex : SpatialObject2d, IVertex2D
+    public class IndexedVertex : SpatialObject2D, IVector2D
     {
         #region Fields
 

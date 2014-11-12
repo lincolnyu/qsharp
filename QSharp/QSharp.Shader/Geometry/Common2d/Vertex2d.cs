@@ -1,12 +1,12 @@
 ﻿namespace QSharp.Shader.Geometry.Common2D
 {
-    public class Vertex2D : IVertex2D
+    public class Vertex2D : IMutableVector2D
     {
         #region Properties
 
-        public double X { get; protected set; }
+        public double X { get; set; }
 
-        public double Y { get; protected set; }
+        public double Y { get; set; }
 
         #endregion
 

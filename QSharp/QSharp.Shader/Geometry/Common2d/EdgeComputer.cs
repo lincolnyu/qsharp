@@ -17,8 +17,8 @@ namespace QSharp.Shader.Geometry.Common2D
 
         #region Properties
 
-        public IVertex2D Vertex1 { get; protected set; }
-        public IVertex2D Vertex2 { get; protected set; }
+        public IVector2D Vertex1 { get; protected set; }
+        public IVector2D Vertex2 { get; protected set; }
 
         public double A { get; protected set; }
         public double B { get; protected set; }
@@ -48,7 +48,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// </summary>
         /// <param name="v1">first end of the edge</param>
         /// <param name="v2">the other end of the edge</param>
-        public EdgeComputer(IVertex2D v1, IVertex2D v2)
+        public EdgeComputer(IVector2D v1, IVector2D v2)
         {
             Vertex1 = v1;
             Vertex2 = v2;
@@ -92,7 +92,7 @@ namespace QSharp.Shader.Geometry.Common2D
 
         #region Methods
 
-        public double GetProjectedX(IVertex2D v)
+        public double GetProjectedX(IVector2D v)
         {
             return (BB * v.X - AB * v.Y - AC) * InvSqLen;
         }
@@ -102,7 +102,7 @@ namespace QSharp.Shader.Geometry.Common2D
             return (BB * x - AB * y - AC) * InvSqLen;
         }
 
-        public double GetProjectedY(IVertex2D v)
+        public double GetProjectedY(IVector2D v)
         {
             return (AA * v.Y - AB * v.X - BC) * InvSqLen;
         }
@@ -112,14 +112,14 @@ namespace QSharp.Shader.Geometry.Common2D
             return (AA * y - AB * x - BC) * InvSqLen;
         }
 
-        public Vertex2D GetProjected(IVertex2D v)
+        public Vertex2D GetProjected(IVector2D v)
         {
             double ex = GetProjectedX(v);
             double ey = GetProjectedY(v);
             return new Vertex2D(ex, ey);
         }
 
-        public double GetDistance(IVertex2D v)
+        public double GetDistance(IVector2D v)
         {
             return GetDistance(v.X, v.Y);
         }
@@ -129,26 +129,26 @@ namespace QSharp.Shader.Geometry.Common2D
             return Math.Abs(A*x + B*y + C) * InvSqLen;
         }
 
-        public Vector2D GetPerpendicularVectorToPoint(IVertex2D v)
+        public Vector2D GetPerpendicularVectorToPoint(IVector2D v)
         {
             double ex = GetProjectedX(v);
             double ey = GetProjectedY(v);
             return new Vector2D(v.X - ex, v.Y - ey);
         }
 
-        public double GetInnerProductFromVertex1(IVertex2D v)
+        public double GetInnerProductFromVertex1(IVector2D v)
         {
             return GetInnerProductFromVertex1(v.X, v.Y);
         }
 
         public double GetInnerProductFromVertex1(double x, double y)
         {
-            double v1vx = x - Vertex1.X;
-            double v1vy = y - Vertex2.Y;
-            return Vector.X * v1vx + Vector.Y * v1vy;
+            double v1Vx = x - Vertex1.X;
+            double v1Vy = y - Vertex2.Y;
+            return Vector.X * v1Vx + Vector.Y * v1Vy;
         }
 
-        public double GetOuterProduct(IVertex2D v)
+        public double GetOuterProduct(IMutableVector2D v)
         {
             return GetOuterProduct(v.X, v.Y);
         }
@@ -163,12 +163,12 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <returns>the cross product</returns>
         public double GetOuterProduct(double x, double y)
         {
-            double v1vx = x - Vertex1.X;
-            double v1vy = y - Vertex2.Y;
-            return Vector.X*v1vy - Vector.Y*v1vx;
+            double v1Vx = x - Vertex1.X;
+            double v1Vy = y - Vertex2.Y;
+            return Vector.X*v1Vy - Vector.Y*v1Vx;
         }
 
-        public double GetDirectionalDistance(IVertex2D v)
+        public double GetDirectionalDistance(IVector2D v)
         {
             return GetDirectionalDistance(v.X, v.Y);
         }
@@ -189,7 +189,7 @@ namespace QSharp.Shader.Geometry.Common2D
         ///  for the vertex to be considered to be on edge
         /// </param>
         /// <returns>true if the vertex is on the edge</returns>
-        public bool Contains(IVertex2D vertex, double epsilon)
+        public bool Contains(IVector2D vertex, double epsilon)
         {
             double dist = GetDistance(vertex);
             if (dist >= epsilon) return false;

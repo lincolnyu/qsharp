@@ -49,7 +49,7 @@ namespace QSharp.Shader.Geometry.Common2D
         ///  references:
         ///   http://www.blackpawn.com/texts/pointinpoly/default.html
         /// </remarks>
-        public static bool IsInTriangle(this IVertex2D vP, IVertex2D vA, IVertex2D vB, IVertex2D vC)
+        public static bool IsInTriangle(this IVector2D vP, IVector2D vA, IVector2D vB, IVector2D vC)
         {
             // gets the vectors
             var v0 = new Vector2D(vA, vC);
@@ -77,7 +77,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="vP">the vertex to test to see if it's inside the triangle</param>
         /// <param name="triangle">the triangle to see if the vertex is in</param>
         /// <returns>true if the vertex is inside the triangle</returns>
-        public static bool IsInTriangle(this IVertex2D vP, ITriangle2D triangle)
+        public static bool IsInTriangle(this IVector2D vP, ITriangle2D triangle)
         {
             return vP.IsInTriangle(triangle.Vertex1, triangle.Vertex2, triangle.Vertex3);
         }
@@ -90,7 +90,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="b">common inner end of the two radiant lines</param>
         /// <param name="c">outer end of the second radiant line</param>
         /// <returns>the angle formed by swiping from the first radiant line to the second</returns>
-        public static double GetAngle(IVertex2D a, IVertex2D b, IVertex2D c)
+        public static double GetAngle(IVector2D a, IVector2D b, IVector2D c)
         {
             double baX = a.X - b.X;
             double baY = a.Y - b.Y;
@@ -115,7 +115,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="vC">third vertex</param>
         /// <param name="epsilon">minimum sinusoid of an angle in the triangle considered to be able to validate the triangle</param>
         /// <returns>if the three vertices are considered to be able to form a triangle</returns>
-        public static bool IsTriangle(IVertex2D vA, IVertex2D vB, IVertex2D vC, double epsilon)
+        public static bool IsTriangle(IVector2D vA, IVector2D vB, IVector2D vC, double epsilon)
         {
             double partA = vA.X * vC.Y + vB.X * vA.Y + vC.X * vB.Y;
             double partB = vA.X * vB.Y + vB.X * vC.Y + vC.X * vA.Y;
@@ -156,8 +156,8 @@ namespace QSharp.Shader.Geometry.Common2D
         ///  'Overlapping' if they overlap
         ///  'Separate' if the are separate
         /// </returns>
-        public static TriangleRelation Intersect(IVertex2D vt1, IVertex2D vt2, IVertex2D vt3, 
-            IVertex2D ve1, IVertex2D ve2, double epsilon)
+        public static TriangleRelation Intersect(IVector2D vt1, IVector2D vt2, IVector2D vt3,
+            IVector2D ve1, IVector2D ve2, double epsilon)
         {
             return Intersect(new EdgeComputer(vt2, vt3), new EdgeComputer(vt3, vt1), new EdgeComputer(vt1, vt2),
                              new EdgeComputer(ve1, ve2), epsilon);
@@ -220,7 +220,7 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="v23">the thrid vertex of the second triangle</param>
         /// <param name="epsilon">the minimum distance between edges or points of the triangles for them to be considered overlapping</param>
         /// <returns>a value of the enumeration indicating the relationship of the two triangles</returns>
-        public static TriangleRelation Intersect(this ITriangle2D triangle, IVertex2D v21, IVertex2D v22, IVertex2D v23, double epsilon)
+        public static TriangleRelation Intersect(this ITriangle2D triangle, IVector2D v21, IVector2D v22, IVector2D v23, double epsilon)
         {
             return Intersect(triangle.Edge23, triangle.Edge31, triangle.Edge12,
                              new EdgeComputer(v22, v23), new EdgeComputer(v23, v21), new EdgeComputer(v21, v22), epsilon);
@@ -237,8 +237,8 @@ namespace QSharp.Shader.Geometry.Common2D
         /// <param name="v23">the third vertex of the second triangle</param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public static TriangleRelation Intersect(IVertex2D v11, IVertex2D v12, IVertex2D v13, 
-            IVertex2D v21, IVertex2D v22, IVertex2D v23, double epsilon)
+        public static TriangleRelation Intersect(IMutableVector2D v11, IMutableVector2D v12, IMutableVector2D v13, 
+            IMutableVector2D v21, IMutableVector2D v22, IMutableVector2D v23, double epsilon)
         {
             return Intersect(new EdgeComputer(v12, v13),
                              new EdgeComputer(v13, v11),
@@ -258,11 +258,11 @@ namespace QSharp.Shader.Geometry.Common2D
             // this includes but is not limited to cases where two triangles share the same joining vertex
             // or share the same edge or they have edges that overlap
             // this method doesn't distinguish further between the above cases
-            var e1s = new[] { e123, e131, e112 };
-            var e2s = new[] { e223, e231, e212 };
-            foreach (var e1 in e1s)
+            var e1S = new[] { e123, e131, e112 };
+            var e2S = new[] { e223, e231, e212 };
+            foreach (var e1 in e1S)
             {
-                foreach (var e2 in e2s)
+                foreach (var e2 in e2S)
                 {
                     if (e1.GetIntersection(e2, epsilon) != null)
                     {
@@ -280,22 +280,46 @@ namespace QSharp.Shader.Geometry.Common2D
 
             // the first triangle is considered contained by the second, if and only if all vertices of 
             // the first triangle are inside the second
-            var v1s = new[] { v11, v12, v13 };
-            foreach (var v1 in v1s)
+            var v1S = new[] { v11, v12, v13 };
+            foreach (var v1 in v1S)
             {
                 if (v1.IsInTriangle(v21, v22, v23)) return TriangleRelation.Contained;
             }
 
             // the first triangle is considered containing the second, if and only if all vertices of 
             // the second triangle are inside the first
-            var v2s = new[] { v21, v22, v23 };
-            foreach (var v2 in v2s)
+            var v2S = new[] { v21, v22, v23 };
+            foreach (var v2 in v2S)
             {
                 if (v2.IsInTriangle(v11, v12, v13)) return TriangleRelation.Containing;
             }
 
             // if none of the above is satisfied, the two triangles are separate
             return TriangleRelation.Separate;
+        }
+
+        /// <summary>
+        ///  Returns the cicumcenter of the triangle formed by the region between
+        ///   <paramref name="vectorA"/> and <paramref name="vectorB"/>
+        /// </summary>
+        /// <param name="vectorA">The first vector</param>
+        /// <param name="vectorB">The second vector</param>
+        /// <param name="cc">The vector to the circumcenter</param>
+        public static void GetCircumcenter(IVector2D vectorA, IVector2D vectorB, IMutableVector2D cc)
+        {
+            var ax = vectorA.X;
+            var ay = vectorA.Y;
+            var bx = vectorB.X;
+            var by = vectorB.Y;
+            var det2 = 2*(ax*by - ay*bx);
+            var axx = ax*ax;
+            var ayy = ay*ay;
+            var bxx = bx*bx;
+            var byy = by*by;
+            var ccx = (axx*by + ayy*by - bxx*ax - byy*ay)/det2;
+            var ccy = (bxx*ax + byy*ax - axx*bx - ayy*bx)/det2;
+            cc.X = ccx;
+            cc.Y = ccy;
         }
 
         #endregion

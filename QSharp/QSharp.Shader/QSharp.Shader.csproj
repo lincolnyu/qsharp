@@ -45,21 +45,22 @@
   <ItemGroup>
     <Compile Include="Geometry\Common2D\EdgeComputer.cs" />
     <Compile Include="Geometry\Common2D\IEdge2D.cs" />
+    <Compile Include="Geometry\Common2D\IVector2D.cs" />
     <Compile Include="Geometry\Common2D\ITriangle2D.cs" />
-    <Compile Include="Geometry\Common2D\IVertex2D.cs" />
+    <Compile Include="Geometry\Common2D\IMutableVector2D.cs" />
     <Compile Include="Geometry\Common2D\PolygonHelper.cs" />
     <Compile Include="Geometry\Common2D\TriangleHelper.cs" />
     <Compile Include="Geometry\Common2D\Vector2D.cs" />
     <Compile Include="Geometry\Common2D\Vertex2D.cs" />
     <Compile Include="Geometry\Common2D\VertexHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2d.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2D.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IBucket.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedEdge.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedTriangle.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedVertex.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\SpatialArray2d.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\SpatialObject2d.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\SpatialArray2D.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\SpatialObject2D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
