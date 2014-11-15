@@ -52,7 +52,6 @@
     <Compile Include="Geometry\Euclid2D\TriangleHelper.cs" />
     <Compile Include="Geometry\Euclid2D\Vector2D.cs" />
     <Compile Include="Geometry\Euclid2D\VectorHelper.cs" />
-    <Compile Include="Geometry\Euclid2D\Vertex2D.cs" />
     <Compile Include="Geometry\Euclid2D\VertexHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2D.cs" />

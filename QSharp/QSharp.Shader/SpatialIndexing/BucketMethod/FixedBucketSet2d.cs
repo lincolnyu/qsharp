@@ -97,8 +97,13 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             col = (int)Math.Floor((x - XMin)/XSize);
             row = (int)Math.Floor((y - YMin)/YSize);
 
-            if (col < 0 || row < 0 || col > XBucketCount || row > YBucketCount)
+            if (col < 0 || row < 0 || col >= XBucketCount || row >= YBucketCount)
             {
+                if (col < 0) col = 0;
+                if (row < 0) row = 0;
+                if (col >= XBucketCount) col = XBucketCount - 1;
+                if (row >= YBucketCount) row = YBucketCount - 1;
+
                 return false;
             }
 
@@ -149,7 +154,5 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         }
 
         #endregion
-
-
     }
 }

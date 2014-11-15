@@ -41,7 +41,7 @@
         /// </summary>
         /// <param name="vertex">the vertex to test</param>
         /// <returns>if the vertex meets the criteria</returns>
-        bool Contains(IMutableVector2D vertex);
+        bool Contains(IVector2D vertex);
 
         /// <summary>
         ///  returns the point opposite the edge
@@ -63,6 +63,6 @@
         ///  edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        IEdge2D GetOpposite(IMutableVector2D vertex);
+        IEdge2D GetOpposite(IVector2D vertex);
     }
 }

@@ -58,16 +58,16 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var v2 = new Vector2D(vA, vP);
 
             // computes the dot products
-            double dot00 = v0 * v0;
-            double dot01 = v0 * v1;
-            double dot02 = v0 * v2;
-            double dot11 = v1 * v1;
-            double dot12 = v1 * v2;
+            var dot00 = v0 * v0;
+            var dot01 = v0 * v1;
+            var dot02 = v0 * v2;
+            var dot11 = v1 * v1;
+            var dot12 = v1 * v2;
 
             // computes barycentric coordinates
-            double recpDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-            double u = (dot11 * dot02 - dot01 * dot12) * recpDenom;
-            double v = (dot00 * dot12 - dot01 * dot02) * recpDenom;
+            var recpDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+            var u = (dot11 * dot02 - dot01 * dot12) * recpDenom;
+            var v = (dot00 * dot12 - dot01 * dot02) * recpDenom;
 
             return (u > 0) && (v > 0) && (u + v < 1);
         }
@@ -84,27 +84,22 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
-        ///  returns the angle from radiant line b-a to b-c. the returned angle is
+        ///  returns the angle from radiant line a-b to a-c ccw. the returned angle is
         ///  in radian between 0 and 2 * PI
         /// </summary>
-        /// <param name="a">outer end of the first radiant line</param>
-        /// <param name="b">common inner end of the two radiant lines</param>
+        /// <param name="a">common inner end of the two radiant lines</param>
+        /// <param name="b">outer end of the first radiant line</param>
         /// <param name="c">outer end of the second radiant line</param>
         /// <returns>the angle formed by swiping from the first radiant line to the second</returns>
-        public static double GetAngle(IVector2D a, IVector2D b, IVector2D c)
+        public static double GetAngle(this IVector2D a, IVector2D b, IVector2D c)
         {
-            double baX = a.X - b.X;
-            double baY = a.Y - b.Y;
-            double bcX = c.X - b.X;
-            double bcY = c.Y - b.Y;
+            var ab = new Vector2D();
+            var ac = new Vector2D();
+            b.Subtract(a, ab);
+            c.Subtract(a, ac);
 
-            double thA = Math.Atan2(baY, baX);
-            double thC = Math.Atan2(bcY, bcX);
-            double thABC = thC - thA;
-            if (thABC < 0)
-                thABC += Math.PI * 2;
-
-            return thABC;
+            var angle = ab.GetAngle(ac);
+            return angle;
         }
 
         /// <summary>

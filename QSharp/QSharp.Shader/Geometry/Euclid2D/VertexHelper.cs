@@ -10,14 +10,26 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <summary>
         ///  returns the distance between two vertices
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
+        /// <param name="v1">The first vertex</param>
+        /// <param name="v2">The second vertex</param>
+        /// <returns>The distance</returns>
         public static double GetDistance(this IVector2D v1, IVector2D v2)
         {
-            double dx = v2.X - v1.X;
-            double dy = v2.Y - v1.Y;
-            return Math.Sqrt(dx * dx + dy * dy);
+            var dd = v1.GetSquareDistance(v2);
+            return Math.Sqrt(dd);
+        }
+
+        /// <summary>
+        ///  Returns the square distance between two vertices
+        /// </summary>
+        /// <param name="v1">The first vertex</param>
+        /// <param name="v2">The second vertex</param>
+        /// <returns>The square distance</returns>
+        public static double GetSquareDistance(this IVector2D v1, IVector2D v2)
+        {
+            var dx = v2.X - v1.X;
+            var dy = v2.Y - v1.Y;
+            return dx*dx + dy*dy;
         }
 
         /// <summary>

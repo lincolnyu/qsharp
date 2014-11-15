@@ -84,7 +84,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="x2">x component of the location of the other end</param>
         /// <param name="y2">y component of the location of the other end</param>
         public EdgeComputer(double x1, double y1, double x2, double y2)
-            : this (new Vertex2D(x1, y1), new Vertex2D(x2, y2)) 
+            : this(new Vector2D(x1, y1), new Vector2D(x2, y2)) 
         {
         }
 
@@ -112,11 +112,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return (AA * y - AB * x - BC) * InvSqLen;
         }
 
-        public Vertex2D GetProjected(IVector2D v)
+        public Vector2D GetProjected(IVector2D v)
         {
             double ex = GetProjectedX(v);
             double ey = GetProjectedY(v);
-            return new Vertex2D(ex, ey);
+            return new Vector2D(ex, ey);
         }
 
         public double GetDistance(IVector2D v)

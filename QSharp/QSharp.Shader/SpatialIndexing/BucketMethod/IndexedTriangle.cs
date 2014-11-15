@@ -168,17 +168,23 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// </summary>
         /// <param name="vertex">the vertex to test</param>
         /// <returns>if the vertex meets the criteria</returns>
-        public bool Contains(IMutableVector2D vertex)
+        public bool Contains(IVector2D vertex)
         {
             var iv = vertex as IndexedVertex;
             if (iv != null)
             {
                 if (iv.CompareTo(_v1) == 0)
+                {
                     return true;
+                }
                 if (iv.CompareTo(_v2) == 0)
+                {
                     return true;
+                }
                 if (iv.CompareTo(_v3) == 0)
+                {
                     return true;
+                }
             }
 
             if (_e23.Contains(vertex, _e23.Length * EpsilonRate)
@@ -254,7 +260,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// edge it represents returned by the triangle
         /// </param>
         /// <returns>the point opposite the edge</returns>
-        public IEdge2D GetOpposite(IMutableVector2D vertex)
+        public IEdge2D GetOpposite(IVector2D vertex)
         {
             var iv = vertex as IndexedVertex ?? new IndexedVertex(vertex.X, vertex.Y);
 
