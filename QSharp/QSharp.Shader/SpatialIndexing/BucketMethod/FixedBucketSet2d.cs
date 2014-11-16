@@ -123,7 +123,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
 
         public bool TryGetBucket(int row, int col, out IBucket bucket)
         {
-             Dictionary<int, IBucket> dict;
+            Dictionary<int, IBucket> dict;
             if (!_buckets.TryGetValue(row, out dict))
             {
                 bucket = null;
@@ -134,6 +134,11 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
                 return false;
             }
             return true;
+        }
+
+        public void AddBucket(int row, int col, IBucket bucket)
+        {
+            _buckets[row][col] = bucket;
         }
 
         /// <summary>

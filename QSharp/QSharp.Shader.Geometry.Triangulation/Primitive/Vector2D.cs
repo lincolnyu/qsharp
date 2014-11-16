@@ -18,6 +18,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             Edges = new HashSet<Edge2D>();
         }
 
+        private Vector2D(double x, double y) : base(x, y)
+        {
+            Edges = new HashSet<Edge2D>();
+        }
+
         #endregion
 
         #region Properties
@@ -26,6 +31,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
         ///  All the incidental edges
         /// </summary>
         public ISet<Edge2D> Edges { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        protected override BaseVector2D Instantiate(double x, double y)
+        {
+            return new Vector2D(x, y);
+        }
 
         #endregion
     }

@@ -43,9 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Bucket.cs" />
+    <Compile Include="Collections\VertexBucket.cs" />
     <Compile Include="Collections\QuadTree.cs" />
-    <Compile Include="Methods\Delauney.cs" />
+    <Compile Include="Methods\Daft.cs" />
+    <Compile Include="Helpers\DelaunayHelper.cs" />
+    <Compile Include="Methods\DaftWave.cs" />
     <Compile Include="Primitive\Edge2D.cs" />
     <Compile Include="Primitive\MeshSurface.cs" />
     <Compile Include="Primitive\Triangle2D.cs" />

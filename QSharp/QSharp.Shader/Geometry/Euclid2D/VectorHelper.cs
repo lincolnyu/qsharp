@@ -92,7 +92,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// </summary>
         /// <param name="v">The vector to get the right normal of</param>
         /// <param name="normal">The normal vector</param>
-        public static void GetRightNorm(this IVector2D v, IMutableVector2D normal)
+        public static void GetRightNormal(this IVector2D v, IMutableVector2D normal)
         {
             normal.X = v.Y;
             normal.Y = -v.X;

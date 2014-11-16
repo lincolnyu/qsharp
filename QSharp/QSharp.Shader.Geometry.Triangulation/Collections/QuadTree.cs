@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using QSharp.Shader.Geometry.Euclid2D;
 using QSharp.Shader.SpatialIndexing.BucketMethod;
-using Vector2D = QSharp.Shader.Geometry.Euclid2D.Vector2D;
+using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
 namespace QSharp.Shader.Geometry.Triangulation.Collections
 {
@@ -37,7 +37,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
                 {
                     IBucket bucket;
                     TryGetBucket(row, col, out bucket);
-                    var vbucket = (Bucket) bucket;
+                    var vbucket = (VertexBucket) bucket;
                     foreach (var v in vbucket)
                     {
                         var dd = v.GetSquareDistance(circle);

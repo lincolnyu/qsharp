@@ -25,7 +25,6 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             }
         }
 
-
         public IVector2D Vertex2
         {
             get

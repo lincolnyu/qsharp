@@ -54,19 +54,24 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return this.InnerProduct(other);
         }
 
+        public double OuterProductWith(Vector2D other)
+        {
+            return this.OuterProduct(other);
+        }
+
         public Vector2D Add(Vector2D other)
         {
-            return new Vector2D(X + other.X, Y + other.Y);
+            return Instantiate(X + other.X, Y + other.Y);
         }
 
         public Vector2D Subtract(Vector2D other)
         {
-            return new Vector2D(X - other.X, Y - other.Y);
+            return Instantiate(X - other.X, Y - other.Y);
         }
 
         public Vector2D Multiply(double scale)
         {
-            return new Vector2D(X * scale, Y * scale);
+            return Instantiate(X * scale, Y * scale);
         }
 
         public static double operator *(Vector2D vA, Vector2D vB)
@@ -87,6 +92,16 @@ namespace QSharp.Shader.Geometry.Euclid2D
         public static Vector2D operator *(Vector2D v, double scale)
         {
             return v.Multiply(scale);
+        }
+
+        public static Vector2D operator /(Vector2D v, double div)
+        {
+            return v.Multiply(1/div);
+        }
+
+        protected virtual Vector2D Instantiate(double x, double y)
+        {
+            return new Vector2D(x, y);
         }
 
         #endregion

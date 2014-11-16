@@ -5,9 +5,9 @@ using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharp.Shader.Geometry.Euclid2D;
 using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
-namespace QSharp.Shader.Geometry.Triangulation.Methods
+namespace QSharp.Shader.Geometry.Triangulation.Helpers
 {
-    public static class Delauney
+    public static class DelaunayHelper
     {
         #region Methods
 
@@ -257,6 +257,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 triangles.Add(t1);
                 triangles.Add(t2);
             }
+        }
+
+        public static double GetMinAngle(IVector2D v1, IVector2D v2, IVector2D v3)
+        {
+            var a1 = v1.GetAngle(v2, v3);
+            if (a1 > Math.PI) a1 = Math.PI*2 - a1;
+            var a2 = v2.GetAngle(v1, v3);
+            if (a2 > Math.PI) a2 = Math.PI*2 - a2;
+            var a3 = Math.PI - a1 - a2;
+
+            return Math.Min(a1, Math.Min(a2, a3));
         }
 
         #endregion
