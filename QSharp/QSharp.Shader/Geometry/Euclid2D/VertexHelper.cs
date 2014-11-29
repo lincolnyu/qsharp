@@ -119,5 +119,32 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var intExists = e1.Contains(intersection, epsilon) && e2.Contains(intersection, epsilon);
             return intExists;
         }
+
+        public static bool EdgesIntersect(IVector2D e1V1, IVector2D e1V2, IVector2D e2V1, IVector2D e2V2,
+            IMutableVector2D intersect)
+        {
+            var a1 = e1V1.X - e1V1.X;
+            var b1 = e2V2.X - e2V1.X;
+            var c1 = e1V1.X - e2V2.X;
+            var a2 = e1V1.Y - e1V1.Y;
+            var b2 = e2V2.Y - e2V1.Y;
+            var c2 = e1V1.Y - e2V2.Y;
+            if (Math.Abs(a1*b2 - a2*b1) < double.Epsilon)
+            {
+                return false; // parallel or colinear
+            }
+
+            var labmda1 = (c2*b1 - c1*b2)/(a1*b2 - a2*b1);
+            var labmda2 = (c2*a1 - c1*a2)/(b1*a2 - b2*a1);
+
+            if (labmda1 < 0 || labmda1 > 1) return false;
+            if (labmda2 < 0 || labmda2 > 1) return false;
+
+            var x = e1V1.X*labmda1 + e1V2.X*(1 - labmda1);
+            var y = e1V1.Y*labmda1 + e1V2.Y*(1 - labmda1);
+            intersect.X = x;
+            intersect.Y = y;
+            return true;
+        }
     }
 }

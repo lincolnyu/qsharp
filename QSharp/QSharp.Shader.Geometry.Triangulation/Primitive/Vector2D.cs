@@ -41,6 +41,36 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             return new Vector2D(x, y);
         }
 
+        public Edge2D TestConnection(Vector2D other)
+        {
+            var c1 =Edges.Count;
+            var c2 = other.Edges.Count;
+            Vector2D v1, v2;
+            if (c1 < c2)
+            {
+                v1 = this;
+                v2 = other;
+            }
+            else
+            {
+                v1 = other;
+                v2 = this;
+            }
+            foreach (var e in v1.Edges)
+            {
+                if (e.V1 == v2 || e.V2 == v2)
+                {
+                    return e;
+                }
+            }
+            return null;
+        }
+
+        public static Vector2D operator -(Vector2D v)
+        {
+            return (Vector2D)v.Negate();
+        }
+
         #endregion
     }
 }

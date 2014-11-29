@@ -138,15 +138,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             var v2 = c - a;
             if (v1.OuterProduct(v2) < 0)
             {
-                SpecifyTriangle(a, c, b, ca, bc, ab);
+                Setup(a, c, b, ca, bc, ab);
             }
             else
             {
-                SpecifyTriangle(a, b, c, ab, bc, ca);
+                Setup(a, b, c, ab, bc, ca);
             }
         }
 
-        public void SpecifyTriangle(Vector2D a, Vector2D b, Vector2D c, Edge2D ab, Edge2D bc, Edge2D ca)
+        public void Setup(Vector2D a, Vector2D b, Vector2D c, Edge2D ab, Edge2D bc, Edge2D ca)
         {
             A = a;
             B = b;

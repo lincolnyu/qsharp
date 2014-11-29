@@ -9,9 +9,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
 {
     public static class DelaunayHelper
     {
+        #region Delegates
+
+        public delegate void NotifyEdgeFlip(Edge2D newEdge, Edge2D oldEdge);
+
+        #endregion
+
         #region Methods
 
-        public static void Validate(Triangle2D triangle, Edge2D except = null)
+        public static void Validate(Triangle2D triangle, Edge2D except = null, NotifyEdgeFlip notifyEdgeFlip = null)
         {
             Triangle2D triangle1, triangle2;
             Edge2D edge;
@@ -23,7 +29,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 if (oab.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
-                    FlipEdge(triangle, ab, out triangle1, out triangle2, out edge);
+                    FlipEdge(triangle, ab, out triangle1, out triangle2, out edge, notifyEdgeFlip);
                     Validate(triangle1, edge);
                     Validate(triangle2, edge);
                 }
@@ -35,7 +41,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 if (obc.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
-                    FlipEdge(triangle, bc, out triangle1, out triangle2, out edge);
+                    FlipEdge(triangle, bc, out triangle1, out triangle2, out edge, notifyEdgeFlip);
                     Validate(triangle1, edge);
                     Validate(triangle2, edge);
                 }
@@ -47,7 +53,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 if (oca.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
-                    FlipEdge(triangle, ca, out triangle1, out triangle2, out edge);
+                    FlipEdge(triangle, ca, out triangle1, out triangle2, out edge, notifyEdgeFlip);
                     Validate(triangle1, edge);
                     Validate(triangle2, edge);
                 }
@@ -55,7 +61,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         }
 
         private static void FlipEdge(Triangle2D triangle, Edge2D edgeToFlip, out Triangle2D triangle1,
-            out Triangle2D triangle2, out Edge2D flippedEdge)
+            out Triangle2D triangle2, out Edge2D flippedEdge, NotifyEdgeFlip notifyEdgeFlip = null)
         {
             Triangle2D opposite;
             if (edgeToFlip.Surface1 == triangle)
@@ -89,8 +95,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             triangle1 = new Triangle2D();
             triangle2 = new Triangle2D();
 
-            triangle1.SpecifyTriangle(m, p, n, mp, pn, flippedEdge);
-            triangle2.SpecifyTriangle(n, q, m, nq, qm, flippedEdge);
+            triangle1.Setup(m, p, n, mp, pn, flippedEdge);
+            triangle2.Setup(n, q, m, nq, qm, flippedEdge);
+
+            if (notifyEdgeFlip != null)
+            {
+                notifyEdgeFlip(flippedEdge, edgeToFlip);
+            }
         }
 
 

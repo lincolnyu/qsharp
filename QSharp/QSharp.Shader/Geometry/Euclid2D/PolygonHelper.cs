@@ -10,8 +10,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
         #region Methods
 
         /// <summary>
-        ///  Returns a value of double type whose magnitude is the area of the polygon and sign 
-        //   indicates if the vertices are in clockwise order
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign
+        //   indicateing if the vertices are in clockwise order
         /// </summary>
         /// <param name="polygon">An ordered collection of vertices of a polygon</param>
         /// <returns>
@@ -39,8 +39,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
 
 
         /// <summary>
-        ///  Returns a value of double type whose magnitude is the area of the polygon and sign 
-        //   indicates if the vertices are in clockwise order
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
+        //   indicating if the vertices are in clockwise order
         /// </summary>
         /// <param name="polygon">Enumerates through all vertices of the polygon without the first vertex repeated at the end</param>
         /// <returns>
@@ -72,8 +72,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
-        ///  Returns a value of double type whose magnitude is the area of the polygon and sign 
-        //   indicates if the vertices are in clockwise order
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
+        //   indicateing if the vertices are in clockwise order
         /// </summary>
         /// <param name="polygon">Enumerates through all vertices of the polygon with the first vertex repeated at the end</param>
         /// <returns>

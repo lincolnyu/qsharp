@@ -74,6 +74,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return Instantiate(X * scale, Y * scale);
         }
 
+        public Vector2D Negate()
+        {
+            return Instantiate(-X, -Y);
+        }
+
         public static double operator *(Vector2D vA, Vector2D vB)
         {
             return vA.InnerProductWith(vB);
@@ -87,6 +92,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
         public static Vector2D operator -(Vector2D vA, Vector2D vB)
         {
             return vA.Subtract(vB);
+        }
+
+        public static Vector2D operator -(Vector2D v)
+        {
+            return v.Negate();
         }
 
         public static Vector2D operator *(Vector2D v, double scale)
