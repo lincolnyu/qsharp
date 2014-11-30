@@ -7,11 +7,6 @@ namespace QSharpTestG
 {
     public partial class QSharp3DGraphicsForm : Form
     {
-        #region Enumerations
-
-
-        #endregion
-
         #region Fields
 
         /// <summary>
@@ -22,7 +17,7 @@ namespace QSharpTestG
         /// <summary>
         ///  3d manager that simplifies 3d rendering setting up
         /// </summary>
-        Q3DManager _q3d = null;
+        Q3DManager _q3D;
 
         private bool _doWireframe;
         private bool _doRayTracing;
@@ -33,16 +28,16 @@ namespace QSharpTestG
 
         private Vector4f _initX, _initY, _initZ;
 
-        Q3DManager Q3d
+        Q3DManager Q3D
         {
             get
             {
-                if (_q3d == null)
+                if (_q3D == null)
                 {
-                    _q3d = new Q3DManager();
+                    _q3D = new Q3DManager();
                     SetupCamera();
                 }
-                return _q3d;
+                return _q3D;
             }
         }
 
@@ -68,9 +63,9 @@ namespace QSharpTestG
         {
             if (_initX != null)
             {
-                Q3d.CameraAxisX = _initX;
-                Q3d.CameraAxisY = _initY;
-                Q3d.CameraAxisZ = _initZ;
+                Q3D.CameraAxisX = _initX;
+                Q3D.CameraAxisY = _initY;
+                Q3D.CameraAxisZ = _initZ;
             }
         }
 
@@ -83,13 +78,13 @@ namespace QSharpTestG
             const float width = 12;
             float height = width * imageHeight / imageWidth;
 
-            Q3d.SetImage(new BitmapImage(_bitmap), width, height, 5, 20, 5);
-            Q3d.SetCameraAttitude(2, -10, 0, 0, 1, 0, 0);
-            _initX = new Vector4f(Q3d.CameraAxisX);
-            _initY = new Vector4f(Q3d.CameraAxisY);
-            _initZ = new Vector4f(Q3d.CameraAxisZ);
+            Q3D.SetImage(new BitmapImage(_bitmap), width, height, 5, 20, 5);
+            Q3D.SetCameraAttitude(2, -10, 0, 0, 1, 0, 0);
+            _initX = new Vector4f(Q3D.CameraAxisX);
+            _initY = new Vector4f(Q3D.CameraAxisY);
+            _initZ = new Vector4f(Q3D.CameraAxisZ);
 
-            Q3d.SetProjectionMode(Q3DManager.ProjectionMode.Perspective);
+            Q3D.SetProjectionMode(Q3DManager.ProjectionMode.Perspective);
         }
 
         private void ClearScreen()
@@ -99,7 +94,7 @@ namespace QSharpTestG
 
         private void ClearScreen(Color color)
         {
-            using (Graphics g = Graphics.FromImage(_bitmap))
+            using (var g = Graphics.FromImage(_bitmap))
             {
                 g.Clear(color);
             }
@@ -110,12 +105,12 @@ namespace QSharpTestG
             ClearScreen();
             if (_doRayTracing)
             {
-                Q3d.Render();
+                Q3D.Render();
             }
 
             if (_doWireframe)
             {
-                Q3d.DrawWireframe(Color.FromArgb(0xff,0x20,0x20,0x20));
+                Q3D.DrawWireframe(Color.FromArgb(0xff,0x20,0x20,0x20));
             }
            
             pbxMain.Invalidate();
@@ -139,7 +134,7 @@ namespace QSharpTestG
             _bitmap = new Bitmap(pbxMain.Width, pbxMain.Height);
             pbxMain.Image = _bitmap;
 
-            using (Graphics g = Graphics.FromImage(pbxMain.Image))
+            using (var g = Graphics.FromImage(pbxMain.Image))
             {
                 g.FillRectangle(new SolidBrush(Color.Black),
                     0, 0, pbxMain.Image.Width, pbxMain.Image.Height);
@@ -198,7 +193,7 @@ namespace QSharpTestG
         /// <param name="e"></param>
         private void loadDemoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Q3d.LoadDemo();
+            Q3D.LoadDemo();
         }
 
         private void pbxMain_Resize(object sender, EventArgs e)
@@ -222,57 +217,57 @@ namespace QSharpTestG
         {
             if (e.Control)
             {   // to rotate
-                var vx = Q3d.CameraAxisX;
-                var vy = Q3d.CameraAxisY;
+                var vx = Q3D.CameraAxisX;
+                var vy = Q3D.CameraAxisY;
                 switch (e.KeyCode)
                 {
                     case Keys.Up:
-                        Q3d.RotateCamera(vx.X, vx.Y, vx.Z, 0.05f);
+                        Q3D.RotateCamera(vx.X, vx.Y, vx.Z, 0.05f);
                         break;
                     case Keys.Down:
-                        Q3d.RotateCamera(vx.X, vx.Y, vx.Z, -0.05f);
+                        Q3D.RotateCamera(vx.X, vx.Y, vx.Z, -0.05f);
                         break;
                     case Keys.Left:
-                        Q3d.RotateCamera(vy.X, vy.Y, vy.Z, -0.05f);
+                        Q3D.RotateCamera(vy.X, vy.Y, vy.Z, -0.05f);
                         break;
                     case Keys.Right:
-                        Q3d.RotateCamera(vy.X, vy.Y, vy.Z, 0.05f);
+                        Q3D.RotateCamera(vy.X, vy.Y, vy.Z, 0.05f);
                         break;
                 }
             }
             else
             {   // to slide
                 const float amountOfSlide = 0.3f;
-                var vz = Q3d.CameraAxisZ;
+                var vz = Q3D.CameraAxisZ;
 
                 switch (e.KeyCode)
                 {
                     case Keys.Left:
                         if (e.Shift)
                         {
-                            Q3d.RotateCamera(vz.X, vz.Y, vz.Z, -0.05f);
+                            Q3D.RotateCamera(vz.X, vz.Y, vz.Z, -0.05f);
                         }
                         else
                         {
-                            Q3d.MoveCamera(Q3DManager.MoveDiriction.Leftward, amountOfSlide);
+                            Q3D.MoveCamera(Q3DManager.MoveDiriction.Leftward, amountOfSlide);
                         }
                         break;
                     case Keys.Right:
                         if (e.Shift)
                         {
-                            Q3d.RotateCamera(vz.X, vz.Y, vz.Z, 0.05f);
+                            Q3D.RotateCamera(vz.X, vz.Y, vz.Z, 0.05f);
                         }
                         else
                         {
-                            Q3d.MoveCamera(Q3DManager.MoveDiriction.Rightward, amountOfSlide);
+                            Q3D.MoveCamera(Q3DManager.MoveDiriction.Rightward, amountOfSlide);
                         }
                         break;
                     case Keys.Up:
-                        Q3d.MoveCamera(e.Shift ? Q3DManager.MoveDiriction.Upward : Q3DManager.MoveDiriction.Forward,
+                        Q3D.MoveCamera(e.Shift ? Q3DManager.MoveDiriction.Upward : Q3DManager.MoveDiriction.Forward,
                                         amountOfSlide);
                         break;
                     case Keys.Down:
-                        Q3d.MoveCamera(
+                        Q3D.MoveCamera(
                             e.Shift ? Q3DManager.MoveDiriction.Downward : Q3DManager.MoveDiriction.Backward,
                             amountOfSlide);
                         break;
@@ -287,7 +282,7 @@ namespace QSharpTestG
 
         private void orthographicToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Q3d.SetProjectionMode(orthographicToolStripMenuItem.Checked
+            Q3D.SetProjectionMode(orthographicToolStripMenuItem.Checked
                                        ? Q3DManager.ProjectionMode.Orthographic
                                        : Q3DManager.ProjectionMode.Perspective);
 

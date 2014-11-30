@@ -76,6 +76,12 @@
     <Compile Include="QSharp3DGraphicsForm.Designer.cs">
       <DependentUpon>QSharp3DGraphicsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="QSharpMeshingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QSharpMeshingForm.Designer.cs">
+      <DependentUpon>QSharpMeshingForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -95,6 +101,9 @@
     <EmbeddedResource Include="QSharp3DGraphicsForm.resx">
       <DependentUpon>QSharp3DGraphicsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="QSharpMeshingForm.resx">
+      <DependentUpon>QSharpMeshingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -113,9 +122,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj">
+      <Project>{55BCF997-5267-41AE-AC02-FE193FE9401F}</Project>
+      <Name>QSharp.Shader.Geometry.Triangulation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj">
       <Project>{078fac3d-6372-4045-bea5-9d6388446f87}</Project>
       <Name>QSharp.Shader.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj">
+      <Project>{57A8521F-B6AD-4A99-97C5-606D93202AEA}</Project>
+      <Name>QSharp.Shader</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

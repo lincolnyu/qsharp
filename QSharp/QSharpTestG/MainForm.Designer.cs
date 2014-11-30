@@ -30,6 +30,7 @@
         {
             this.BtnQSharp2DGraphics = new System.Windows.Forms.Button();
             this.BtnQSharp3DGraphics = new System.Windows.Forms.Button();
+            this.BtnQSharpMeshing = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnQSharp2DGraphics
@@ -52,11 +53,22 @@
             this.BtnQSharp3DGraphics.UseVisualStyleBackColor = true;
             this.BtnQSharp3DGraphics.Click += new System.EventHandler(this.BtnQSharp3DGraphics_Click);
             // 
+            // BtnQSharpMeshing
+            // 
+            this.BtnQSharpMeshing.Location = new System.Drawing.Point(12, 88);
+            this.BtnQSharpMeshing.Name = "BtnQSharpMeshing";
+            this.BtnQSharpMeshing.Size = new System.Drawing.Size(159, 32);
+            this.BtnQSharpMeshing.TabIndex = 2;
+            this.BtnQSharpMeshing.Text = "QSharp Meshing";
+            this.BtnQSharpMeshing.UseVisualStyleBackColor = true;
+            this.BtnQSharpMeshing.Click += new System.EventHandler(this.BtnQSharpMeshing_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(183, 97);
+            this.ClientSize = new System.Drawing.Size(183, 130);
+            this.Controls.Add(this.BtnQSharpMeshing);
             this.Controls.Add(this.BtnQSharp3DGraphics);
             this.Controls.Add(this.BtnQSharp2DGraphics);
             this.MaximizeBox = false;
@@ -71,6 +83,7 @@
 
         private System.Windows.Forms.Button BtnQSharp2DGraphics;
         private System.Windows.Forms.Button BtnQSharp3DGraphics;
+        private System.Windows.Forms.Button BtnQSharpMeshing;
     }
 }
 
