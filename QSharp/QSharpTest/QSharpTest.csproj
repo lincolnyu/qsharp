@@ -85,6 +85,7 @@
     <Compile Include="Scheme.Classical.Sequential\MaxSublistMatchTest.cs" />
     <Compile Include="Scheme.Classical.Trees\AvlTreeTest.cs" />
     <Compile Include="Scheme.Classical.Trees\RbTreeTest.cs" />
+    <Compile Include="Shader.Geometry.Triangulation\DelaunayTest.cs" />
     <Compile Include="String.Arithmetic\FractionTest.cs" />
     <Compile Include="String.Compiler\MathExpressionTest.cs" />
     <Compile Include="String.Compiler\StringCompilerConsoleTest.cs" />

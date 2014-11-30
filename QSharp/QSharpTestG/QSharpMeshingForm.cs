@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using QSharp.Shader.Geometry.Triangulation.Primitive;
+using QSharpTest.Shader.Geometry.Triangulation;
 
 namespace QSharpTestG
 {
@@ -194,6 +195,19 @@ namespace QSharpTestG
             definePolylinesToolStripMenuItem.Checked = false;
             definePolygonsToolStripMenuItem.Checked = false;
             UpdateState();
+        }
+
+        private void randomVerticesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _points.Clear();
+            var vertices = DelaunayTest.GenerateRandomVertices(0, 0, MeshingPictureBox.Width, MeshingPictureBox.Height, 2, 200);
+            _points.AddRange(vertices);
+            InvalidateView();
+        }
+
+        private void triangulateVerticesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         #endregion

@@ -134,6 +134,10 @@
       <Project>{57A8521F-B6AD-4A99-97C5-606D93202AEA}</Project>
       <Name>QSharp.Shader</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QSharpTest\QSharpTest.csproj">
+      <Project>{9d366b80-049d-4734-ba87-78fba06b4876}</Project>
+      <Name>QSharpTest</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

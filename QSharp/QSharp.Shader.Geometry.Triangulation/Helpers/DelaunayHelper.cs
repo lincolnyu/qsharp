@@ -7,16 +7,31 @@ using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
 namespace QSharp.Shader.Geometry.Triangulation.Helpers
 {
+    /// <summary>
+    ///  Provides helper methods for delaunay triangulation
+    /// </summary>
     public static class DelaunayHelper
     {
         #region Delegates
 
+        /// <summary>
+        ///  The delegate that notifies of an edge flip
+        /// </summary>
+        /// <param name="newEdge">The new edge resulting from flipping the old</param>
+        /// <param name="oldEdge">The old edge</param>
         public delegate void NotifyEdgeFlip(Edge2D newEdge, Edge2D oldEdge);
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///  Validates the triangle by checking if the opposite vertex of each of its neightbouring triangles
+        ///  is within its circumcicle.
+        /// </summary>
+        /// <param name="triangle">The triangle to check</param>
+        /// <param name="except">The edge of the triangle to exclude from the checking (null if all edges need to be checked)</param>
+        /// <param name="notifyEdgeFlip">The delegate that notifies of an edge flip</param>
         public static void Validate(Triangle2D triangle, Edge2D except = null, NotifyEdgeFlip notifyEdgeFlip = null)
         {
             Triangle2D triangle1, triangle2;
@@ -60,6 +75,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
         }
 
+        /// <summary>
+        ///  Flips the edge of two neightbouring triangles that violate delaunay triangulation criteria
+        /// </summary>
+        /// <param name="triangle">The triangle that contains the edge</param>
+        /// <param name="edgeToFlip">The edge to flip</param>
+        /// <param name="triangle1">The first resultant triangle</param>
+        /// <param name="triangle2">The secoknd resultant triangle</param>
+        /// <param name="flippedEdge">The new edge</param>
+        /// <param name="notifyEdgeFlip">The delegates that notifies of an edge flip</param>
         private static void FlipEdge(Triangle2D triangle, Edge2D edgeToFlip, out Triangle2D triangle1,
             out Triangle2D triangle2, out Edge2D flippedEdge, NotifyEdgeFlip notifyEdgeFlip = null)
         {
@@ -124,6 +148,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             CreateTriangles(v, vlist, elist);
         }
 
+        /// <summary>
+        ///  Removes edges and related triangles
+        /// </summary>
+        /// <param name="edgesToDelete">The edges to remove</param>
         private static void DestroyTriangles(IEnumerable<Edge2D> edgesToDelete)
         {
             foreach (var edge in edgesToDelete)
@@ -132,6 +160,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
         }
 
+        /// <summary>
+        ///  Creates trianges formed by connecting <paramref name="v"/> to <paramref name="vlist"/> surrounded by <paramref name="elist"/>
+        /// </summary>
+        /// <param name="v">The vertex within the polygon to serve as the common vertex of all the triangles</param>
+        /// <param name="vlist">The vertex list that provide vertices</param>
+        /// <param name="elist">The list of edges formed by connecting the vertices in <paramref name="vlist"/>in order</param>
         private static void CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, IReadOnlyList<Edge2D> elist)
         {
             Edge2D eNew = null;
@@ -153,10 +187,16 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 eNew = new Edge2D();
                 eNew.Connect(v2, v);
                 var tri = new Triangle2D();
-                tri.SpecifyTriangleU(v1, v2, v, e12, eNew, eOld);
+                tri.SetupU(v1, v2, v, e12, eNew, eOld);
             }
         }
 
+        /// <summary>
+        ///  Sorts the specified edge set into ordered vertex list and corresponding edge list
+        /// </summary>
+        /// <param name="eset">The edge set to sort out</param>
+        /// <param name="vlist">The vertex list, first edge of <paramref name="elist"/>starts from the first vertex in the list</param>
+        /// <param name="elist">The edge list first vertex of first of which is the first vertex of <paramref name="vlist"/></param>
         private static void SortEdges(HashSet<Edge2D> eset,  out List<Vector2D> vlist, out List<Edge2D> elist)
         {
             elist = new List<Edge2D>();
@@ -190,6 +230,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             } while (vcurr != vfirst);
         }
 
+        /// <summary>
+        ///  Returns the edges that are affected by local retriangulation due to the additoin of 
+        ///  v inside the specified triangle
+        /// </summary>
+        /// <param name="triangle">The triangle that the new vertex is added within</param>
+        /// <param name="v">The new vertex</param>
+        /// <param name="boundingEdges">The bounding edges of the retriangulation region</param>
+        /// <param name="edgesToDelete">The edges that are within the retriangulation region anb are to be deleted</param>
         private static void GetAffectedEdges(Triangle2D triangle, Vector2D v, 
             out HashSet<Edge2D> boundingEdges, out HashSet<Edge2D> edgesToDelete)
         {
@@ -237,7 +285,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
 
                     foreach (var tri in trianglesToAdd)
                     {
-                        if (!testedTriangles.Contains(t))
+                        if (!testedTriangles.Contains(tri))
                         {
                             tq.Enqueue(tri);
                         }
@@ -259,7 +307,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
         }
 
-        public static void AddNeightbouringTriangles(this Vector2D v, ICollection<Triangle2D> triangles)
+        /// <summary>
+        ///  Adds all the triangles that contain the specified vertex to the triangle set
+        /// </summary>
+        /// <param name="v">The vertex to return the triangles around</param>
+        /// <param name="triangles">The triangles</param>
+        public static void AddNeightbouringTriangles(this Vector2D v, ISet<Triangle2D> triangles)
         {
             foreach (var edge in v.Edges)
             {
@@ -270,6 +323,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
         }
 
+        /// <summary>
+        ///  Returns the minimum angle of the triangle determined by the specified vertices
+        /// </summary>
+        /// <param name="v1">The first vertex</param>
+        /// <param name="v2">The second vertex</param>
+        /// <param name="v3">The third vertex</param>
+        /// <returns>The minimum triangle</returns>
         public static double GetMinAngle(IVector2D v1, IVector2D v2, IVector2D v3)
         {
             var a1 = v1.GetAngle(v2, v3);

@@ -132,7 +132,16 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
 
         #endregion
 
-        public void SpecifyTriangleU(Vector2D a, Vector2D b, Vector2D c, Edge2D ab, Edge2D bc, Edge2D ca)
+        /// <summary>
+        ///  Sets up a triangle with the specified vertices whose ordering is unknown
+        /// </summary>
+        /// <param name="a">The first vertex</param>
+        /// <param name="b">The second vertex</param>
+        /// <param name="c">The third vertex</param>
+        /// <param name="ab">The edge that connect the first vertex and the second vertex</param>
+        /// <param name="bc">The edge that connect the second vertex and the third vertex</param>
+        /// <param name="ca">The edge that connect the third vertex and the first vertex</param>
+        public void SetupU(Vector2D a, Vector2D b, Vector2D c, Edge2D ab, Edge2D bc, Edge2D ca)
         {
             var v1 = b - a;
             var v2 = c - a;
@@ -146,6 +155,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             }
         }
 
+        /// <summary>
+        ///  Sets up a triangle with the specified vertices and edges in counter clockwise order
+        /// </summary>
+        /// <param name="a">The first vertex</param>
+        /// <param name="b">The second vertex</param>
+        /// <param name="c">The third vertex</param>
+        /// <param name="ab">The edge that connect the first vertex and the second vertex</param>
+        /// <param name="bc">The edge that connect the second vertex and the third vertex</param>
+        /// <param name="ca">The edge that connect the third vertex and the first vertex</param>
         public void Setup(Vector2D a, Vector2D b, Vector2D c, Edge2D ab, Edge2D bc, Edge2D ca)
         {
             A = a;
