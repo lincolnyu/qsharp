@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharpTest", "QSharpTest\QSharpTest.csproj", "{9D366B80-049D-4734-BA87-78FBA06B4876}"
 EndProject
@@ -50,6 +50,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Arithmetic", "QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj", "{97003447-C035-4D24-BB27-B731635CE146}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Mathematics", "QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj", "{F9E4A9B9-9712-40CF-860E-BDF96009F861}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation-NP", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation-NP.csproj", "{25F9933C-1B0B-4DF8-85CC-BE00164F52A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +155,10 @@ Global
 		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9E4A9B9-9712-40CF-860E-BDF96009F861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25F9933C-1B0B-4DF8-85CC-BE00164F52A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25F9933C-1B0B-4DF8-85CC-BE00164F52A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25F9933C-1B0B-4DF8-85CC-BE00164F52A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25F9933C-1B0B-4DF8-85CC-BE00164F52A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
