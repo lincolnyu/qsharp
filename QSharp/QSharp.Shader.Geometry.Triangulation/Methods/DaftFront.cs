@@ -195,7 +195,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var vc = GetSecondVertex(targetEdge1Index);
             var v1 = GetFirstVertex(edgeIndex);
             var v2 = GetSecondVertex(edgeIndex);
-            var rel = EdgeRelationToVertex(v1, v2, vc);
+            var rel = vc.VertexRelativeToEdge(v1, v2);
 
             var vertices = GetVertices(edgeIndex, targetEdge1Index);
             var area = vertices.GetSignedPolygonArea();
@@ -247,7 +247,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var vc = GetSecondVertex(targetEdge1Index);
             var v1 = GetFirstVertex(edgeIndex);
             var v2 = GetSecondVertex(edgeIndex);
-            var rel = EdgeRelationToVertex(v1, v2, vc);
+            var rel = vc.VertexRelativeToEdge(v1, v2);
 
             bridge1 = new Edge2D();
             bridge1.Connect(v1, vc);
@@ -282,29 +282,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <summary>
         ///  Returns if vertex is on the left of the edge or right or on the same line
         /// </summary>
-        /// <param name="edgeIndex">The index of the edge in the front</param>
         /// <param name="v">The edge to return the relation of with the edge</param>
+        /// <param name="edgeIndex">The index of the edge in the front</param>
         /// <returns>-1 right, 1 left 0 on the same line</returns>
-        public int EdgeRelationToVertex(int edgeIndex, Vector2D v)
+        public int VertexRelativeToEdge(Vector2D v, int edgeIndex)
         {
             var v1 = GetFirstVertex(edgeIndex);
             var v2 = GetSecondVertex(edgeIndex);
-            return EdgeRelationToVertex(v1, v2, v);
-        }
-
-        /// <summary>
-        ///  Returns if vertex is on the left of the edge or right or on the same line
-        /// </summary>
-        /// <param name="v1">The first vertex of the edge</param>
-        /// <param name="v2">The second vertex of the edge</param>
-        /// <param name="v">The vertex to return the relation of with the edge</param>
-        /// <returns></returns>
-        public int EdgeRelationToVertex(Vector2D v1, Vector2D v2, Vector2D v)
-        {
-            var ve = v2 - v1;
-            var vv = v - v1;
-            var op = ve.OuterProduct(vv);
-            return op.CompareTo(0); // -1 : right; 1 : left; 0 : same line
+            return v.VertexRelativeToEdge(v1, v2);
         }
 
         private void RemoveRange(int startEdgeIndex, int endEdgeIndexPlus1)

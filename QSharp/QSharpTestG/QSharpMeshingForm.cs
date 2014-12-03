@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using QSharp.Shader.Geometry.Triangulation.Primitive;
+using QSharp.Shader.Geometry.Euclid2D;
 using QSharpTest.Shader.Geometry.Triangulation;
+using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
 namespace QSharpTestG
 {
@@ -18,7 +20,8 @@ namespace QSharpTestG
             Normal,
             DefiningPolygons,
             DefiningPolylines,
-            DefiningPoints
+            DefiningPoints,
+            Deleting,
         }
 
         #endregion
@@ -48,6 +51,11 @@ namespace QSharpTestG
         private bool _isDrawing;
 
         private readonly List<Vector2D> _drawnPoly = new List<Vector2D>();
+
+        private Pen _shinyLinePen;
+
+        private Vector2D _shineV1;
+        private Vector2D _shineV2;
 
         #endregion
 
@@ -91,7 +99,6 @@ namespace QSharpTestG
         {
             Close();
         }
-
 
         private void MeshingPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
@@ -139,6 +146,9 @@ namespace QSharpTestG
                 case Modes.DefiningPoints:
                     _points.Add(new Vector2D { X = e.X, Y = e.Y });
                     break;
+                case Modes.Deleting:
+                    DeleteAt(e.X, e.Y);
+                    break;
             }
             InvalidateView();
         }
@@ -180,6 +190,7 @@ namespace QSharpTestG
         {
             definePolygonsToolStripMenuItem.Checked = false;
             definePointsToolStripMenuItem.Checked = false;
+            deleteToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -187,6 +198,7 @@ namespace QSharpTestG
         {
             definePolylinesToolStripMenuItem.Checked = false;
             definePointsToolStripMenuItem.Checked = false;
+            deleteToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -194,6 +206,15 @@ namespace QSharpTestG
         {
             definePolylinesToolStripMenuItem.Checked = false;
             definePolygonsToolStripMenuItem.Checked = false;
+            deleteToolStripMenuItem.Checked = false;
+            UpdateState();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            definePolygonsToolStripMenuItem.Checked = false;
+            definePolylinesToolStripMenuItem.Checked = false;
+            definePointsToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -210,13 +231,52 @@ namespace QSharpTestG
 
         }
 
+        private void shineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var polygon = _polygons.FirstOrDefault();
+            var point = _points.FirstOrDefault();
+            if (polygon == null || point == null)
+            {
+                return;
+            }
+
+            int start, end;
+            polygon.GetConvexHullEnds(point, out start, out end);
+
+            _shineV1 = polygon[start];
+            _shineV2 = polygon[end];
+
+            InvalidateView();
+        }
+
         #endregion
+
+
+        private void DeleteAt(int x, int y)
+        {
+            var v = new Vector2D {X = x, Y = y};
+            var idel = new List<int>();
+            for (var index = 0; index < _polygons.Count; index++)
+            {
+                var polygon = _polygons[index];
+                if (polygon.VertexIsInside(v))
+                {
+                    idel.Add(index);
+                }
+            }
+            foreach (var i in ((IEnumerable<int>)idel).Reverse())
+            {
+                _polygons.RemoveAt(i);
+            }
+            InvalidateView();
+        }
 
         private void InitializeMode()
         {
             definePolylinesToolStripMenuItem.CheckOnClick = true;
             definePolygonsToolStripMenuItem.CheckOnClick = true;
             definePointsToolStripMenuItem.CheckOnClick = true;
+            deleteToolStripMenuItem.CheckOnClick = true;
         }
 
         private void InitializeGraphics()
@@ -226,6 +286,7 @@ namespace QSharpTestG
             _pointBrush = new SolidBrush(Color.Red);
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
+            _shinyLinePen = new Pen(Color.Orange, 1);
         }
 
         private void UpdateState()
@@ -242,6 +303,10 @@ namespace QSharpTestG
             else if (definePointsToolStripMenuItem.Checked)
             {
                 CurrentMode = Modes.DefiningPoints;
+            }
+            else if (deleteToolStripMenuItem.Checked)
+            {
+                CurrentMode = Modes.Deleting;
             }
             else
             {
@@ -281,6 +346,12 @@ namespace QSharpTestG
                             break;
                     }
                 }
+                if (_shineV1 != null && _shineV2 != null)
+                {
+                    var point = _points.First();
+                    g.DrawLine(_shinyLinePen, (float)_shineV1.X, (float)_shineV1.Y, (float)point.X, (float)point.Y);
+                    g.DrawLine(_shinyLinePen, (float)_shineV2.X, (float)_shineV2.Y, (float)point.X, (float)point.Y);
+                }
             }
         }
 
@@ -305,5 +376,6 @@ namespace QSharpTestG
         }
 
         #endregion
+
     }
 }

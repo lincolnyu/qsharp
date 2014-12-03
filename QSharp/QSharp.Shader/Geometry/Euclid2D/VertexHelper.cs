@@ -146,5 +146,36 @@ namespace QSharp.Shader.Geometry.Euclid2D
             intersect.Y = y;
             return true;
         }
+
+        public static bool IsColinear(IVector2D v1, IVector2D v2, IVector2D v3)
+        {
+            var e12X = v2.X - v1.X;
+            var e12Y = v2.Y - v1.Y;
+            var e13X = v3.X - v1.X;
+            var e13Y = v3.Y - v1.Y;
+            return (Math.Abs(e12X*e13Y - e12Y*e13X) < double.Epsilon);
+        }
+
+        /// <summary>
+        ///  Returns if vertex is on the left of the edge or right or on the same line
+        /// </summary>
+        /// <param name="v1">The first vertex of the edge</param>
+        /// <param name="v2">The second vertex of the edge</param>
+        /// <param name="v">The vertex to return the relation of with the edge</param>
+        /// <returns>-1 : vertex is on the right hand side; 1: left; 0 exactly on the same line</returns>
+        public static int VertexRelativeToEdge(this IVector2D v, IVector2D v1, IVector2D v2)
+        {
+            var ve = new Vector2D();
+            var vv = new Vector2D();
+            v2.Subtract(v1, ve);
+            v.Subtract(v1, vv);
+            var op = ve.OuterProduct(vv);
+            return op.CompareTo(0); // -1 : right; 1 : left; 0 : same line
+        }
+
+        public static int VertexRelativeToEdge(this IVector2D v, IEdge2D e)
+        {
+            return v.VertexRelativeToEdge(e.Vertex1, e.Vertex2);
+        }
     }
 }

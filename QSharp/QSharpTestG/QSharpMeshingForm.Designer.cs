@@ -37,10 +37,13 @@
             this.definePointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.demoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomVerticesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.triangulateVerticesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.triangulateAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.shineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -51,7 +54,8 @@
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.demoToolStripMenuItem,
-            this.solveToolStripMenuItem});
+            this.solveToolStripMenuItem,
+            this.testToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MainMenuStrip.Name = "MainMenuStrip";
             this.MainMenuStrip.Size = new System.Drawing.Size(784, 24);
@@ -78,7 +82,8 @@
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.definePolygonsToolStripMenuItem,
             this.definePolylinesToolStripMenuItem,
-            this.definePointsToolStripMenuItem});
+            this.definePointsToolStripMenuItem,
+            this.deleteToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
@@ -119,21 +124,6 @@
             this.randomVerticesToolStripMenuItem.Text = "Random Vertices";
             this.randomVerticesToolStripMenuItem.Click += new System.EventHandler(this.randomVerticesToolStripMenuItem_Click);
             // 
-            // MeshingPictureBox
-            // 
-            this.MeshingPictureBox.BackColor = System.Drawing.Color.White;
-            this.MeshingPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MeshingPictureBox.Location = new System.Drawing.Point(0, 24);
-            this.MeshingPictureBox.Name = "MeshingPictureBox";
-            this.MeshingPictureBox.Size = new System.Drawing.Size(784, 537);
-            this.MeshingPictureBox.TabIndex = 1;
-            this.MeshingPictureBox.TabStop = false;
-            this.MeshingPictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseClick);
-            this.MeshingPictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseDoubleClick);
-            this.MeshingPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseDown);
-            this.MeshingPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseMove);
-            this.MeshingPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseUp);
-            // 
             // solveToolStripMenuItem
             // 
             this.solveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -155,6 +145,43 @@
             this.triangulateAllToolStripMenuItem.Name = "triangulateAllToolStripMenuItem";
             this.triangulateAllToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.triangulateAllToolStripMenuItem.Text = "Triangulate All";
+            // 
+            // testToolStripMenuItem
+            // 
+            this.testToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.shineToolStripMenuItem});
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.testToolStripMenuItem.Text = "&Test";
+            // 
+            // shineToolStripMenuItem
+            // 
+            this.shineToolStripMenuItem.Name = "shineToolStripMenuItem";
+            this.shineToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.shineToolStripMenuItem.Text = "Shine";
+            this.shineToolStripMenuItem.Click += new System.EventHandler(this.shineToolStripMenuItem_Click);
+            // 
+            // MeshingPictureBox
+            // 
+            this.MeshingPictureBox.BackColor = System.Drawing.Color.White;
+            this.MeshingPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MeshingPictureBox.Location = new System.Drawing.Point(0, 24);
+            this.MeshingPictureBox.Name = "MeshingPictureBox";
+            this.MeshingPictureBox.Size = new System.Drawing.Size(784, 537);
+            this.MeshingPictureBox.TabIndex = 1;
+            this.MeshingPictureBox.TabStop = false;
+            this.MeshingPictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseClick);
+            this.MeshingPictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseDoubleClick);
+            this.MeshingPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseDown);
+            this.MeshingPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseMove);
+            this.MeshingPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseUp);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.deleteToolStripMenuItem.Text = "Dele&te";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // QSharpMeshingForm
             // 
@@ -192,5 +219,8 @@
         private System.Windows.Forms.ToolStripMenuItem solveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem triangulateVerticesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem triangulateAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem shineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
     }
 }

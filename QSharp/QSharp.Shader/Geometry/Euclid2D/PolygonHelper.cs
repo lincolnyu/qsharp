@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QSharp.Shader.Geometry.Euclid2D
 {
@@ -96,6 +98,201 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 }
             }
             return res;
+        }
+
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="hull">Vertices on the hull in counterclockwise order</param>
+        /// <param name="v"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public static void GetConvexHullEnds<TVector2D>(this IList<TVector2D> hull, IVector2D v, out int start,
+            out int end) where TVector2D : IVector2D
+        {
+            var i = 0;
+            var j = (i + 1)%hull.Count;
+            var v1 = hull[i];
+            var v2 = hull[j];
+            var r = v.VertexRelativeToEdge(v1, v2);
+
+            if (r >= 0)
+            {
+                // dark
+                for (i = j;; i = j)
+                {
+                    j = (i + 1)%hull.Count;
+                    v1 = hull[i];
+                    v2 = hull[j];
+                    r = v.VertexRelativeToEdge(v1, v2);
+                    if (r < 0)
+                    {
+                        start = i;
+                        i = j;
+                        break;
+                    }
+                }
+                for (;; i = j)
+                {
+                    j = (i + 1)%hull.Count;
+                    v1 = hull[i];
+                    v2 = hull[j];
+                    r = v.VertexRelativeToEdge(v1, v2);
+                    if (r >= 0)
+                    {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // bright
+                for (i = 0; ; i = j)
+                {
+                    j = (i + hull.Count - 1) % hull.Count;
+                    v1 = hull[j];
+                    v2 = hull[i];
+                    r = v.VertexRelativeToEdge(v1, v2);
+                    if (r >= 0)
+                    {
+                        start = i;
+                        break;
+                    }
+                }
+
+                for (i = 1;; i = j)
+                {
+                    j = (i + 1) % hull.Count;
+                    v1 = hull[i];
+                    v2 = hull[j];
+                    r = v.VertexRelativeToEdge(v1, v2);
+                    if (r >= 0)
+                    {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public static void GetEdgedConvexHullEnds<TEdge2D>(this IList<TEdge2D> hull, IVector2D v, out int start,
+            out int end) where TEdge2D : IEdge2D
+        {
+            var i = 0;
+            var e = hull[i];
+            var r = v.VertexRelativeToEdge(e);
+
+            if (r >= 0)
+            {
+                // dark
+                var j = (i + 1) % hull.Count;
+                for (i = j; ; i = j)
+                {
+                    j = (i + 1) % hull.Count;
+                    e = hull[i];
+                    r = v.VertexRelativeToEdge(e);
+                    if (r < 0)
+                    {
+                        i = j;
+                        start = i;
+                        break;
+                    }
+                }
+                for (; ; i = j)
+                {
+                    j = (i + 1) % hull.Count;
+                    e = hull[i];
+                    r = v.VertexRelativeToEdge(e);
+                    if (r >= 0)
+                    {
+                        end = (i + hull.Count - 1) % hull.Count;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                // bright
+                int j;
+                for (i = hull.Count-1; ; i = j)
+                {
+                    e = hull[i];
+                    r = v.VertexRelativeToEdge(e);
+                    if (r >= 0)
+                    {
+                        start = (i + 1) % hull.Count;
+                        break;
+                    }
+                    j = (i - 1) % hull.Count;
+                }
+                for (i = 1; ; i = j)
+                {
+                    j = (i + 1) % hull.Count;
+                    e = hull[i];
+                    r = v.VertexRelativeToEdge(e);
+                    if (r >= 0)
+                    {
+                        end = (i - 1) % hull.Count;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public static bool VertexIsInside(this IEnumerable<IVector2D> polygon, IVector2D vertex)
+        {
+            var vv = new Vector2D();
+            var lastvv = new Vector2D();
+            var isFirst = true;
+            double firsta = 0;
+            double lasta = 0;
+            var vlist = polygon.ToList();
+            vlist.Add(vlist[0]);
+            foreach (var v in vlist)
+            {
+                v.Subtract(vertex, vv);
+                var a = Math.Atan2(vv.Y, vv.X);
+                if (!isFirst)
+                {
+                    var op = lastvv.OuterProduct(vv);
+                    if (op > 0)
+                    {
+                        // counterclockwise
+                        if (a < lasta)
+                        {
+                            a += Math.PI*2;
+                        }
+                        else if (a - lasta > Math.PI*2)
+                        {
+                            a -= Math.PI*2;
+                        }
+                    }
+                    else
+                    {
+                        // clockwise
+                        if (a > lasta)
+                        {
+                            a -= Math.PI*2;
+                        }
+                        else if (lasta - a > Math.PI*2)
+                        {
+                            a += Math.PI*2;
+                        }
+                    }
+                }
+                else
+                {
+                    isFirst = false;
+                    firsta = a;
+                }
+                lastvv.X = vv.X;
+                lastvv.Y = vv.Y;
+                lasta = a;
+            }
+            var diff = lasta - firsta;
+            var adiff = Math.Abs(diff);
+            return adiff > Math.PI;  // supposed to be either 0 or 2*PI
         }
 
         #endregion

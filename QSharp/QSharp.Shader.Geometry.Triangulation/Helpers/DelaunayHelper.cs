@@ -21,6 +21,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="oldEdge">The old edge</param>
         public delegate void NotifyEdgeFlip(Edge2D newEdge, Edge2D oldEdge);
 
+
+        public delegate void NotifyEdgeRemoval(Edge2D edge);
+        public delegate void NotifyEdgeAddition(Edge2D edge);
+
+        public delegate void NotifyTriangleRemoval(Triangle2D edge);
+        public delegate void NotifyTriangleAddition(Triangle2D edge);
+
         #endregion
 
         #region Methods
@@ -148,6 +155,51 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             CreateTriangles(v, vlist, elist);
         }
 
+        public static void AddVertex(Triangle2D triangle, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval,
+            NotifyEdgeAddition notifyEdgeAddition, NotifyTriangleRemoval notifyTriangleRemoval,
+            NotifyTriangleAddition notifyTriangleAddition)
+        {
+            HashSet<Edge2D> boundingEdges, edgesToDelete;
+            GetAffectedEdges(triangle, v, out boundingEdges, out edgesToDelete);
+
+            var removedTriangles = new HashSet<Triangle2D>();
+            foreach (var edge in edgesToDelete)
+            {
+                var t1 = (Triangle2D)edge.Surface1;
+                var t2 = (Triangle2D) edge.Surface2;
+                if (t1 != null)
+                {
+                    removedTriangles.Add(t1);
+                }
+                if (t2 != null)
+                {
+                    removedTriangles.Add(t2);
+                }
+                notifyEdgeRemoval(edge);
+            }
+            foreach (var tri in removedTriangles)
+            {
+                notifyTriangleRemoval(tri);
+            }
+
+            DestroyTriangles(edgesToDelete);
+
+            List<Vector2D> vlist;
+            List<Edge2D> elist;
+            SortEdges(boundingEdges, out vlist, out elist);
+
+            var createdTriangles = CreateTriangles(v, vlist, elist);
+
+            foreach (var e in elist)
+            {
+                notifyEdgeAddition(e);
+            }
+            foreach (var tri in createdTriangles)
+            {
+                notifyTriangleAddition(tri);
+            }
+        }
+
         /// <summary>
         ///  Removes edges and related triangles
         /// </summary>
@@ -166,7 +218,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="v">The vertex within the polygon to serve as the common vertex of all the triangles</param>
         /// <param name="vlist">The vertex list that provide vertices</param>
         /// <param name="elist">The list of edges formed by connecting the vertices in <paramref name="vlist"/>in order</param>
-        private static void CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, IReadOnlyList<Edge2D> elist)
+        /// <returns>The created triangles</returns>
+        private static IEnumerable<Triangle2D> CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, IReadOnlyList<Edge2D> elist)
         {
             Edge2D eNew = null;
             for (var i = 0; i < vlist.Count; i++)
@@ -188,6 +241,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 eNew.Connect(v2, v);
                 var tri = new Triangle2D();
                 tri.SetupU(v1, v2, v, e12, eNew, eOld);
+                yield return tri;
             }
         }
 
@@ -238,7 +292,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="v">The new vertex</param>
         /// <param name="boundingEdges">The bounding edges of the retriangulation region</param>
         /// <param name="edgesToDelete">The edges that are within the retriangulation region anb are to be deleted</param>
-        private static void GetAffectedEdges(Triangle2D triangle, Vector2D v, 
+        private static void GetAffectedEdges(Triangle2D triangle, IVector2D v, 
             out HashSet<Edge2D> boundingEdges, out HashSet<Edge2D> edgesToDelete)
         {
             var testedTriangles = new HashSet<Triangle2D>();
