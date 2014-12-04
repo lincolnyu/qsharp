@@ -176,12 +176,35 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
         }
 
+        public static IVector2D GetFirstVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
+            where TEdge2D : IEdge2D
+        {
+            var esd = polygon.IsEdgeSameDirection(edgeIndex);
+            var edge = polygon[edgeIndex];
+            return esd ? edge.Vertex1 : edge.Vertex2;
+        }
+
+        public static IVector2D GetSecondVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
+            where TEdge2D : IEdge2D
+        {
+            var esd = polygon.IsEdgeSameDirection(edgeIndex);
+            var edge = polygon[edgeIndex];
+            return esd ? edge.Vertex2 : edge.Vertex1;
+        }
+
+        public static int VertexRelativeToEdge<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex, IVector2D v)
+            where TEdge2D : IEdge2D
+        {
+            var v1 = polygon.GetFirstVertex(edgeIndex);
+            var v2 = polygon.GetSecondVertex(edgeIndex);
+            return v.VertexRelativeToEdge(v1, v2);
+        }
+
         public static void GetEdgedConvexHullEnds<TEdge2D>(this IList<TEdge2D> hull, IVector2D v, out int start,
             out int end) where TEdge2D : IEdge2D
         {
             var i = 0;
-            var e = hull[i];
-            var r = v.VertexRelativeToEdge(e);
+            var r = hull.VertexRelativeToEdge(i, v);
 
             if (r >= 0)
             {
@@ -190,8 +213,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 for (i = j; ; i = j)
                 {
                     j = (i + 1) % hull.Count;
-                    e = hull[i];
-                    r = v.VertexRelativeToEdge(e);
+                    r = hull.VertexRelativeToEdge(i, v);
                     if (r < 0)
                     {
                         i = j;
@@ -202,8 +224,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 for (; ; i = j)
                 {
                     j = (i + 1) % hull.Count;
-                    e = hull[i];
-                    r = v.VertexRelativeToEdge(e);
+                    r = hull.VertexRelativeToEdge(i, v);
                     if (r >= 0)
                     {
                         end = (i + hull.Count - 1) % hull.Count;
@@ -217,8 +238,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 int j;
                 for (i = hull.Count-1; ; i = j)
                 {
-                    e = hull[i];
-                    r = v.VertexRelativeToEdge(e);
+                    r = hull.VertexRelativeToEdge(i, v);
                     if (r >= 0)
                     {
                         start = (i + 1) % hull.Count;
@@ -229,11 +249,10 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 for (i = 1; ; i = j)
                 {
                     j = (i + 1) % hull.Count;
-                    e = hull[i];
-                    r = v.VertexRelativeToEdge(e);
+                    r = hull.VertexRelativeToEdge(i, v);
                     if (r >= 0)
                     {
-                        end = (i - 1) % hull.Count;
+                        end = (i + hull.Count - 1) % hull.Count;
                         break;
                     }
                 }
@@ -293,6 +312,46 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var diff = lasta - firsta;
             var adiff = Math.Abs(diff);
             return adiff > Math.PI;  // supposed to be either 0 or 2*PI
+        }
+
+        /// <summary>
+        ///  Returns the the specified edge's natural direction is the same as the front where the edge is
+        /// </summary>
+        /// <param name="edges">All the edges that constitute the polygon</param>
+        /// <param name="edgeIndex">The index of the edge in the collection of this front</param>
+        /// <returns>True if it's the same direction</returns>
+        /// <remarks>
+        ///  The current design implies that there are at least 2 edges in a front
+        /// </remarks>
+        public static bool IsEdgeSameDirection<TEdge2D>(this IList<TEdge2D> edges, int edgeIndex)
+            where TEdge2D : IEdge2D
+        {
+            var edge = edges[edgeIndex];
+            var next = edges[(edgeIndex + 1) % edges.Count];
+            return (edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2);
+        }
+
+        public static void RemoveRange<TEdge2D>(this IList<TEdge2D> edges, int start, int count)
+        {
+            var r = count - (edges.Count - start);
+            if (r <= 0)
+            {
+                for (var i = start + count - 1; i >= start; i--)
+                {
+                    edges.RemoveAt(i);
+                }
+            }
+            else
+            {
+                for (var i = edges.Count - 1; i >= start; i--)
+                {
+                    edges.RemoveAt(i);
+                }
+                for (var i = r-1; i >= 0; i--)
+                {
+                    edges.RemoveAt(i);
+                }
+            }
         }
 
         #endregion

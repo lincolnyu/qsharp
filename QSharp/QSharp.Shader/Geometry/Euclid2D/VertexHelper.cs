@@ -172,10 +172,5 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var op = ve.OuterProduct(vv);
             return op.CompareTo(0); // -1 : right; 1 : left; 0 : same line
         }
-
-        public static int VertexRelativeToEdge(this IVector2D v, IEdge2D e)
-        {
-            return v.VertexRelativeToEdge(e.Vertex1, e.Vertex2);
-        }
     }
 }

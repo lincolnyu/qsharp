@@ -202,7 +202,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 bucket.Vertices.Add(nv);
             }
 
-            DelaunayHelper.Validate(tri, null, Qst.EdgeFlipped);
+            tri.Validate(x=>true, Qst.EdgeFlipped);
         }
 
         private Triangle2D AddTriangleWithNewVertex(Edge2D edge, int iedge, Vector2D nv, bool isInwards)

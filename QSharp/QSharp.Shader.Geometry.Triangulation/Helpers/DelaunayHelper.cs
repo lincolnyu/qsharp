@@ -37,47 +37,50 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         ///  is within its circumcicle.
         /// </summary>
         /// <param name="triangle">The triangle to check</param>
-        /// <param name="except">The edge of the triangle to exclude from the checking (null if all edges need to be checked)</param>
+        /// <param name="allow">Function determines the edge should be validated against</param>
         /// <param name="notifyEdgeFlip">The delegate that notifies of an edge flip</param>
-        public static void Validate(Triangle2D triangle, Edge2D except = null, NotifyEdgeFlip notifyEdgeFlip = null)
+        public static void Validate(this Triangle2D triangle, Predicate<Edge2D> allow, NotifyEdgeFlip notifyEdgeFlip = null)
         {
             Triangle2D triangle1, triangle2;
-            Edge2D edge;
+            
             var ab = (Edge2D)triangle.Edge12;
-            if (ab != except)
+            if (allow(ab))
             {
                 var oab = triangle.GetOutsideVertex(ab);
                 // TODO consider using epsilon same as below
                 if (oab.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
+                    Edge2D edge;
                     FlipEdge(triangle, ab, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, edge);
-                    Validate(triangle2, edge);
+                    Validate(triangle1, x=>x!=edge);
+                    Validate(triangle2, x=>x!=edge);
                 }
             }
             var bc = (Edge2D)triangle.Edge23;
-            if (bc != except)
+            if (allow(bc))
             {
                 var obc = triangle.GetOutsideVertex(bc);
                 if (obc.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
+                    Edge2D edge;
                     FlipEdge(triangle, bc, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, edge);
-                    Validate(triangle2, edge);
+                    Validate(triangle1, x=>x!=edge);
+                    Validate(triangle2, x=>x!= edge);
                 }
             }
             var ca = (Edge2D)triangle.Edge31;
-            if (ca != except)
+            if (allow(ca))
             {
                 var oca = triangle.GetOutsideVertex(ca);
                 if (oca.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
+                    Edge2D edge;
                     FlipEdge(triangle, ca, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, edge);
-                    Validate(triangle2, edge);
+                    Validate(triangle1, x => x != edge);
+                    Validate(triangle2, x => x != edge);
                 }
             }
         }
@@ -121,18 +124,19 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             flippedEdge = new Edge2D();
             flippedEdge.Connect(m, n);
 
-            edgeToFlip.Dispose();
-
             triangle1 = new Triangle2D();
             triangle2 = new Triangle2D();
 
             triangle1.Setup(m, p, n, mp, pn, flippedEdge);
             triangle2.Setup(n, q, m, nq, qm, flippedEdge);
 
+            // note here the old and the new edge both connected to their neighbouring triangles
             if (notifyEdgeFlip != null)
             {
                 notifyEdgeFlip(flippedEdge, edgeToFlip);
             }
+
+            edgeToFlip.Dispose();
         }
 
 

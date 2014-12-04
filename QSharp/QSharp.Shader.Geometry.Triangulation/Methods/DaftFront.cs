@@ -102,21 +102,6 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         }
 
         /// <summary>
-        ///  Returns the the specified edge's natural direction is the same as the front where the edge is
-        /// </summary>
-        /// <param name="edgeIndex">The index of the edge in the collection of this front</param>
-        /// <returns>True if it's the same direction</returns>
-        /// <remarks>
-        ///  The current design implies that there are at least 2 edges in a front
-        /// </remarks>
-        public bool IsEdgeSameDirection(int edgeIndex)
-        {
-            var edge = Edges[edgeIndex];
-            var next = Edges[(edgeIndex + 1) % Edges.Count];
-            return (edge.V2 == next.V1 || edge.V2 == next.V2);
-        }
-
-        /// <summary>
         ///  Returns the normal of the edge of the specified index
         /// </summary>
         /// <param name="edgeIndex">The index of the edge in the collection of this front</param>
@@ -128,7 +113,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var n = new Vector2D();
             v.GetLeftNormal(n);
 
-            if (!IsEdgeSameDirection(edgeIndex))
+            if (!Edges.IsEdgeSameDirection(edgeIndex))
             {
                 n = -n;
             }
@@ -439,14 +424,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
         public Vector2D GetFirstVertex(int edgeIndex)
         {
-            var esd = IsEdgeSameDirection(edgeIndex);
+            var esd = Edges.IsEdgeSameDirection(edgeIndex);
             var edge = Edges[edgeIndex];
             return esd ? edge.V1 : edge.V2;
         }
 
         public Vector2D GetSecondVertex(int edgeIndex)
         {
-            var esd = IsEdgeSameDirection(edgeIndex);
+            var esd = Edges.IsEdgeSameDirection(edgeIndex);
             var edge = Edges[edgeIndex];
             return esd ? edge.V1 : edge.V2;
         }

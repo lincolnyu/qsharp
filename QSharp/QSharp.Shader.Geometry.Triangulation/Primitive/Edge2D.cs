@@ -21,7 +21,6 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
             {
                 return V2;
             }
-        
         }
 
         /// <summary>
