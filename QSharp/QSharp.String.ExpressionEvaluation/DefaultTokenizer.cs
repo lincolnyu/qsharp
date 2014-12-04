@@ -118,12 +118,24 @@ namespace QSharp.String.ExpressionEvaluation
                 }
                 else if (c == '!')
                 {
-                    token = new Token
+                    if (i + 1 < expression.Length && expression[i + 1] == '=')
                     {
-                        Content = "!",
-                        TokenType = Token.Type.Operator
-                    };
-                    i++;
+                        token = new Token
+                        {
+                            Content = "!=",
+                            TokenType = Token.Type.Operator
+                        };
+                        i+=2;
+                    }
+                    else
+                    {
+                        token = new Token
+                        {
+                            Content = "!",
+                            TokenType = Token.Type.Operator
+                        };
+                        i++;
+                    }
                     lastIsEntity = false;
                 }
                 else if (c == '(')
