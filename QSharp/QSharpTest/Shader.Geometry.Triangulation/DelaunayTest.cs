@@ -34,7 +34,8 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             return list;
         }
 
-        public static void TriangulateVertices(IEnumerable<Vector2D> vertices)
+        public static void TriangulateVertices(IEnumerable<Vector2D> vertices, out HashSet<Edge2D> edges,
+            out HashSet<Triangle2D> triangles, out List<Edge2D> hull)
         {
             var vertexSet = new HashSet<Vector2D>();
             foreach (var v in vertices)
@@ -42,10 +43,15 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 vertexSet.Add(v);
             }
             var triangle = GetFirstTriangle(vertexSet);
-            var edges = new HashSet<Edge2D>();
-            var triangles = new HashSet<Triangle2D>();
+            var localEdges = new HashSet<Edge2D>
+            {
+                (Edge2D) triangle.Edge12,
+                (Edge2D) triangle.Edge23,
+                (Edge2D) triangle.Edge31
+            };
+            var localTriangles = new HashSet<Triangle2D> {triangle};
             // NOTE the triangle edges are guaranteed to be counterclockwise
-            var hull = new List<Edge2D>
+            hull = new List<Edge2D>
             {
                 (Edge2D)triangle.Edge12,
                 (Edge2D)triangle.Edge23,
@@ -56,12 +62,12 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             {
                 var v = vertexSet.First();
                 var isIn = false;
-                foreach (var tri in triangles)
+                foreach (var tri in localTriangles)
                 {
                     if (tri.Contains(v))
                     {
-                        DelaunayHelper.AddVertex(tri, v, e => edges.Remove(e), e => edges.Add(e), 
-                            t => triangles.Remove(t), t=>triangles.Add(t));
+                        DelaunayHelper.AddVertex(tri, v, e => localEdges.Remove(e), e => localEdges.Add(e),
+                            t => localTriangles.Remove(t), t => localTriangles.Add(t));
                         isIn = true;
                         break;
                     }
@@ -69,13 +75,15 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 if (!isIn)
                 {
                     // TODO vertex is out of the current mesh
-                    AddVertexToHull(hull, triangles, v);
+                    AddVertexToHull(hull, localTriangles, localEdges, v);
                 }
                 vertexSet.Remove(v);
             }
+            triangles = localTriangles;
+            edges = localEdges;
         }
 
-        private static void AddVertexToHull(IList<Edge2D> hull, ISet<Triangle2D> triangles, Vector2D v)
+        private static void AddVertexToHull(IList<Edge2D> hull, ISet<Triangle2D> triangles, ISet<Edge2D> edges, Vector2D v)
         {
             int start, end;
             hull.GetEdgedConvexHullEnds(v, out start, out end);
@@ -86,13 +94,14 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             var newEdges = new List<Edge2D>();
             Edge2D firstEdge = null;
             var count = 0;
-            for (var i = start; i != end1; i++)
+            for (var i = start; i != end1; i = (i+1)%hull.Count)
             {
                 if (i == start)
                 {
                     e1 = new Edge2D();
                     v1 = (Vector2D)hull.GetFirstVertex(i);
                     e1.Connect(v1, v);
+                    edges.Add(e1);
                     newEdges.Add(e1);
                     firstEdge = e1;
                 }
@@ -104,14 +113,17 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 triangles.Add(tri);
                 newTriangles.Add(tri);
                 newEdges.Add(e2);
+                edges.Add(e2);
                 e1 = e2;
                 v1 = v2;
                 count++;
             }
 
+            var shift = start + count - hull.Count;
             hull.RemoveRange(start, count);
-            hull.Insert(start, firstEdge);
-            hull.Insert(start+1, e1);
+            hull.Insert(start-shift, firstEdge);
+            hull.Insert(start-shift+1, e1);
+
             foreach (var tri in newTriangles)
             {
                 tri.Validate(e => !newEdges.Contains(e), (newEdge, oldEdge) =>
@@ -121,6 +133,9 @@ namespace QSharpTest.Shader.Geometry.Triangulation
 
                     var newtri1 = (Triangle2D)newEdge.Surface1;
                     var newtri2 = (Triangle2D)newEdge.Surface2;
+
+                    edges.Remove(oldEdge);
+                    edges.Add(newEdge);
 
                     triangles.Remove(oldtri1);
                     triangles.Remove(oldtri2);
@@ -142,6 +157,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             {
                 return null;
             }
+            vertexSet.Remove(v3);
             var t = new Triangle2D();
             var e12 = new Edge2D();
             e12.Connect(v1, v2);

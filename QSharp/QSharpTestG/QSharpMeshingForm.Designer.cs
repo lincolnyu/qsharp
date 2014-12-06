@@ -35,6 +35,7 @@
             this.definePolygonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definePolylinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definePointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.demoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomVerticesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +44,7 @@
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.circumcirclesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -109,6 +110,13 @@
             this.definePointsToolStripMenuItem.Text = "Define &Points";
             this.definePointsToolStripMenuItem.Click += new System.EventHandler(this.definePointsToolStripMenuItem_Click);
             // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.deleteToolStripMenuItem.Text = "Dele&te";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // demoToolStripMenuItem
             // 
             this.demoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -149,7 +157,8 @@
             // testToolStripMenuItem
             // 
             this.testToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.shineToolStripMenuItem});
+            this.shineToolStripMenuItem,
+            this.circumcirclesToolStripMenuItem});
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
             this.testToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.testToolStripMenuItem.Text = "&Test";
@@ -157,7 +166,7 @@
             // shineToolStripMenuItem
             // 
             this.shineToolStripMenuItem.Name = "shineToolStripMenuItem";
-            this.shineToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.shineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.shineToolStripMenuItem.Text = "Shine";
             this.shineToolStripMenuItem.Click += new System.EventHandler(this.shineToolStripMenuItem_Click);
             // 
@@ -176,12 +185,12 @@
             this.MeshingPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseMove);
             this.MeshingPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseUp);
             // 
-            // deleteToolStripMenuItem
+            // circumcirclesToolStripMenuItem
             // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.deleteToolStripMenuItem.Text = "Dele&te";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.circumcirclesToolStripMenuItem.Name = "circumcirclesToolStripMenuItem";
+            this.circumcirclesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.circumcirclesToolStripMenuItem.Text = "Circumcircles";
+            this.circumcirclesToolStripMenuItem.Click += new System.EventHandler(this.circumcirclesToolStripMenuItem_Click);
             // 
             // QSharpMeshingForm
             // 
@@ -222,5 +231,6 @@
         private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem shineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem circumcirclesToolStripMenuItem;
     }
 }

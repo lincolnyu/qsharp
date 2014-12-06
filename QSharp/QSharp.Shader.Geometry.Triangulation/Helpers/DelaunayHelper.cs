@@ -48,7 +48,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             {
                 var oab = triangle.GetOutsideVertex(ab);
                 // TODO consider using epsilon same as below
-                if (oab.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
+                if (oab != null && oab.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
                     Edge2D edge;
@@ -61,7 +61,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             if (allow(bc))
             {
                 var obc = triangle.GetOutsideVertex(bc);
-                if (obc.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
+                if (obc != null && obc.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
                     Edge2D edge;
@@ -74,7 +74,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             if (allow(ca))
             {
                 var oca = triangle.GetOutsideVertex(ca);
-                if (oca.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
+                if (oca != null && oca.GetSquareDistance(triangle.Circumcenter) < triangle.SquareCircumradius)
                 {
                     // flip this
                     Edge2D edge;
@@ -150,13 +150,16 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             HashSet<Edge2D> boundingEdges, edgesToDelete;
             GetAffectedEdges(triangle, v, out boundingEdges, out edgesToDelete);
 
+            triangle.Dispose();
             DestroyTriangles(edgesToDelete);
 
             List<Vector2D> vlist;
             List<Edge2D> elist;
             SortEdges(boundingEdges, out vlist, out elist);
 
-            CreateTriangles(v, vlist, elist);
+            var createdTriangles = new List<Triangle2D>();
+            var createdEdges = new List<Edge2D>();
+            CreateTriangles(v, vlist, elist, createdTriangles, createdEdges);
         }
 
         public static void AddVertex(Triangle2D triangle, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval,
@@ -186,15 +189,18 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 notifyTriangleRemoval(tri);
             }
 
+            triangle.Dispose();
             DestroyTriangles(edgesToDelete);
 
             List<Vector2D> vlist;
             List<Edge2D> elist;
             SortEdges(boundingEdges, out vlist, out elist);
 
-            var createdTriangles = CreateTriangles(v, vlist, elist);
+            var createdTriangles = new List<Triangle2D>();
+            var createdEdges = new List<Edge2D>();
+            CreateTriangles(v, vlist, elist, createdTriangles, createdEdges);
 
-            foreach (var e in elist)
+            foreach (var e in createdEdges)
             {
                 notifyEdgeAddition(e);
             }
@@ -222,8 +228,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="v">The vertex within the polygon to serve as the common vertex of all the triangles</param>
         /// <param name="vlist">The vertex list that provide vertices</param>
         /// <param name="elist">The list of edges formed by connecting the vertices in <paramref name="vlist"/>in order</param>
-        /// <returns>The created triangles</returns>
-        private static IEnumerable<Triangle2D> CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, IReadOnlyList<Edge2D> elist)
+        /// <param name="triangles">The yielded triangles</param>
+        /// <param name="newEdges">The created edges</param>
+        private static void CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, 
+            IReadOnlyList<Edge2D> elist, ICollection<Triangle2D> triangles, ICollection<Edge2D> newEdges)
         {
             Edge2D eNew = null;
             for (var i = 0; i < vlist.Count; i++)
@@ -236,6 +244,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 {
                     eOld = new Edge2D();
                     eOld.Connect(v1, v);
+                    newEdges.Add(eOld);
                 }
                 else
                 {
@@ -243,9 +252,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 }
                 eNew = new Edge2D();
                 eNew.Connect(v2, v);
+                newEdges.Add(eNew);
+
                 var tri = new Triangle2D();
                 tri.SetupU(v1, v2, v, e12, eNew, eOld);
-                yield return tri;
+                triangles.Add(tri);
             }
         }
 
@@ -376,8 +387,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             {
                 var t1 = (Triangle2D)edge.Surface1;
                 var t2 = (Triangle2D)edge.Surface2;
-                triangles.Add(t1);
-                triangles.Add(t2);
+                if (t1 != null)
+                {
+                    triangles.Add(t1);
+                }
+                if (t2 != null)
+                {
+                    triangles.Add(t2);
+                }
             }
         }
 

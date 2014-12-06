@@ -216,8 +216,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
                     r = hull.VertexRelativeToEdge(i, v);
                     if (r < 0)
                     {
-                        i = j;
                         start = i;
+                        i = j;
                         break;
                     }
                 }

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using QSharp.Shader.Geometry.Euclid2D;
+using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharpTest.Shader.Geometry.Triangulation;
 using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
@@ -34,6 +34,8 @@ namespace QSharpTestG
 
         private readonly List<Vector2D> _points = new List<Vector2D>();
 
+        private HashSet<Edge2D> _meshEdges = new HashSet<Edge2D>();
+
         private Pen _polygonPen;
 
         private Pen _polylinePen;
@@ -54,8 +56,15 @@ namespace QSharpTestG
 
         private Pen _shinyLinePen;
 
+        private Pen _meshPen;
+
+        private Pen _ccPen;
+
         private Vector2D _shineV1;
         private Vector2D _shineV2;
+
+        private readonly List<IVector2D> _circumcenters = new List<IVector2D>();
+        private readonly List<double> _circumradius = new List<double>();
 
         #endregion
 
@@ -82,7 +91,6 @@ namespace QSharpTestG
         #endregion
 
         #region Methods
-
 
         #region Event handlers
 
@@ -221,14 +229,22 @@ namespace QSharpTestG
         private void randomVerticesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _points.Clear();
-            var vertices = DelaunayTest.GenerateRandomVertices(0, 0, MeshingPictureBox.Width, MeshingPictureBox.Height, 2, 200);
+            var marginX = MeshingPictureBox.Width*0.1;
+            var marginY = MeshingPictureBox.Height*0.1;
+            var vertices = DelaunayTest.GenerateRandomVertices(marginX, marginY, 
+                MeshingPictureBox.Width - marginX * 2,
+                MeshingPictureBox.Height - marginY, 
+                20, 8);
             _points.AddRange(vertices);
             InvalidateView();
         }
 
         private void triangulateVerticesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            List<Edge2D> hull;
+            HashSet<Triangle2D> triangles;
+            DelaunayTest.TriangulateVertices(_points, out _meshEdges, out triangles, out hull);
+            InvalidateView();
         }
 
         private void shineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -249,8 +265,33 @@ namespace QSharpTestG
             InvalidateView();
         }
 
-        #endregion
+        private void circumcirclesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _circumcenters.Clear();
+            _circumradius.Clear();
+            foreach (var polygon in _polygons)
+            {
+                if (polygon.Count == 3)
+                {
+                    var tri = new Triangle2D();
+                    var v1 = polygon[0];
+                    var v2 = polygon[1];
+                    var v3 = polygon[2];
+                    var e12 = new Edge2D();
+                    var e23 = new Edge2D();
+                    var e31 = new Edge2D();
+                    e12.Connect(v1, v2);
+                    e23.Connect(v2, v3);
+                    e31.Connect(v3, v1);;
+                    tri.SetupU(v1, v2, v3, e12, e23, e31);
+                    _circumcenters.Add(tri.Circumcenter);
+                    _circumradius.Add(tri.Circumradius);
+                }
+            }
+            InvalidateView();
+        }
 
+        #endregion
 
         private void DeleteAt(int x, int y)
         {
@@ -287,6 +328,8 @@ namespace QSharpTestG
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
             _shinyLinePen = new Pen(Color.Orange, 1);
+            _meshPen = new Pen(Color.DeepPink, 1);
+            _ccPen = new Pen(Color.GreenYellow, 1);
         }
 
         private void UpdateState()
@@ -352,6 +395,26 @@ namespace QSharpTestG
                     g.DrawLine(_shinyLinePen, (float)_shineV1.X, (float)_shineV1.Y, (float)point.X, (float)point.Y);
                     g.DrawLine(_shinyLinePen, (float)_shineV2.X, (float)_shineV2.Y, (float)point.X, (float)point.Y);
                 }
+                if (_meshEdges != null && _meshEdges.Count > 0)
+                {
+                    foreach (var edge in _meshEdges)
+                    {
+                        var v1 = edge.V1;
+                        var v2 = edge.V2;
+                        g.DrawLine(_meshPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                    }
+                }
+                if (_circumcenters.Any())
+                {
+                    for (var i = 0; i < _circumcenters.Count; i++)
+                    {
+                        var cc = _circumcenters[i];
+                        var cr = _circumradius[i];
+                        var x1 = (float)(cc.X - cr);
+                        var y1 = (float)(cc.Y - cr);
+                        g.DrawEllipse(_ccPen, x1, y1, (float)(cr*2), (float)(cr*2));
+                    }
+                }
             }
         }
 
@@ -376,6 +439,5 @@ namespace QSharpTestG
         }
 
         #endregion
-
     }
 }

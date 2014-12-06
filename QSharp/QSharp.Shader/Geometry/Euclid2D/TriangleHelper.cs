@@ -304,7 +304,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var ayy = ay*ay;
             var bxx = bx*bx;
             var byy = by*by;
-            var ccx = (axx*by + ayy*by - bxx*ax - byy*ay)/det2;
+            var ccx = (axx*by + ayy*by - bxx*ay - byy*ay)/det2;
             var ccy = (bxx*ax + byy*ax - axx*bx - ayy*bx)/det2;
             cc.X = ccx;
             cc.Y = ccy;

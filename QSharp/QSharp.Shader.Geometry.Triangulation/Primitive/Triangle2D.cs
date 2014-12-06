@@ -283,6 +283,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
         public Vector2D GetOutsideVertex(Edge2D edge)
         {
             var neightbour = (Triangle2D)GetSurfaceOtherThanThis(edge);
+            if (neightbour == null)
+            {
+                return null;
+            }
             return (Vector2D)neightbour.GetOpposite(edge);
         }
 
@@ -309,18 +313,21 @@ namespace QSharp.Shader.Geometry.Triangulation.Primitive
                 var ab = B - A;
                 var ac = C - A;
                 TriangleHelper.GetCircumcenter(ab, ac, _cc);
+                _cc.Add(A, _cc);
             }
             else if (thB >= thC)
             {
                 var bc = C - B;
                 var ba = A - B;
                 TriangleHelper.GetCircumcenter(bc, ba, _cc);
+                _cc.Add(B, _cc);
             }
             else
             {
                 var ca = A - C;
                 var cb = B - C;
                 TriangleHelper.GetCircumcenter(ca, cb, _cc);
+                _cc.Add(C, _cc);
             }
             SquareCircumradius = Circumcenter.GetSquareDistance(A);
         }
