@@ -15,7 +15,8 @@ namespace QSharpTest.Shader.Geometry.Triangulation
         public static IEnumerable<Vector2D> GenerateRandomVertices(double minx, double miny, double maxx, 
             double maxy, double epsilon, int count)
         {
-            var rand = new Random();
+            var rand = new Random(123);
+            //var rand = new Random(123);
             var list = new List<Vector2D>();
             var ee = epsilon*epsilon;
             for (; list.Count < count; )
@@ -58,7 +59,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 (Edge2D)triangle.Edge31
             };
             
-            while (vertexSet.Count > 0)
+            while (vertexSet.Count > 1)
             {
                 var v = vertexSet.First();
                 var isIn = false;
@@ -66,9 +67,11 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 {
                     if (tri.Contains(v))
                     {
+#if false
                         DelaunayHelper.AddVertex(tri, v, e => localEdges.Remove(e), e => localEdges.Add(e),
                             t => localTriangles.Remove(t), t => localTriangles.Add(t));
                         isIn = true;
+#endif
                         break;
                     }
                 }
@@ -120,10 +123,11 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             }
 
             var shift = start + count - hull.Count;
+            if (shift < 0) shift = 0;
             hull.RemoveRange(start, count);
             hull.Insert(start-shift, firstEdge);
             hull.Insert(start-shift+1, e1);
-
+#if false
             foreach (var tri in newTriangles)
             {
                 tri.Validate(e => !newEdges.Contains(e), (newEdge, oldEdge) =>
@@ -144,6 +148,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                     triangles.Add(newtri2);
                 });
             }
+#endif
         }
 
         private static Triangle2D GetFirstTriangle(ICollection<Vector2D> vertexSet)

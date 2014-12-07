@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharp.Shader.Geometry.Euclid2D;
@@ -276,26 +277,41 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
 
             foreach (var e in eset)
             {
-                dict1[e.V1] = e;
-                dict2[e.V2] = e;
+                if (!dict1.ContainsKey(e.V1) && !dict2.ContainsKey(e.V2))
+                {
+                    dict1[e.V1] = e;
+                    dict2[e.V2] = e;
+                }
+                else
+                {
+                    Debug.Assert(!dict1.ContainsKey(e.V2) && !dict2.ContainsKey(e.V1));
+                    dict1[e.V2] = e;
+                    dict2[e.V1] = e;
+                }
             }
 
             var ecurr  = eset.First();
-            var vcurr = ecurr.V1;
-            var vfirst = vcurr;
+            Vector2D vfirst = null;
+            Vector2D vcurr = null;
+
+            elist.Add(ecurr);
+            var elast = ecurr;
+            vfirst = ecurr.V1;
+            vlist.Add(vfirst);
+            vcurr = ecurr.V2;
+
             do
             {
                 vlist.Add(vcurr);
-                elist.Add(ecurr);
                 var vlast = vcurr;
-                var elast = ecurr;
 
-                vcurr = elast.V1 == vlast ? elast.V2 : elast.V1;
-                ecurr = dict1[vcurr];
-                if (ecurr == elast)
-                {
-                    ecurr = dict2[vcurr];
-                }
+                var e1 = dict1[vcurr];
+                var e2 = dict2[vcurr];
+                ecurr = e1 == elast ? e2 : e1;
+
+                elist.Add(ecurr);
+                vcurr = ecurr.V1 == vlast ? ecurr.V2 : ecurr.V1;
+                elast = ecurr;
             } while (vcurr != vfirst);
         }
 
@@ -357,6 +373,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                         if (!testedTriangles.Contains(tri))
                         {
                             tq.Enqueue(tri);
+                            testedTriangles.Add(tri);
                         }
                     }
                 }
