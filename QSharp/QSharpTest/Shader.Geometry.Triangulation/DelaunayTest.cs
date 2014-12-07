@@ -59,7 +59,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 (Edge2D)triangle.Edge31
             };
             
-            while (vertexSet.Count > 1)
+            while (vertexSet.Count > 0)
             {
                 var v = vertexSet.First();
                 var isIn = false;
@@ -67,11 +67,9 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                 {
                     if (tri.Contains(v))
                     {
-#if false
                         DelaunayHelper.AddVertex(tri, v, e => localEdges.Remove(e), e => localEdges.Add(e),
                             t => localTriangles.Remove(t), t => localTriangles.Add(t));
                         isIn = true;
-#endif
                         break;
                     }
                 }
@@ -127,7 +125,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             hull.RemoveRange(start, count);
             hull.Insert(start-shift, firstEdge);
             hull.Insert(start-shift+1, e1);
-#if false
+
             foreach (var tri in newTriangles)
             {
                 tri.Validate(e => !newEdges.Contains(e), (newEdge, oldEdge) =>
@@ -135,8 +133,8 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                     var oldtri1 = (Triangle2D) oldEdge.Surface1;
                     var oldtri2 = (Triangle2D) oldEdge.Surface2;
 
-                    var newtri1 = (Triangle2D)newEdge.Surface1;
-                    var newtri2 = (Triangle2D)newEdge.Surface2;
+                    var newtri1 = (Triangle2D) newEdge.Surface1;
+                    var newtri2 = (Triangle2D) newEdge.Surface2;
 
                     edges.Remove(oldEdge);
                     edges.Add(newEdge);
@@ -148,7 +146,6 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                     triangles.Add(newtri2);
                 });
             }
-#endif
         }
 
         private static Triangle2D GetFirstTriangle(ICollection<Vector2D> vertexSet)

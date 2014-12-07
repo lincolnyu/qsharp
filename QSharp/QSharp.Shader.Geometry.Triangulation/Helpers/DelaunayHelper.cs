@@ -54,8 +54,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     // flip this
                     Edge2D edge;
                     FlipEdge(triangle, ab, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, x=>x!=edge);
-                    Validate(triangle2, x=>x!=edge);
+                    Validate(triangle1, x => x != edge && allow(x), notifyEdgeFlip);
+                    Validate(triangle2, x => x != edge && allow(x), notifyEdgeFlip);
+                    return;
                 }
             }
             var bc = (Edge2D)triangle.Edge23;
@@ -67,8 +68,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     // flip this
                     Edge2D edge;
                     FlipEdge(triangle, bc, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, x=>x!=edge);
-                    Validate(triangle2, x=>x!= edge);
+                    Validate(triangle1, x => x != edge && allow(x), notifyEdgeFlip);
+                    Validate(triangle2, x => x != edge && allow(x), notifyEdgeFlip);
+                    return;
                 }
             }
             var ca = (Edge2D)triangle.Edge31;
@@ -80,8 +82,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     // flip this
                     Edge2D edge;
                     FlipEdge(triangle, ca, out triangle1, out triangle2, out edge, notifyEdgeFlip);
-                    Validate(triangle1, x => x != edge);
-                    Validate(triangle2, x => x != edge);
+                    Validate(triangle1, x => x != edge && allow(x), notifyEdgeFlip);
+                    Validate(triangle2, x => x != edge && allow(x), notifyEdgeFlip);
                 }
             }
         }
@@ -189,6 +191,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             {
                 notifyTriangleRemoval(tri);
             }
+            notifyTriangleRemoval(triangle);
 
             triangle.Dispose();
             DestroyTriangles(edgesToDelete);
@@ -234,7 +237,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         private static void CreateTriangles(Vector2D v, IReadOnlyList<Vector2D> vlist, 
             IReadOnlyList<Edge2D> elist, ICollection<Triangle2D> triangles, ICollection<Edge2D> newEdges)
         {
-            Edge2D eNew = null;
+            Edge2D eNew = null, eFirst = null;
             for (var i = 0; i < vlist.Count; i++)
             {
                 var v1 = vlist[i];
@@ -243,7 +246,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 Edge2D eOld;
                 if (i == 0)
                 {
-                    eOld = new Edge2D();
+                    eFirst = eOld = new Edge2D();
                     eOld.Connect(v1, v);
                     newEdges.Add(eOld);
                 }
@@ -251,9 +254,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 {
                     eOld = eNew;
                 }
-                eNew = new Edge2D();
-                eNew.Connect(v2, v);
-                newEdges.Add(eNew);
+
+                if (i == vlist.Count - 1)
+                {
+                    eNew = eFirst;
+                }
+                else
+                {
+                    eNew = new Edge2D();
+                    eNew.Connect(v2, v);
+                    newEdges.Add(eNew);
+                }
 
                 var tri = new Triangle2D();
                 tri.SetupU(v1, v2, v, e12, eNew, eOld);
@@ -272,41 +283,53 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             elist = new List<Edge2D>();
             vlist = new List<Vector2D>();
 
-            var dict1 = new Dictionary<Vector2D, Edge2D>();
-            var dict2 = new Dictionary<Vector2D, Edge2D>();
+            var dict = new Dictionary<Vector2D, Edge2D[]>();
 
             foreach (var e in eset)
             {
-                if (!dict1.ContainsKey(e.V1) && !dict2.ContainsKey(e.V2))
+                Edge2D[] edges;
+                if (!dict.TryGetValue(e.V1, out edges))
                 {
-                    dict1[e.V1] = e;
-                    dict2[e.V2] = e;
+                    dict[e.V1] = edges = new Edge2D[2];
+                }
+                if (edges[0] == null)
+                {
+                    edges[0] = e;
                 }
                 else
                 {
-                    Debug.Assert(!dict1.ContainsKey(e.V2) && !dict2.ContainsKey(e.V1));
-                    dict1[e.V2] = e;
-                    dict2[e.V1] = e;
+                    edges[1] = e;
+                }
+
+                if (!dict.TryGetValue(e.V2, out edges))
+                {
+                    dict[e.V2] = edges = new Edge2D[2];
+                }
+                if (edges[0] == null)
+                {
+                    edges[0] = e;
+                }
+                else
+                {
+                    edges[1] = e;
                 }
             }
 
             var ecurr  = eset.First();
-            Vector2D vfirst = null;
-            Vector2D vcurr = null;
 
             elist.Add(ecurr);
             var elast = ecurr;
-            vfirst = ecurr.V1;
+            var vfirst = ecurr.V1;
             vlist.Add(vfirst);
-            vcurr = ecurr.V2;
+            var vcurr = ecurr.V2;
 
             do
             {
                 vlist.Add(vcurr);
                 var vlast = vcurr;
 
-                var e1 = dict1[vcurr];
-                var e2 = dict2[vcurr];
+                var e1 = dict[vcurr][0];
+                var e2 = dict[vcurr][1];
                 ecurr = e1 == elast ? e2 : e1;
 
                 elist.Add(ecurr);

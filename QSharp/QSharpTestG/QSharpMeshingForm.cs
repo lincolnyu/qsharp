@@ -234,7 +234,7 @@ namespace QSharpTestG
             var vertices = DelaunayTest.GenerateRandomVertices(marginX, marginY, 
                 MeshingPictureBox.Width - marginX * 2,
                 MeshingPictureBox.Height - marginY, 
-                20, 8);
+                20, 20);
             _points.AddRange(vertices);
             InvalidateView();
         }
@@ -282,7 +282,7 @@ namespace QSharpTestG
                     var e31 = new Edge2D();
                     e12.Connect(v1, v2);
                     e23.Connect(v2, v3);
-                    e31.Connect(v3, v1);;
+                    e31.Connect(v3, v1);
                     tri.SetupU(v1, v2, v3, e12, e23, e31);
                     _circumcenters.Add(tri.Circumcenter);
                     _circumradius.Add(tri.Circumradius);
