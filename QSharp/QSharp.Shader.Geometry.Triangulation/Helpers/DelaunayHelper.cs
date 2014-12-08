@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharp.Shader.Geometry.Euclid2D;
@@ -148,35 +147,23 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// </summary>
         /// <param name="triangle">The triangle that contains the vertex <paramref name="v"/></param>
         /// <param name="v">The vertex to add which has to be inside the <paramref name="triangle"/></param>
-        public static void AddVertex(Triangle2D triangle, Vector2D v)
-        {
-            HashSet<Edge2D> boundingEdges, edgesToDelete;
-            GetAffectedEdges(triangle, v, out boundingEdges, out edgesToDelete);
-
-            triangle.Dispose();
-            DestroyTriangles(edgesToDelete);
-
-            List<Vector2D> vlist;
-            List<Edge2D> elist;
-            SortEdges(boundingEdges, out vlist, out elist);
-
-            var createdTriangles = new List<Triangle2D>();
-            var createdEdges = new List<Edge2D>();
-            CreateTriangles(v, vlist, elist, createdTriangles, createdEdges);
-        }
-
-        public static void AddVertex(Triangle2D triangle, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval,
+        /// <param name="notifyEdgeRemoval">method that notifies removal of an edge</param>
+        /// <param name="notifyEdgeAddition">method that notifies addition of an edge</param>
+        /// <param name="notifyTriangleRemoval">method that notifies removal of a triangle</param>
+        /// <param name="notifyTriangleAddition">method that notifies addition of a triangle</param>
+        public static void AddVertexInTriangle(Triangle2D triangle, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval,
             NotifyEdgeAddition notifyEdgeAddition, NotifyTriangleRemoval notifyTriangleRemoval,
             NotifyTriangleAddition notifyTriangleAddition)
         {
             HashSet<Edge2D> boundingEdges, edgesToDelete;
+
             GetAffectedEdges(triangle, v, out boundingEdges, out edgesToDelete);
 
-            var removedTriangles = new HashSet<Triangle2D>();
+            var removedTriangles = new HashSet<Triangle2D> {triangle};
             foreach (var edge in edgesToDelete)
             {
                 var t1 = (Triangle2D)edge.Surface1;
-                var t2 = (Triangle2D) edge.Surface2;
+                var t2 = (Triangle2D)edge.Surface2;
                 if (t1 != null)
                 {
                     removedTriangles.Add(t1);
@@ -191,9 +178,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             {
                 notifyTriangleRemoval(tri);
             }
-            notifyTriangleRemoval(triangle);
 
-            triangle.Dispose();
+            triangle.Dispose();// removed regardless
+
             DestroyTriangles(edgesToDelete);
 
             List<Vector2D> vlist;
@@ -211,6 +198,152 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             foreach (var tri in createdTriangles)
             {
                 notifyTriangleAddition(tri);
+            }
+        }
+
+        public static void AddVertexToConvexHull(IList<Edge2D> hull, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval,
+            NotifyEdgeAddition notifyEdgeAddition, NotifyTriangleRemoval notifyTriangleRemoval,
+            NotifyTriangleAddition notifyTriangleAddition)
+        {
+            int start, end;
+            hull.GetEdgedConvexHullEnds(v, out start, out end);
+            var v1 = hull.GetFirstVertex(start);
+            var v2 = hull.GetSecondVertex(end);
+            var end1 = (end + 1) % hull.Count;
+            var initialEdges = new List<Edge2D>();
+            var count = 0;
+            for (var i = start; i != end1; i = (i + 1)%hull.Count, count++)
+            {
+                initialEdges.Add(hull[i]);
+            }
+            HashSet<Edge2D> boundingEdges, edgesToDelete;
+            GetAffectedEdges(initialEdges, v, out boundingEdges, out edgesToDelete);
+
+            var removedTriangles = new HashSet<Triangle2D>();
+            foreach (var edge in edgesToDelete)
+            {
+                var t1 = (Triangle2D)edge.Surface1;
+                var t2 = (Triangle2D)edge.Surface2;
+                if (t1 != null)
+                {
+                    removedTriangles.Add(t1);
+                }
+                if (t2 != null)
+                {
+                    removedTriangles.Add(t2);
+                }
+                notifyEdgeRemoval(edge);
+            }
+            foreach (var tri in removedTriangles)
+            {
+                notifyTriangleRemoval(tri);
+            }
+
+            DestroyTriangles(edgesToDelete);
+
+            List<Vector2D> vlist;
+            List<Edge2D> elist;
+            SortEdgesNonlooped(boundingEdges, out vlist, out elist);
+
+            var createdTriangles = new List<Triangle2D>();
+            var createdEdges = new List<Edge2D>();
+            CreateTriangles(v, vlist, elist, createdTriangles, createdEdges);
+
+            var e1 = createdEdges[0];
+            var e2 = createdEdges[createdEdges.Count - 1];
+            System.Diagnostics.Debug.Assert(v1 == vlist[0] && v2 == vlist[vlist.Count-1] || v2 == vlist[0] && v1 == vlist[vlist.Count-1]);
+            if (e2.V1 == v1 || e2.V2 == v1)
+            {
+                System.Diagnostics.Debug.Assert(e1.V1 == v2 || e1.V2 == v2);
+                var t = e1;
+                e1 = e2;
+                e2 = t;
+            }
+            else
+            {
+                System.Diagnostics.Debug.Assert(e1.V1 == v1 || e1.V2 == v1);
+                System.Diagnostics.Debug.Assert(e2.V1 == v2 || e2.V2 == v2);
+            }
+
+            var shift = start + count - hull.Count;
+            if (shift < 0) shift = 0;
+            hull.RemoveRange(start, count);
+            hull.Insert(start - shift, e1);
+            hull.Insert(start - shift + 1, e2);
+
+            foreach (var e in createdEdges)
+            {
+                notifyEdgeAddition(e);
+            }
+            foreach (var tri in createdTriangles)
+            {
+                notifyTriangleAddition(tri);
+            }
+        }
+
+        public static void AddVertexToConvexHull2(IList<Edge2D> hull, Vector2D v, NotifyEdgeRemoval notifyEdgeRemoval, 
+            NotifyEdgeAddition notifyEdgeAddition, NotifyTriangleRemoval notifyTriangleRemoval,
+            NotifyTriangleAddition notifyTriangleAddition)
+        {
+            int start, end;
+            hull.GetEdgedConvexHullEnds(v, out start, out end);
+            var end1 = (end + 1) % hull.Count;
+            Edge2D e1 = null;
+            Vector2D v1 = null;
+            var newTriangles = new List<Triangle2D>();
+            var newEdges = new List<Edge2D>();
+            Edge2D firstEdge = null;
+            var count = 0;
+            for (var i = start; i != end1; i = (i + 1) % hull.Count)
+            {
+                if (i == start)
+                {
+                    e1 = new Edge2D();
+                    v1 = (Vector2D)hull.GetFirstVertex(i);
+                    e1.Connect(v1, v);
+                    notifyEdgeAddition(e1);
+                    newEdges.Add(e1);
+                    firstEdge = e1;
+                }
+                var e2 = new Edge2D();
+                var v2 = (Vector2D)hull.GetSecondVertex(i);
+                e2.Connect(v2, v);
+                var tri = new Triangle2D();
+                tri.Setup(v1, v, v2, e1, e2, hull[i]);
+                notifyTriangleAddition(tri);
+                newTriangles.Add(tri);
+                newEdges.Add(e2);
+                notifyEdgeAddition(e2);
+                e1 = e2;
+                v1 = v2;
+                count++;
+            }
+
+            var shift = start + count - hull.Count;
+            if (shift < 0) shift = 0;
+            hull.RemoveRange(start, count);
+            hull.Insert(start - shift, firstEdge);
+            hull.Insert(start - shift + 1, e1);
+
+            foreach (var tri in newTriangles)
+            {
+                tri.Validate(e => !newEdges.Contains(e), (newEdge, oldEdge) =>
+                {
+                    var oldtri1 = (Triangle2D)oldEdge.Surface1;
+                    var oldtri2 = (Triangle2D)oldEdge.Surface2;
+
+                    var newtri1 = (Triangle2D)newEdge.Surface1;
+                    var newtri2 = (Triangle2D)newEdge.Surface2;
+
+                    notifyEdgeRemoval(oldEdge);
+                    notifyEdgeAddition(newEdge);
+
+                    notifyTriangleRemoval(oldtri1);
+                    notifyTriangleRemoval(oldtri2);
+
+                    notifyTriangleAddition(newtri1);
+                    notifyTriangleAddition(newtri2);
+                });
             }
         }
 
@@ -238,10 +371,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             IReadOnlyList<Edge2D> elist, ICollection<Triangle2D> triangles, ICollection<Edge2D> newEdges)
         {
             Edge2D eNew = null, eFirst = null;
-            for (var i = 0; i < vlist.Count; i++)
+            for (var i = 0; i < vlist.Count-1; i++)
             {
                 var v1 = vlist[i];
-                var v2 = vlist[(i + 1)%vlist.Count];
+                var v2 = vlist[i+1];
                 var e12 = elist[i];
                 Edge2D eOld;
                 if (i == 0)
@@ -255,7 +388,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     eOld = eNew;
                 }
 
-                if (i == vlist.Count - 1)
+                if (v2 == vlist[0])
                 {
                     eNew = eFirst;
                 }
@@ -278,7 +411,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="eset">The edge set to sort out</param>
         /// <param name="vlist">The vertex list, first edge of <paramref name="elist"/>starts from the first vertex in the list</param>
         /// <param name="elist">The edge list first vertex of first of which is the first vertex of <paramref name="vlist"/></param>
-        private static void SortEdges(HashSet<Edge2D> eset,  out List<Vector2D> vlist, out List<Edge2D> elist)
+        private static void SortEdges(ISet<Edge2D> eset,  out List<Vector2D> vlist, out List<Edge2D> elist)
         {
             elist = new List<Edge2D>();
             vlist = new List<Vector2D>();
@@ -318,15 +451,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             var ecurr  = eset.First();
 
             elist.Add(ecurr);
-            var elast = ecurr;
-            var vfirst = ecurr.V1;
-            vlist.Add(vfirst);
-            var vcurr = ecurr.V2;
+            var vcurr = ecurr.V1;
+            vlist.Add(vcurr);
+            vcurr = ecurr.V2;
+            vlist.Add(vcurr);
 
-            do
+            for (var i = 1; i < eset.Count; i++)
             {
-                vlist.Add(vcurr);
                 var vlast = vcurr;
+                var elast = ecurr;
 
                 var e1 = dict[vcurr][0];
                 var e2 = dict[vcurr][1];
@@ -334,8 +467,118 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
 
                 elist.Add(ecurr);
                 vcurr = ecurr.V1 == vlast ? ecurr.V2 : ecurr.V1;
-                elast = ecurr;
-            } while (vcurr != vfirst);
+                vlist.Add(vcurr);
+            }
+        }
+
+        private static void SortEdgesNonlooped(ISet<Edge2D> eset, out List<Vector2D> vlist, out List<Edge2D> elist)
+        {
+            elist = new List<Edge2D>();
+            vlist = new List<Vector2D>();
+
+            var dict = new Dictionary<Vector2D, Edge2D[]>();
+
+            foreach (var e in eset)
+            {
+                Edge2D[] edges;
+                if (!dict.TryGetValue(e.V1, out edges))
+                {
+                    dict[e.V1] = edges = new Edge2D[2];
+                }
+                if (edges[0] == null)
+                {
+                    edges[0] = e;
+                }
+                else
+                {
+                    edges[1] = e;
+                }
+
+                if (!dict.TryGetValue(e.V2, out edges))
+                {
+                    dict[e.V2] = edges = new Edge2D[2];
+                }
+                if (edges[0] == null)
+                {
+                    edges[0] = e;
+                }
+                else
+                {
+                    edges[1] = e;
+                }
+            }
+
+            var efirst = eset.First();
+            elist.Add(efirst);
+
+            var v1 = efirst.V1;
+            var v2 = efirst.V2;
+            vlist.Add(v1);
+            vlist.Add(v2);
+
+            Edge2D ecurr;
+            for (var elast = efirst; ; elast = ecurr)
+            {
+                var ee = dict[v1];
+                var e1 = ee[0];
+                var e2 = ee[1];
+                ecurr = elast == e1 ? e2 : e1;
+                if (ecurr == null)
+                {
+                    break;
+                }
+                elist.Insert(0, ecurr);
+
+                v1 = ecurr.V1 == v1 ? ecurr.V2 : ecurr.V1;
+                vlist.Insert(0, v1);
+            }
+
+            for (var elast = efirst; ; elast = ecurr)
+            {
+                var ee = dict[v2];
+                var e1 = ee[0];
+                var e2 = ee[1];
+                ecurr = elast == e1 ? e2 : e1;
+                if (ecurr == null)
+                {
+                    break;
+                }
+                elist.Add(ecurr);
+
+                v2 = ecurr.V2 == v2 ? ecurr.V1 : ecurr.V2;
+                vlist.Add(v2);
+            }
+        }
+
+
+        private static void GetAffectedEdges(IEnumerable<Edge2D> initialEdges, IVector2D v,
+            out HashSet<Edge2D> boundingEdges, out HashSet<Edge2D> edgesToDelete)
+        {
+            var testedTriangles = new HashSet<Triangle2D>();
+            var edgeCounter = new Dictionary<IEdge2D, int>();
+            var tq = new Queue<Triangle2D>();
+
+            var initialVertices = new HashSet<Vector2D>();
+            foreach (var initialEdge in initialEdges)
+            {
+                edgeCounter[initialEdge] = 1;
+                initialVertices.Add(initialEdge.V1);
+                initialVertices.Add(initialEdge.V2);
+            }
+
+            var trianglesToAdd = new HashSet<Triangle2D>();
+            foreach (var initialVertex in initialVertices)
+            {
+                initialVertex.AddNeightbouringTriangles(trianglesToAdd);
+            }
+
+            foreach (var tri in trianglesToAdd)
+            {
+                tq.Enqueue(tri);
+                testedTriangles.Add(tri);
+            }
+
+            Pickup(v, tq, edgeCounter, testedTriangles, out boundingEdges, out edgesToDelete);
         }
 
         /// <summary>
@@ -350,12 +593,20 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             out HashSet<Edge2D> boundingEdges, out HashSet<Edge2D> edgesToDelete)
         {
             var testedTriangles = new HashSet<Triangle2D>();
-            var edgeCounter = new Dictionary<IEdge2D, int>();
             var tq = new Queue<Triangle2D>();
+
+            var edgeCounter = new Dictionary<IEdge2D, int>();
 
             tq.Enqueue(triangle);
             testedTriangles.Add(triangle);
 
+            Pickup(v, tq, edgeCounter, testedTriangles, out boundingEdges, out edgesToDelete);
+        }
+
+        private static void Pickup(IVector2D v, Queue<Triangle2D> tq, Dictionary<IEdge2D, int> edgeCounter,
+            ISet<Triangle2D> testedTriangles, out HashSet<Edge2D> boundingEdges, out HashSet<Edge2D> edgesToDelete)
+        {
+            
             while (tq.Count > 0)
             {
                 var t = tq.Dequeue();
@@ -401,17 +652,18 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     }
                 }
             }
+
             boundingEdges = new HashSet<Edge2D>();
             edgesToDelete = new HashSet<Edge2D>();
             foreach (var kvp in edgeCounter)
             {
                 if (kvp.Value == 1)
                 {
-                    boundingEdges.Add((Edge2D) kvp.Key);
+                    boundingEdges.Add((Edge2D)kvp.Key);
                 }
                 else
                 {
-                    edgesToDelete.Add((Edge2D) kvp.Key);
+                    edgesToDelete.Add((Edge2D)kvp.Key);
                 }
             }
         }

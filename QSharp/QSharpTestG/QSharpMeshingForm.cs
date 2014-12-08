@@ -57,6 +57,7 @@ namespace QSharpTestG
         private Pen _shinyLinePen;
 
         private Pen _meshPen;
+        private Pen _hullPen;
 
         private Pen _ccPen;
 
@@ -65,6 +66,7 @@ namespace QSharpTestG
 
         private readonly List<IVector2D> _circumcenters = new List<IVector2D>();
         private readonly List<double> _circumradius = new List<double>();
+        private List<Edge2D> _hull;
 
         #endregion
 
@@ -182,7 +184,6 @@ namespace QSharpTestG
             switch (CurrentMode)
             {
                 case Modes.DefiningPolygons:
-                   
                     _polygons.Add(_drawnPoly.ToList());
                     break;
                 case Modes.DefiningPolylines:
@@ -234,16 +235,15 @@ namespace QSharpTestG
             var vertices = DelaunayTest.GenerateRandomVertices(marginX, marginY, 
                 MeshingPictureBox.Width - marginX * 2,
                 MeshingPictureBox.Height - marginY, 
-                20, 20);
+                20, 30);
             _points.AddRange(vertices);
             InvalidateView();
         }
 
         private void triangulateVerticesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Edge2D> hull;
             HashSet<Triangle2D> triangles;
-            DelaunayTest.TriangulateVertices(_points, out _meshEdges, out triangles, out hull);
+            DelaunayTest.TriangulateVertices(_points, out _meshEdges, out triangles, out _hull);
             InvalidateView();
         }
 
@@ -329,6 +329,7 @@ namespace QSharpTestG
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
             _shinyLinePen = new Pen(Color.Orange, 1);
             _meshPen = new Pen(Color.DeepPink, 1);
+            _hullPen = new Pen(Color.Brown, 2);
             _ccPen = new Pen(Color.GreenYellow, 1);
         }
 
@@ -402,6 +403,15 @@ namespace QSharpTestG
                         var v1 = edge.V1;
                         var v2 = edge.V2;
                         g.DrawLine(_meshPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                    }
+                }
+                if (_hull != null)
+                {
+                    foreach (var edge in _hull)
+                    {
+                        var v1 = edge.V1;
+                        var v2 = edge.V2;
+                        g.DrawLine(_hullPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
                     }
                 }
                 if (_circumcenters.Any())
