@@ -12,18 +12,63 @@ namespace QSharpTest.Shader.Geometry.Triangulation
     [TestClass]
     public class DelaunayTest
     {
+        [TestMethod]
+        public void RandomDelanayTriangulationTest()
+        {
+            const double minx = 20;
+            const double miny = 20;
+            const double maxx = 780;
+            const double maxy = 580;
+            const double epsilon = 5;
+            var rand = new Random(123);
+            for (var t = 0; t < 100; t++)
+            {
+                var count = rand.Next(20, 100);
+                var vertices = GenerateRandomVertices(minx, miny, maxx, maxy, epsilon, count).ToList();
+                List<Edge2D> hull;
+                HashSet<Triangle2D> triangles;
+                HashSet<Edge2D> edges;
+                TriangulateVertices(vertices, out edges, out triangles, out hull);
+                var b = IsDelaunayMesh(vertices, triangles);
+                Assert.IsTrue(b);
+            }
+        }
+
+        [TestMethod]
+        public void SingleDelanayTriangulationTest()
+        {
+            const double minx = -200.0;
+            const double miny = -200.0;
+            const double maxx = 200.0;
+            const double maxy = 200.0;
+            const double epsilon = 20;
+            const int count = 30;
+            var vertices = GenerateRandomVertices(minx, miny, maxx, maxy, epsilon, count).ToList();
+            List<Edge2D> hull;
+            HashSet<Triangle2D> triangles;
+            HashSet<Edge2D> edges;
+            TriangulateVertices(vertices, out edges, out triangles, out hull);
+            var b = IsDelaunayMesh(vertices, triangles);
+            Assert.IsTrue(b);
+        }
+
         public static IEnumerable<Vector2D> GenerateRandomVertices(double minx, double miny, double maxx, 
             double maxy, double epsilon, int count)
         {
             var rand = new Random(123);
-            //var rand = new Random(123);
+            return GenerateRandomVertices(rand, minx, miny, maxx, maxy, epsilon, count);
+        }
+
+        public static IEnumerable<Vector2D> GenerateRandomVertices(Random rand, double minx, double miny, double maxx,
+            double maxy, double epsilon, int count)
+        {
             var list = new List<Vector2D>();
-            var ee = epsilon*epsilon;
+            var ee = epsilon * epsilon;
             for (; list.Count < count; )
             {
-                var x = rand.NextDouble()*(maxx - minx) + minx;
-                var y = rand.NextDouble()*(maxy - miny) + miny;
-                var nv = new Vector2D {X = x, Y = y};
+                var x = rand.NextDouble() * (maxx - minx) + minx;
+                var y = rand.NextDouble() * (maxy - miny) + miny;
+                var nv = new Vector2D { X = x, Y = y };
 
                 // check against existing vertices
                 var valid = list.All(v => v.GetSquareDistance(nv) > ee);
@@ -86,6 +131,27 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             edges = localEdges;
         }
 
+        private static bool IsDelaunayMesh(IEnumerable<Vector2D> vertices, IEnumerable<Triangle2D> triangles)
+        {
+            var vlist = vertices as IList<Vector2D> ?? vertices.ToList();
+
+            foreach (var tri in triangles)
+            {
+                foreach (var v in vlist)
+                {
+                    if (tri.A == v || tri.B == v || tri.C == v)
+                    {
+                        continue;
+                    }
+                    var d = v.GetSquareDistance(tri.Circumcenter);
+                    if (d < tri.SquareCircumradius)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         
         private static Triangle2D GetFirstTriangle(ICollection<Vector2D> vertexSet)
         {
