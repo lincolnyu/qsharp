@@ -101,12 +101,12 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
-        ///  
+        ///  Returns the two points where the two tanglent lines starting <paramref name="v"/> touch the specified convex hull
         /// </summary>
         /// <param name="hull">Vertices on the hull in counterclockwise order</param>
-        /// <param name="v"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
+        /// <param name="v">The point where the radient tangent line starts</param>
+        /// <param name="start">The first point of the bright region in counterclockwise order</param>
+        /// <param name="end">The last point</param>
         public static void GetConvexHullEnds<TVector2D>(this IList<TVector2D> hull, IVector2D v, out int start,
             out int end) where TVector2D : IVector2D
         {
@@ -259,7 +259,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
         }
 
-        public static bool VertexIsInside(this IEnumerable<IVector2D> polygon, IVector2D vertex)
+        public static bool VertexIsInside<TVector2D>(this IEnumerable<TVector2D> polygon, 
+            IVector2D vertex) where TVector2D : IVector2D
         {
             var vv = new Vector2D();
             var lastvv = new Vector2D();
@@ -315,6 +316,42 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
+        ///  Tests if <paramref name="testee"/> is inside <paramref name="polygon"/>
+        /// </summary>
+        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <param name="polygon">The polygon to see if containing <paramref name="testee"/></param>
+        /// <param name="testee">The polygon to see if contained</param>
+        /// <returns>true if it is inside</returns>
+        public static bool PolygonIsInside<TVector2D>(this IList<TVector2D> polygon, IList<TVector2D> testee)
+            where TVector2D : IVector2D
+        {
+            var v = testee[0];
+            var inside = polygon.VertexIsInside(v);
+            if (!inside)
+            {
+                return false;
+            }
+            var intersect = new Vector2D();
+            for (var i = 0; i < testee.Count; i++)
+            {
+                var a1 = testee[i];
+                var a2 = testee[(i + 1) % testee.Count];
+
+                for (var j = 0; j < polygon.Count; j++)
+                {
+                    var b1 = polygon[j];
+                    var b2 = polygon[(j + 1) % polygon.Count];
+
+                    if (VertexHelper.EdgesIntersect(a1, a2, b1, b2, intersect))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         ///  Returns the the specified edge's natural direction is the same as the front where the edge is
         /// </summary>
         /// <param name="edges">All the edges that constitute the polygon</param>
@@ -331,29 +368,37 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return (edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2);
         }
 
-        public static void RemoveRange<TEdge2D>(this IList<TEdge2D> edges, int start, int count)
+        /// <summary>
+        ///  Removes a continuous range of items from a looped list
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the list</typeparam>
+        /// <param name="loop">The list</param>
+        /// <param name="start">The first item to delete</param>
+        /// <param name="count">The number of consecutive items starting from and including the above</param>
+        public static void RemoveRange<T>(this IList<T> loop, int start, int count)
         {
-            var r = count - (edges.Count - start);
+            var r = count - (loop.Count - start);
             if (r <= 0)
             {
                 for (var i = start + count - 1; i >= start; i--)
                 {
-                    edges.RemoveAt(i);
+                    loop.RemoveAt(i);
                 }
             }
             else
             {
-                for (var i = edges.Count - 1; i >= start; i--)
+                for (var i = loop.Count - 1; i >= start; i--)
                 {
-                    edges.RemoveAt(i);
+                    loop.RemoveAt(i);
                 }
                 for (var i = r-1; i >= 0; i--)
                 {
-                    edges.RemoveAt(i);
+                    loop.RemoveAt(i);
                 }
             }
         }
 
+        
         #endregion
     }
 }

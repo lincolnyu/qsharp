@@ -24,11 +24,19 @@ namespace QSharpTestG
             Deleting,
         }
 
+        public enum PolygonState
+        {
+            Normal,
+            Contained,
+        }
+
         #endregion
 
         #region Fields
 
         private readonly List<List<Vector2D>> _polygons = new List<List<Vector2D>>();
+
+        private PolygonState[] _polygonStates;
 
         private readonly List<List<Vector2D>> _polylines = new List<List<Vector2D>>();
 
@@ -37,6 +45,7 @@ namespace QSharpTestG
         private HashSet<Edge2D> _meshEdges = new HashSet<Edge2D>();
 
         private Pen _polygonPen;
+        private Pen _internalPolygonPen;
 
         private Pen _polylinePen;
 
@@ -185,6 +194,7 @@ namespace QSharpTestG
             {
                 case Modes.DefiningPolygons:
                     _polygons.Add(_drawnPoly.ToList());
+                    UpdatePolygonStates();
                     break;
                 case Modes.DefiningPolylines:
                     _polylines.Add(_drawnPoly.ToList());
@@ -245,6 +255,11 @@ namespace QSharpTestG
             HashSet<Triangle2D> triangles;
             DelaunayTest.TriangulateVertices(_points, out _meshEdges, out triangles, out _hull);
             InvalidateView();
+        }
+
+        private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void shineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -322,7 +337,8 @@ namespace QSharpTestG
 
         private void InitializeGraphics()
         {
-            _polygonPen = new Pen(Color.Blue, 1);
+            _polygonPen = new Pen(Color.Blue, 2);
+            _internalPolygonPen = new Pen(Color.Purple, 1);
             _polylinePen = new Pen(Color.Green, 2);
             _pointBrush = new SolidBrush(Color.Red);
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
@@ -363,9 +379,12 @@ namespace QSharpTestG
             using (var g = Graphics.FromImage(image))
             {
                 g.Clear(Color.White);
-                foreach (var polygon in _polygons)
+                for (var i = 0; i < _polygons.Count; i++)
                 {
-                    DrawPolygon(g, _polygonPen, polygon);
+                    var info = _polygonStates[i];
+                    var polygon = _polygons[i];
+                    var pen = info == PolygonState.Normal ? _polygonPen : _internalPolygonPen;
+                    DrawPolygon(g, pen, polygon);
                 }
                 foreach (var polyline in _polylines)
                 {
@@ -448,6 +467,27 @@ namespace QSharpTestG
             }
         }
 
+        private void UpdatePolygonStates()
+        {
+            _polygonStates = new PolygonState[_polygons.Count];
+            for (var i = 0; i < _polygons.Count; i++)
+            {
+                var pi = _polygons[i];
+                _polygonStates[i] = PolygonState.Normal;
+                for (var j = 0; j < _polygons.Count; j++)
+                {
+                    if (j == i) continue;
+                    var pj = _polygons[j];
+                    if (pj.PolygonIsInside(pi))
+                    {
+                        _polygonStates[i] = PolygonState.Contained;
+                        break;
+                    }
+                }
+            }
+        }
+
         #endregion
+
     }
 }

@@ -43,8 +43,8 @@
             this.triangulateAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
             this.circumcirclesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -153,6 +153,7 @@
             this.triangulateAllToolStripMenuItem.Name = "triangulateAllToolStripMenuItem";
             this.triangulateAllToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.triangulateAllToolStripMenuItem.Text = "Triangulate All";
+            this.triangulateAllToolStripMenuItem.Click += new System.EventHandler(this.triangulateAllToolStripMenuItem_Click);
             // 
             // testToolStripMenuItem
             // 
@@ -166,9 +167,16 @@
             // shineToolStripMenuItem
             // 
             this.shineToolStripMenuItem.Name = "shineToolStripMenuItem";
-            this.shineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.shineToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.shineToolStripMenuItem.Text = "Shine";
             this.shineToolStripMenuItem.Click += new System.EventHandler(this.shineToolStripMenuItem_Click);
+            // 
+            // circumcirclesToolStripMenuItem
+            // 
+            this.circumcirclesToolStripMenuItem.Name = "circumcirclesToolStripMenuItem";
+            this.circumcirclesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.circumcirclesToolStripMenuItem.Text = "Circumcircles";
+            this.circumcirclesToolStripMenuItem.Click += new System.EventHandler(this.circumcirclesToolStripMenuItem_Click);
             // 
             // MeshingPictureBox
             // 
@@ -184,13 +192,6 @@
             this.MeshingPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseDown);
             this.MeshingPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseMove);
             this.MeshingPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseUp);
-            // 
-            // circumcirclesToolStripMenuItem
-            // 
-            this.circumcirclesToolStripMenuItem.Name = "circumcirclesToolStripMenuItem";
-            this.circumcirclesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.circumcirclesToolStripMenuItem.Text = "Circumcircles";
-            this.circumcirclesToolStripMenuItem.Click += new System.EventHandler(this.circumcirclesToolStripMenuItem_Click);
             // 
             // QSharpMeshingForm
             // 

@@ -123,12 +123,12 @@ namespace QSharp.Shader.Geometry.Euclid2D
         public static bool EdgesIntersect(IVector2D e1V1, IVector2D e1V2, IVector2D e2V1, IVector2D e2V2,
             IMutableVector2D intersect)
         {
-            var a1 = e1V1.X - e1V1.X;
+            var a1 = e1V1.X - e1V2.X;
             var b1 = e2V2.X - e2V1.X;
-            var c1 = e1V1.X - e2V2.X;
-            var a2 = e1V1.Y - e1V1.Y;
+            var c1 = e1V2.X - e2V2.X;
+            var a2 = e1V1.Y - e1V2.Y;
             var b2 = e2V2.Y - e2V1.Y;
-            var c2 = e1V1.Y - e2V2.Y;
+            var c2 = e1V2.Y - e2V2.Y;
             if (Math.Abs(a1*b2 - a2*b1) < double.Epsilon)
             {
                 return false; // parallel or colinear
