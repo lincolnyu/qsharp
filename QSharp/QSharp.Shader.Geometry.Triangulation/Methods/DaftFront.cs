@@ -6,7 +6,7 @@ using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 namespace QSharp.Shader.Geometry.Triangulation.Methods
 {
     /// <summary>
-    ///  Represents a daft front (wave) which is always closed
+    ///  Represents a DAFT front (wave) which is always closed
     /// </summary>
     /// <remarks>
     ///  The direction of a wave is defined as per the comments for the property of Edges
@@ -15,6 +15,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
     {
         #region Constructors
 
+        /// <summary>
+        ///  Constructs a DAFT front with the specified traits
+        /// </summary>
+        /// <param name="inwards">If the front is going inwards</param>
         public DaftFront(bool inwards)
         {
             IsInwards = inwards;
@@ -25,6 +29,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
         #region Properties
 
+        /// <summary>
+        ///  If this front is developing inwards
+        /// </summary>
         public bool IsInwards
         {
             get; private set;
@@ -32,15 +39,16 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
         /// <summary>
         ///  Edges in the order such that
-        ///  1. if the front has more than two edges
+        ///  1. if the front forms fully or partially a polygon (has a positive area)
         ///   1.1. if the front is moving outwards, clockwise
         ///   1.2. if its moving inwards, counterclockwise
         ///   (Therefore the normal vector is always pointing to the left hand side)
-        ///  2. if the front has only two edges (must be the same)
-        ///   Then the front has to be moving outwards, and the order doesn't matter as they are the same
-        ///   however for the counterclockwiseness to hold, the first edge is conceptually the one whose
-        ///   natural left handside normal vector is the same as the front, whereas the second is the
-        ///   other way around
+        ///  2. if the front is a doubled polyline (each edge of which is passed twice)
+        ///   As the front has to be moving outwards, the direction of the repeated polyline has to be clockwise
+        ///   And actualy every two repeated edge pairs are overlapped, the direction can only manifest when a normal
+        ///   vector is drawn.
+        ///   2.1 if the polyline has only one edge, the order (of vertices) is determined by the vertices of the first edge
+        ///   2.1 if it has more than one edge, the direction is determined by the edges
         /// </summary>
         public List<Edge2D> Edges
         {
@@ -51,7 +59,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         ///  All vertices in the order they appear with the edge list
         /// </summary>
         /// <remarks>
-        ///  As a daft front is always closed  so the first vertex is repeated at last
+        ///  As a DAFT front is always closed  so the first vertex is repeated at last
         /// </remarks>
         public IEnumerable<Vector2D> Vertices
         {
@@ -65,6 +73,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
         #region Methods
 
+        /// <summary>
+        ///  Returns if the front contains the specified vertex and the edges adjacent to it if it does
+        /// </summary>
+        /// <param name="v">The vertex to test</param>
+        /// <param name="edgeIndex1">The index of the edge that precedes the vertex if any</param>
+        /// <param name="edgeIndex2">The index of the edge that succeeds the vertex if any</param>
+        /// <returns>True if the vertex is contained in the front</returns>
         public bool ContainsVertex(Vector2D v, out int edgeIndex1, out int edgeIndex2)
         {
             for (var i = 0; i < Edges.Count; i++)
@@ -80,6 +95,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return false;
         }
 
+        /// <summary>
+        ///  Gets the bounding box dimensions of the front
+        /// </summary>
+        /// <param name="minx">The minimum x</param>
+        /// <param name="miny">The minimum y</param>
+        /// <param name="maxx">The maximum x</param>
+        /// <param name="maxy">The maximum y</param>
         public void GetDimensions(out double minx, out double miny, out double maxx, out double maxy)
         {
             miny = minx = double.MaxValue;
@@ -277,6 +299,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return v.VertexRelativeToEdge(v1, v2);
         }
 
+        /// <summary>
+        ///  Removes edges from the loop within the range
+        /// </summary>
+        /// <param name="startEdgeIndex">The index of the first edge in the range</param>
+        /// <param name="endEdgeIndexPlus1">The index one after the last edge in the range</param>
         private void RemoveRange(int startEdgeIndex, int endEdgeIndexPlus1)
         {
             if (startEdgeIndex < endEdgeIndexPlus1)
@@ -291,48 +318,31 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             // range being 0 is interpreted as removing nothing
         }
 
+        /// <summary>
+        ///  Returns all the vertices that appear in order on the chain of the edges specified by the indices
+        ///  including the starting vertex of the first edge and the ending vertex of the last edge
+        /// </summary>
+        /// <param name="startEdgeIndex">The index of the starting edge</param>
+        /// <param name="endEdgeIndexPlus1">The index of the edge after the ending edge</param>
+        /// <returns>The list of vertices</returns>
         public IEnumerable<Vector2D> GetVertices(int startEdgeIndex, int endEdgeIndexPlus1)
         {
-            if (Edges.Count == 2)
-            {
-                if (startEdgeIndex + 1 == endEdgeIndexPlus1)
-                {
-                    if (startEdgeIndex == 0)
-                    {
-                        yield return Edges[0].V1;
-                        yield return Edges[0].V2;
-                    }
-                    else
-                    {
-                        yield return Edges[0].V2;
-                        yield return Edges[0].V1;
-                    }
-                }
-                else
-                {
-                    yield return Edges[0].V1;
-                    yield return Edges[0].V2;
-                    yield return Edges[0].V1;
-                }
-                yield break;
-            }
-
             var first = Edges[startEdgeIndex];
             var second = Edges[IncIndex(startEdgeIndex)];
             Vector2D vlast;
-            if (first.V1 == second.V1 || first.V1 == second.V2)
-            {
-                yield return first.V2;
-                yield return first.V1;
-                vlast = first.V1;
-            }
-            else
+            if (first.V2 == second.V1 || first.V2 == second.V2)
             {
                 yield return first.V1;
                 yield return first.V2;
                 vlast = first.V2;
             }
-            for (var i = startEdgeIndex + 1; i != endEdgeIndexPlus1; i = IncIndex(i))
+            else
+            {
+                yield return first.V2;
+                yield return first.V1;
+                vlast = first.V1;
+            }
+            for (var i = IncIndex(startEdgeIndex); i != endEdgeIndexPlus1; i = IncIndex(i))
             {
                 var v1 = Edges[i].V1;
                 var v2 = Edges[i].V2;
@@ -341,48 +351,31 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Returns in reverse order all the vertices that appear on the chain of the edges specified 
+        ///  by the indices including the starting vertex of the first edge and the ending vertex of the last edge
+        /// </summary>
+        /// <param name="startEdgeIndex">The index of the starting edge</param>
+        /// <param name="endEdgeIndexMinus1">The index of the edge before the ending edge</param>
+        /// <returns>The list of vertices</returns>
         public IEnumerable<Vector2D> GetVerticesReverse(int startEdgeIndex, int endEdgeIndexMinus1)
         {
-            if (Edges.Count == 2)
-            {
-                if (startEdgeIndex - 1 == endEdgeIndexMinus1)
-                {
-                    if (startEdgeIndex == 0)
-                    {
-                        yield return Edges[0].V1;
-                        yield return Edges[0].V2;
-                    }
-                    else
-                    {
-                        yield return Edges[0].V2;
-                        yield return Edges[0].V1;
-                    }
-                }
-                else
-                {
-                    yield return Edges[0].V2;
-                    yield return Edges[0].V1;
-                    yield return Edges[0].V2;
-                }
-                yield break;
-            }
-
             var first = Edges[startEdgeIndex];
             var second = Edges[DecIndex(startEdgeIndex)];
             Vector2D vlast;
-            if (first.V1 == second.V1 || first.V1 == second.V2)
-            {
-                yield return first.V2;
-                yield return first.V1;
-                vlast = first.V1;
-            }
-            else
+            if (first.V2 == second.V1 || first.V2 == second.V2)
             {
                 yield return first.V1;
                 yield return first.V2;
                 vlast = first.V2;
             }
-            for (var i = startEdgeIndex + 1; i != endEdgeIndexMinus1; i = DecIndex(i))
+            else
+            {
+                yield return first.V2;
+                yield return first.V1;
+                vlast = first.V1;
+            }
+            for (var i = DecIndex(startEdgeIndex); i != endEdgeIndexMinus1; i = DecIndex(i))
             {
                 var v1 = Edges[i].V1;
                 var v2 = Edges[i].V2;
@@ -391,6 +384,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Returns the index after the current index in the front loop
+        /// </summary>
+        /// <param name="index">The index to return the index after</param>
+        /// <returns>The index after</returns>
         public int IncIndex(int index)
         {
             index++;
@@ -401,6 +399,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return index;
         }
 
+        /// <summary>
+        ///  Returns the index before the current index in the front loop
+        /// </summary>
+        /// <param name="index">The index to return the index before</param>
+        /// <returns>The index before</returns>
         public int DecIndex(int index)
         {
             index--;
@@ -411,29 +414,45 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return index;
         }
 
+        /// <summary>
+        ///  Adds an edge to the front loop at the specified location
+        /// </summary>
+        /// <param name="iedge">The location to add the edge at</param>
+        /// <param name="edge">The edge to add</param>
         public void AddEdge(int iedge, Edge2D edge)
         {
             Edges.Insert(iedge, edge);
         }
 
+        /// <summary>
+        /// Get the index of the specified edge
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
         public int GetEdgeIndex(Edge2D edge)
         {
             // Optimize this with balanced binary tree?
             return Edges.IndexOf(edge);
         }
 
+        /// <summary>
+        ///  Returns the first vertex of the edge with the specifed index in the edge loop
+        /// </summary>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <returns>The first vertex</returns>
         public Vector2D GetFirstVertex(int edgeIndex)
         {
-            var esd = Edges.IsEdgeSameDirection(edgeIndex);
-            var edge = Edges[edgeIndex];
-            return esd ? edge.V1 : edge.V2;
+            return (Vector2D)Edges.GetFirstVertex(edgeIndex);
         }
 
+        /// <summary>
+        ///  Returns the second vertex of the edge with the specified index in the edge loop
+        /// </summary>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <returns>The second vertex</returns>
         public Vector2D GetSecondVertex(int edgeIndex)
         {
-            var esd = Edges.IsEdgeSameDirection(edgeIndex);
-            var edge = Edges[edgeIndex];
-            return esd ? edge.V1 : edge.V2;
+            return (Vector2D)Edges.GetSecondVertex(edgeIndex);
         }
         
         #endregion

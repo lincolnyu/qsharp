@@ -42,9 +42,19 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// </summary>
         public HashSet<DaftFront> Inwards { get; private set; }
 
+        /// <summary>
+        ///  Edges sorted by coordinates that can be fast searched
+        /// </summary>
         public SortedDictionary<Edge2D, Edge2D> SortedFrontEdges { get; private set; }
 
+        /// <summary>
+        ///  maps edges to corresponding outward fronts
+        /// </summary>
         public Dictionary<Edge2D, DaftFront> OutwardsDict { get; private set; }
+
+        /// <summary>
+        ///  maps edges to corresponding inward fronts
+        /// </summary>
         public Dictionary<Edge2D, DaftFront> InwardsDict { get; private set; }
 
         public QuadTree Qst { get; private set; }

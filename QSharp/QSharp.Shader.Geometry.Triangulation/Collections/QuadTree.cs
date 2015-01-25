@@ -12,10 +12,16 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
     {
         #region Nested types
 
+        /// <summary>
+        ///  Comapres the edges by X coordinates and then Y coordinates in ascending order for sorting purposes
+        /// </summary>
         public class EdgeComparer : IComparer<Edge2D>
         {
             #region Properties
 
+            /// <summary>
+            ///  The singleton of this class
+            /// </summary>
             public static readonly EdgeComparer Instance = new EdgeComparer();
 
             #endregion
@@ -24,6 +30,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
 
             #region IComparer<Edge2D> members
 
+            /// <summary>
+            ///  Compares two edges by the x and then y coordinates in ascending order
+            /// </summary>
+            /// <param name="x"></param>
+            /// <param name="y"></param>
+            /// <returns></returns>
             public int Compare(Edge2D x, Edge2D y)
             {
                 if (ReferenceEquals(x, y))

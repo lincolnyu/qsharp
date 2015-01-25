@@ -176,6 +176,12 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
         }
 
+        /// <summary>
+        ///  Returns the first vertex of the edge with the specifed index in the edge loop
+        /// </summary>
+        /// <param name="polygon">The edge loop</param>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <returns>The first vertex</returns>
         public static IVector2D GetFirstVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
             where TEdge2D : IEdge2D
         {
@@ -184,6 +190,12 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return esd ? edge.Vertex1 : edge.Vertex2;
         }
 
+        /// <summary>
+        ///  Returns the second vertex of the edge with the specified index in the edge loop
+        /// </summary>
+        /// <param name="polygon">The edge loop</param>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <returns>The second vertex</returns>
         public static IVector2D GetSecondVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
             where TEdge2D : IEdge2D
         {
@@ -192,6 +204,14 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return esd ? edge.Vertex2 : edge.Vertex1;
         }
 
+        /// <summary>
+        ///  Returns the relationship between the vertex and edge (left, right or on the edge)
+        /// </summary>
+        /// <typeparam name="TEdge2D">The edge type</typeparam>
+        /// <param name="polygon">The edge loop</param>
+        /// <param name="edgeIndex">The edge to test</param>
+        /// <param name="v">The vertex to get the relationship with the edge</param>
+        /// <returns>-1 : vertex is on the right hand side; 1: left; 0 exactly on the same line</returns>
         public static int VertexRelativeToEdge<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex, IVector2D v)
             where TEdge2D : IEdge2D
         {
@@ -200,6 +220,14 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return v.VertexRelativeToEdge(v1, v2);
         }
 
+        /// <summary>
+        ///  Returns the starting and ending edges on the hull where the tangent lines from the specified vertex meet the hull
+        /// </summary>
+        /// <typeparam name="TEdge2D">Tge edge type</typeparam>
+        /// <param name="hull">The hull</param>
+        /// <param name="v">The vertex to test</param>
+        /// <param name="start">To return the starting index</param>
+        /// <param name="end">To return the ending index</param>
         public static void GetEdgedConvexHullEnds<TEdge2D>(this IList<TEdge2D> hull, IVector2D v, out int start,
             out int end) where TEdge2D : IEdge2D
         {
@@ -258,7 +286,14 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 }
             }
         }
-
+        
+        /// <summary>
+        ///  Returns if the vertex is inside the specified polygon
+        /// </summary>
+        /// <typeparam name="TVector2D">The vertex type</typeparam>
+        /// <param name="polygon">The polygon to test</param>
+        /// <param name="vertex">The vertex to see if inside the polygon</param>
+        /// <returns>True if it's inside</returns>
         public static bool VertexIsInside<TVector2D>(this IEnumerable<TVector2D> polygon, 
             IVector2D vertex) where TVector2D : IVector2D
         {
@@ -352,7 +387,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
-        ///  Returns the the specified edge's natural direction is the same as the front where the edge is
+        ///  Returns if the specified edge's natural direction is the same as the front where the edge is
+        ///  Note this method can handle polygons with overlapped edges as far as they form a loop
         /// </summary>
         /// <param name="edges">All the edges that constitute the polygon</param>
         /// <param name="edgeIndex">The index of the edge in the collection of this front</param>
@@ -365,7 +401,17 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             var edge = edges[edgeIndex];
             var next = edges[(edgeIndex + 1) % edges.Count];
-            return (edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2);
+            if (next.Equals(edge))
+            {
+                if (edges.Count == 2)
+                {
+                    return edgeIndex == 0;
+                }
+
+                var last = edges[(edgeIndex - 1)%edges.Count];
+                return edge.Vertex1 == last.Vertex1 || edge.Vertex2 == last.Vertex2;
+            }
+            return edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2;
         }
 
         /// <summary>

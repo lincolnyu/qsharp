@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using QSharp.Shader.Geometry.Euclid2D;
+using QSharp.Shader.Geometry.Triangulation.Methods;
 using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharpTest.Shader.Geometry.Triangulation;
 using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
@@ -259,7 +260,8 @@ namespace QSharpTestG
 
         private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            var daft = new Daft();
+            daft.
         }
 
         private void shineToolStripMenuItem_Click(object sender, EventArgs e)
