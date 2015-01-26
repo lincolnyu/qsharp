@@ -42,7 +42,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         ///  1. if the front forms fully or partially a polygon (has a positive area)
         ///   1.1. if the front is moving outwards, clockwise
         ///   1.2. if its moving inwards, counterclockwise
-        ///   (Therefore the normal vector is always pointing to the left hand side)
+        ///   (Therefore the normal vector is always pointing to the LEFT hand side)
         ///  2. if the front is a doubled polyline (each edge of which is passed twice)
         ///   As the front has to be moving outwards, the direction of the repeated polyline has to be clockwise
         ///   And actualy every two repeated edge pairs are overlapped, the direction can only manifest when a normal
@@ -143,6 +143,25 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return n;
         }
 
+        /// <summary>
+        ///  create a protruding triangle based on an edge
+        /// </summary>
+        /// <param name="edgeIndex">The index of the edge to extend a triangle based on</param>
+        /// <param name="nv">The vertex the new triangle uses opposite the based edge</param>
+        /// <param name="edgeOffFront">The edge from the front the triangle is based of</param>
+        /// <param name="newEdge1">The first new edge</param>
+        /// <param name="newEdge2">The second new edge</param>
+        /// <param name="newTriangle">The new triangle</param>
+        /// <remarks>
+        ///                   nv
+        ///               /        \
+        ///              /          \
+        ///    newEdge1 /            \ newEdge2
+        ///            /              \
+        ///           /                \
+        ///  ------- v1 --------------- v2 ------->
+        ///               edgeOffFront
+        /// </remarks>
         public void Stoke(int edgeIndex, Vector2D nv, out Edge2D edgeOffFront, out Edge2D newEdge1, out Edge2D newEdge2,
             out Triangle2D newTriangle)
         {
@@ -163,8 +182,29 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             newTriangle.Setup(v1, nv, v2, newEdge1, newEdge2, edgeOffFront);
         }
 
-        public void Fill(int edgeIndex, Vector2D ev, out Edge2D edgeOffFront, out Edge2D edge2OffFront, out Edge2D newEdge, 
-            out Triangle2D newTriangle)
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="edgeIndex">The index of the base edge</param>
+        /// <param name="ev">The vertex opposite the base edge</param>
+        /// <param name="edgeOffFront">The edge with the specified index</param>
+        /// <param name="edge2OffFront">The other edge removed from the front</param>
+        /// <param name="newEdge">The new edge</param>
+        /// <param name="newTriangle">The new triangle</param>
+        /// <remarks>
+        ///   
+        ///                        ev
+        ///                   /       \
+        ///                 -          \
+        ///               /             \
+        ///         prev /               \  next
+        ///            -/                 \
+        ///          /                     \
+        ///        v1 --------------------> v2
+        ///                edgeIndex
+        /// </remarks>
+        public void Fill(int edgeIndex, Vector2D ev, out Edge2D edgeOffFront, out Edge2D edge2OffFront, 
+            out Edge2D newEdge, out Triangle2D newTriangle)
         {
             edgeOffFront = Edges[edgeIndex];
             var v1 = GetFirstVertex(edgeIndex);
@@ -183,6 +223,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 Edges.RemoveAt(edgeIndex);
                 edge2OffFront = next;
                 newEdge.Connect(v1, ev);
+                Edges.Insert(edgeIndex, newEdge);
                 newTriangle.Setup(v1, ev, v2, newEdge, next, edgeOffFront);
             }
             else
@@ -191,6 +232,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 Edges.RemoveAt(prevIndex);
                 edge2OffFront = prev;
                 newEdge.Connect(v2, ev);
+                Edges.Insert(prevIndex, newEdge);
                 newTriangle.Setup(v1, v2, ev, edgeOffFront, newEdge, prev);
             }
         }
