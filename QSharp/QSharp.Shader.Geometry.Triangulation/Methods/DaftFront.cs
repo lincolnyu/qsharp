@@ -159,7 +159,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         ///    newEdge1 /            \ newEdge2
         ///            /              \
         ///           /                \
-        ///  ------- v1 --------------- v2 ------->
+        ///  ------} v1 --------------} v2 -------}
         ///               edgeOffFront
         /// </remarks>
         public void Stoke(int edgeIndex, Vector2D nv, out Edge2D edgeOffFront, out Edge2D newEdge1, out Edge2D newEdge2,
@@ -193,14 +193,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <param name="newTriangle">The new triangle</param>
         /// <remarks>
         ///   
-        ///                        ev
-        ///                   /       \
-        ///                 -          \
-        ///               /             \
-        ///         prev /               \  next
-        ///            -/                 \
-        ///          /                     \
-        ///        v1 --------------------> v2
+        ///                   ev
+        ///                 /     \
+        ///                /       \
+        ///         prev -           -  next
+        ///            /               \
+        ///           /                 \
+        ///        v1 --------------------} v2
         ///                edgeIndex
         /// </remarks>
         public void Fill(int edgeIndex, Vector2D ev, out Edge2D edgeOffFront, out Edge2D edge2OffFront, 
@@ -237,6 +236,29 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Extends the front with a triangle which splits the front out to a new front
+        /// </summary>
+        /// <param name="edgeIndex"></param>
+        /// <param name="targetEdge1Index"></param>
+        /// <param name="targetEdge2Index"></param>
+        /// <param name="newFront"></param>
+        /// <param name="bridge1"></param>
+        /// <param name="bridge2"></param>
+        /// <param name="newTriangle"></param>
+        /// <remarks>
+        /// 
+        ///   targetEdge2Index    targetEdge1Index       
+        ///   {--------------- vc {------------------- 
+        ///                    .  --
+        ///                    .     \
+        ///           bridge1  .       ---  bridge2
+        ///                    .           \
+        ///                    .             ---
+        ///    --------------} v1 ---------------} v2 ----------}
+        ///                          edgeIndex
+        /// 
+        /// </remarks>
         public void Convolve(int edgeIndex, int targetEdge1Index, int targetEdge2Index, out DaftFront newFront, 
             out Edge2D bridge1, out Edge2D bridge2, out Triangle2D newTriangle)
         {
@@ -246,27 +268,44 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var v2 = GetSecondVertex(edgeIndex);
             var rel = vc.VertexRelativeToEdge(v1, v2);
 
-            var vertices = GetVertices(edgeIndex, targetEdge1Index);
+            var vertices = GetVertices(IncIndex(edgeIndex), targetEdge2Index);
             var area = vertices.GetSignedPolygonArea();
             var isNewInwards = area > 0 ^ rel > 0;
-            newFront = new DaftFront(isNewInwards);
-            for (var i = IncIndex(edgeIndex); i != targetEdge2Index; i = IncIndex(i))
-            {
-                var e = Edges[i];
-                newFront.Edges.Add(e);
-            }
+            var wasInwards = IsInwards;
 
-            bridge1 = new Edge2D();           
+            newFront = new DaftFront(true);
+            bridge1 = new Edge2D();
             bridge1.Connect(vc, v1);
-            newFront.Edges.Add(bridge1);
-            newFront.IsInwards = true;
 
             bridge2 = new Edge2D();
             bridge2.Connect(v2, vc);
 
-            RemoveRange(edgeIndex, targetEdge2Index);
-            Edges.Insert(edgeIndex, bridge2);
-            IsInwards = !isNewInwards;
+            if (wasInwards || isNewInwards)
+            {
+                for (var i = IncIndex(edgeIndex); i != targetEdge2Index; i = IncIndex(i))
+                {
+                    var e = Edges[i];
+                    newFront.Edges.Add(e);
+                }
+
+                newFront.Edges.Add(bridge2);
+
+                var ins = RemoveRange(edgeIndex, targetEdge2Index);
+                Edges.Insert(ins, bridge1);
+            }
+            else
+            {
+                for (var i = targetEdge2Index; i != DecIndex(edgeIndex); i = IncIndex(i))
+                {
+                    var e = Edges[i];
+                    newFront.Edges.Add(e);
+                }
+
+                newFront.Edges.Add(bridge1);
+
+                var ins = RemoveRange(targetEdge2Index, IncIndex(edgeIndex));
+                Edges.Insert(ins, bridge2);
+            }
 
             newTriangle = new Triangle2D();
             if (rel > 0)
@@ -289,6 +328,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <param name="bridge1">First bridge edge</param>
         /// <param name="bridge2">Second bridge edge</param>
         /// <param name="newTriangle">The new triangle generated</param>
+        /// <remarks>
+        ///   targetEdge2Index    targetEdge1Index       
+        ///   {--------------- vc {-------------------  other front
+        ///                    .  --
+        ///                    .     \
+        ///           bridge1  .       ---  bridge2
+        ///                    .           \
+        ///                    .             ---
+        ///    --------------} v1 ---------------} v2 ----------}  this front
+        ///                          edgeIndex
+        /// </remarks>
         public void Join(int edgeIndex, DaftFront other, int targetEdge1Index, int targetEdge2Index,
               out Edge2D bridge1, out Edge2D bridge2, out Triangle2D newTriangle)
         {
@@ -343,21 +393,27 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
         /// <summary>
         ///  Removes edges from the loop within the range
+        ///  NOTE range with zero length (equal <paramref name="startEdgeIndex"/> and <paramref name="endEdgeIndexPlus1"/>
+        ///       will cause nothing to be removed
         /// </summary>
         /// <param name="startEdgeIndex">The index of the first edge in the range</param>
         /// <param name="endEdgeIndexPlus1">The index one after the last edge in the range</param>
-        private void RemoveRange(int startEdgeIndex, int endEdgeIndexPlus1)
+        /// <returns>The new index of the gap</returns>
+        private int RemoveRange(int startEdgeIndex, int endEdgeIndexPlus1)
         {
             if (startEdgeIndex < endEdgeIndexPlus1)
             {
                 Edges.RemoveRange(startEdgeIndex, endEdgeIndexPlus1 - startEdgeIndex);
+                return startEdgeIndex;
             }
-            else if (startEdgeIndex > endEdgeIndexPlus1)
+            if (startEdgeIndex > endEdgeIndexPlus1)
             {
                 Edges.RemoveRange(startEdgeIndex, Edges.Count - startEdgeIndex);
                 Edges.RemoveRange(0, endEdgeIndexPlus1);
+                return startEdgeIndex-endEdgeIndexPlus1;
             }
-            // range being 0 is interpreted as removing nothing
+            return startEdgeIndex;
+            // range being 0 is interpreted as to remove nothing
         }
 
         /// <summary>
