@@ -9,16 +9,28 @@ using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
 namespace QSharp.Shader.Geometry.Triangulation.Methods
 {
+    /// <summary>
+    ///  Performs Delauney Advancing Front Triagnualtion method
+    /// </summary>
     public class Daft
     {
         #region Delegates
 
+        /// <summary>
+        ///  A delegate that defines methods that specify size with respect to location
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public delegate double SizeFieldDelegate(double x, double y);
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        ///  Instantiates a Daft class
+        /// </summary>
         public Daft()
         {
             Outwards = new HashSet<DaftFront>();
@@ -57,21 +69,49 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// </summary>
         public Dictionary<Edge2D, DaftFront> InwardsDict { get; private set; }
 
+        /// <summary>
+        ///  The quad tree for fast vertex lookup
+        /// </summary>
         public QuadTree Qst { get; private set; }
 
+        /// <summary>
+        /// Typical length of an edge used to empirically derive the quad tree properties like grid size
+        /// </summary>
         public double TypicalLength { get; private set; }
 
+        /// <summary>
+        ///  The minimum X
+        /// </summary>
         public double MinX { get; private set; }
+
+        /// <summary>
+        ///  The minimum Y
+        /// </summary>
         public double MinY { get; private set; }
+
+        /// <summary>
+        ///  The maximum X
+        /// </summary>
         public double MaxX { get; private set; }
+
+        /// <summary>
+        ///  The maximum Y
+        /// </summary>
         public double MaxY { get; private set; }
 
+        /// <summary>
+        ///  The method that specifies the field formed by size with respect to location
+        /// </summary>
         public SizeFieldDelegate SizeField { get; set; }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///  Sets up the quadtree as per the typical length
+        /// </summary>
+        /// <param name="typicalLength">The typical length of an edge</param>
         public void SetupQuadtree(double typicalLength)
         {
             TypicalLength = typicalLength;
@@ -108,6 +148,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Qst = new QuadTree(nx, ny, qtminx, qtminy, qtmaxx-qtminx, qtmaxy-qtminy);
         }
 
+        /// <summary>
+        ///  Initializes edge dictionary
+        /// </summary>
         public void InitEdgeDict()
         {
             foreach (var front in Outwards)
@@ -126,6 +169,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Populates the quad tree wiht inward and outward fronts
+        /// </summary>
         public void InitQuadtreeContents()
         {
             foreach (var front in Outwards)

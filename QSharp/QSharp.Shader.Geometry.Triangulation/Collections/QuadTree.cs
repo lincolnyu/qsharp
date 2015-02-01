@@ -8,6 +8,9 @@ using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 
 namespace QSharp.Shader.Geometry.Triangulation.Collections
 {
+    /// <summary>
+    ///  Quad tree for fast edge look up
+    /// </summary>
     public class QuadTree : FixedBucketSet2D
     {
         #region Nested types
@@ -75,6 +78,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
 
         #region Constructors
 
+        /// <summary>
+        ///  Instantiates a QuadTree
+        /// </summary>
+        /// <param name="nx">The number of cells in horizontal direction</param>
+        /// <param name="ny">The number of cells in vertical direction</param>
+        /// <param name="xmin">The minimum coordinate of X (the edge of one end of the grid horizontally)</param>
+        /// <param name="ymin">The minimum coordinate of Y (the edge of one end of the grid vertically)</param>
+        /// <param name="xsize">The minimum coordinate of X</param>
+        /// <param name="ysize"></param>
         public QuadTree(int nx, int ny, double xmin, double ymin, double xsize, double ysize) 
             : base(nx, ny, xmin, ymin, xsize, ysize)
         {
@@ -85,14 +97,26 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
 
         #region Properties
 
+        /// <summary>
+        ///  Edges organized in a sorted dictionary
+        /// </summary>
         public SortedDictionary<Edge2D, Edge2D> SortedEdges { get; private set; }
 
+        /// <summary>
+        ///  Max length of edges
+        /// </summary>
         public double MaxEdgeLength { get; private set; }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///  Gets the bucket at the specified location or creates one if it doesn't yet exist
+        /// </summary>
+        /// <param name="x">The X coordinate</param>
+        /// <param name="y">The Y coordinate</param>
+        /// <returns>The bucket</returns>
         public Bucket GetOrCreateBucket(double x, double y)
         {
             int ix, iy;
@@ -111,6 +135,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
             return bucket;
         }
 
+        /// <summary>
+        ///  Gets all the vertices in the circle
+        /// </summary>
+        /// <param name="circle">The circumcenter of the circle to get vertices</param>
+        /// <param name="radius">The radius of the circle</param>
+        /// <param name="vertices">The vertices in the circle (proper)</param>
         public void GetAllVerticesInCircle(IVector2D circle, double radius, ICollection<Vector2D> vertices)
         {
             var xmin = circle.X - radius;
@@ -186,6 +216,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
             return edgesToCheck.FirstOrDefault(e => VertexHelper.EdgesIntersect(v1, v2, e.V1, e.V2, dummy));
         }
 
+        /// <summary>
+        ///  Adds an edge to the quad tree
+        /// </summary>
+        /// <param name="edge">The edge to add</param>
         public void AddEdge(Edge2D edge)
         {
             SortedEdges.Add(edge, edge);
@@ -195,6 +229,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
             }
         }
 
+        /// <summary>
+        ///  Replace an edge with a new one
+        /// </summary>
+        /// <param name="newEdge">The new edge</param>
+        /// <param name="oldEdge">The old edge</param>
         public void EdgeFlipped(Edge2D newEdge, Edge2D oldEdge)
         {
             SortedEdges.Remove(oldEdge);
