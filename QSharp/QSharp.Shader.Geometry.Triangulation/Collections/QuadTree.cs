@@ -9,7 +9,7 @@ using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
 namespace QSharp.Shader.Geometry.Triangulation.Collections
 {
     /// <summary>
-    ///  Quad tree for fast edge look up
+    ///  Quad tree for fast edge and vertex look up for triangulation
     /// </summary>
     public class QuadTree : FixedBucketSet2D
     {
@@ -111,29 +111,27 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
 
         #region Methods
 
+        #region QuadTree members
+
         /// <summary>
-        ///  Gets the bucket at the specified location or creates one if it doesn't yet exist
+        ///  Clears everything
         /// </summary>
-        /// <param name="x">The X coordinate</param>
-        /// <param name="y">The Y coordinate</param>
-        /// <returns>The bucket</returns>
-        public Bucket GetOrCreateBucket(double x, double y)
+        public override void Clear()
         {
-            int ix, iy;
-            Bucket bucket;
-            if (TryGetBucket(x, y, out ix, out iy))
-            {
-                IBucket b;
-                TryGetBucket(ix, iy, out b);
-                bucket = (Bucket)b;
-            }
-            else
-            {
-                bucket = new Bucket();
-                AddBucket(ix, iy, bucket);
-            }
-            return bucket;
+            base.Clear();
+            SortedEdges.Clear();
         }
+
+        /// <summary>
+        ///  Instantiates a bucket
+        /// </summary>
+        /// <returns>The bucket</returns>
+        protected override IBucket CreateBucket()
+        {
+            return new Bucket();
+        }
+
+        #endregion
 
         /// <summary>
         ///  Gets all the vertices in the circle

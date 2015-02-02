@@ -45,17 +45,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         #region Properties
 
         /// <summary>
-        ///  wave to grow outwards
+        ///  fronts to grow outwards
         /// </summary>
         public HashSet<DaftFront> Outwards { get; private set; }
 
         /// <summary>
-        ///  wave to grow inwards
+        ///  fronts to grow inwards
         /// </summary>
         public HashSet<DaftFront> Inwards { get; private set; }
 
         /// <summary>
-        ///  Edges sorted by coordinates that can be fast searched
+        ///  Edges in fronts sorted by coordinates that can be fast searched
         /// </summary>
         public SortedDictionary<Edge2D, Edge2D> SortedFrontEdges { get; private set; }
 
@@ -147,11 +147,34 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
             Qst = new QuadTree(nx, ny, qtminx, qtminy, qtmaxx-qtminx, qtmaxy-qtminy);
         }
+        
+        public void LoadFronts()
+        {
+            InitQuadTreeItems();
+            InitEdgeDicts();
+            InitSortedFrontEdges();
+        }
 
         /// <summary>
-        ///  Initializes edge dictionary
+        ///  Populates the quad tree with inward and outward fronts
         /// </summary>
-        public void InitEdgeDict()
+        private void InitQuadTreeItems()
+        {
+            Qst.Clear();
+            foreach (var front in Outwards)
+            {
+                PopulateQuadTree(front);
+            }
+            foreach (var front in Inwards)
+            {
+                PopulateQuadTree(front);
+            }
+        }
+
+        /// <summary>
+        ///  Initializes edge dictionaries
+        /// </summary>
+        private void InitEdgeDicts()
         {
             foreach (var front in Outwards)
             {
@@ -170,49 +193,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         }
 
         /// <summary>
-        ///  Populates the quad tree wiht inward and outward fronts
+        ///  Adds edges of the fronts into the sorted front edge collection
         /// </summary>
-        public void InitQuadtreeContents()
-        {
-            foreach (var front in Outwards)
-            {
-                PopulateQuadTree(front);
-            }
-            foreach (var front in Inwards)
-            {
-                PopulateQuadTree(front);
-            }
-        }
-
-        private void PopulateQuadTree(DaftFront front)
-        {
-            var vhash = new HashSet<Vector2D>();
-            foreach (var e in front.Edges)
-            {
-                var v1 = e.V1;
-                var v2 = e.V2;
-                vhash.Add(v1);
-                vhash.Add(v2);
-                AddEdgeToQuadTree(e);
-            }
-            foreach (var v in vhash)
-            {
-                AddVertexToQuadTree(v);
-            }
-        }
-
-        private void AddEdgeToQuadTree(Edge2D edge)
-        {
-            Qst.AddEdge(edge);
-        }
-
-        private void AddVertexToQuadTree(Vector2D v)
-        {
-            var bucket = Qst.GetOrCreateBucket(v.X, v.Y);
-            bucket.Vertices.Add(v);
-        }
-
-        public void InitSortedEdges()
+        private void InitSortedFrontEdges()
         {
             SortedFrontEdges.Clear();
             // NOTE we assume that there's no duplciate edges in the wave collections
@@ -232,6 +215,49 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Populates the quadtree with the specified front line
+        /// </summary>
+        /// <param name="front">The front line to populate the quadtree with edges from</param>
+        private void PopulateQuadTree(DaftFront front)
+        {
+            var vhash = new HashSet<Vector2D>();
+            foreach (var e in front.Edges)
+            {
+                var v1 = e.V1;
+                var v2 = e.V2;
+                vhash.Add(v1);
+                vhash.Add(v2);
+                AddEdgeToQuadTree(e);
+            }
+            foreach (var v in vhash)
+            {
+                AddVertexToQuadTree(v);
+            }
+        }
+
+        /// <summary>
+        ///  Adds the specified edge to the internal quad tree
+        /// </summary>
+        /// <param name="edge">The edge to add</param>
+        private void AddEdgeToQuadTree(Edge2D edge)
+        {
+            Qst.AddEdge(edge);
+        }
+
+        /// <summary>
+        ///  Adds the specified vertex to the internal quad tree
+        /// </summary>
+        /// <param name="v">The vertex to add</param>
+        private void AddVertexToQuadTree(Vector2D v)
+        {
+            var bucket = Qst.GetOrCreateBucket(v.X, v.Y);
+            bucket.Vertices.Add(v);
+        }
+
+        /// <summary>
+        ///  The main loop that generates mesh
+        /// </summary>
         public void GenerateMesh()
         {
             while (SortedFrontEdges.Count > 0)
@@ -241,13 +267,20 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
         }
 
+        /// <summary>
+        ///  Generates a triangle based of the specified edge
+        /// </summary>
+        /// <param name="edge">The edge to generate a triangle from</param>
         private void GenerateFromEdge(Edge2D edge)
         {
             bool isInwards;
             int edgeIndex;
             Vector2D nv;
+            
             GetNewVertexForEdge(edge, out nv, out isInwards, out edgeIndex);
+            
             var vc = CheckVertex(edge, nv);
+            
             var tri = nv == vc ? AddTriangleWithNewVertex(edge, edgeIndex, vc, isInwards)
                 : AddTriangleWithOldVertex(edge, edgeIndex, vc, isInwards);
 
@@ -261,7 +294,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             tri.Validate(x=>true, Qst.EdgeFlipped);
         }
 
-        private Triangle2D AddTriangleWithNewVertex(Edge2D edge, int iedge, Vector2D nv, bool isInwards)
+        /// <summary>
+        ///  Adds a triangle with a new vertex 
+        /// </summary>
+        /// <param name="edge">The edge to base the triangle of</param>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <param name="nv">The new vertex to build the triangle to</param>
+        /// <param name="isInwards">If the edge is from inward front, therefore the triangle is going inwards</param>
+        /// <returns>The triangle</returns>
+        private Triangle2D AddTriangleWithNewVertex(Edge2D edge, int edgeIndex, Vector2D nv, bool isInwards)
         {
             var w = GetFront(edge, isInwards);
 
@@ -269,7 +310,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Edge2D newEdge1;
             Edge2D newEdge2;
             Triangle2D newTriangle;
-            w.Stoke(iedge, nv, out edgeOffFront, out newEdge1, out newEdge2, out newTriangle);
+            w.Stoke(edgeIndex, nv, out edgeOffFront, out newEdge1, out newEdge2, out newTriangle);
 
             SortedFrontEdges.Remove(edge);
             SortedFrontEdges.Add(newEdge1, newEdge1);
@@ -282,6 +323,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return newTriangle;
         }
 
+        /// <summary>
+        ///  Adds a triangle with an existing vertex
+        /// </summary>
+        /// <param name="edge">The edge to base the triangle of</param>
+        /// <param name="edgeIndex">The index of the edge</param>
+        /// <param name="vc">The vertex that's already part of mesh and that the triangle to build to</param>
+        /// <param name="isInwards">If the edge is from inward front, therefore the triangle is going inwards</param>
+        /// <returns>The triangle</returns>
         private Triangle2D AddTriangleWithOldVertex(Edge2D edge, int edgeIndex, Vector2D vc, bool isInwards)
         {
             var w = GetFront(edge, isInwards);
@@ -356,6 +405,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return newTriangle;
         }
 
+        /// <summary>
+        ///  Finds the front the specified vertex is in
+        /// </summary>
+        /// <param name="vc">The vertex to find the front in</param>
+        /// <param name="front">The front the vertex is in</param>
+        /// <param name="edge1Index">The index of the edge preceding the vertex in the front</param>
+        /// <param name="edge2Index">The index of the edge succeeding the vertex in the front</param>
+        /// <returns>True if a front can be found for the vertex</returns>
         private bool FindFront(Vector2D vc, out DaftFront front, out int edge1Index, out int edge2Index)
         {
             Edge2D edge = null;
@@ -392,12 +449,24 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return edge != null;
         }
 
+        /// <summary>
+        ///  Returns the front the specified edge is in
+        /// </summary>
+        /// <param name="edge">The edge to find the front for</param>
+        /// <param name="isInwards">If the front is inward front</param>
+        /// <returns>The front</returns>
         private DaftFront GetFront(Edge2D edge, bool isInwards)
         {
             var w = isInwards ? InwardsDict[edge] : OutwardsDict[edge];
             return w;
         }
 
+        /// <summary>
+        ///  Validates the specified vertex to create triangle based of the specified edge
+        /// </summary>
+        /// <param name="edge">The edge to base the triangle of</param>
+        /// <param name="vertexToAdd">The vertex to check</param>
+        /// <returns>The vertex itself if it passes the valiation or a vertex nearby that passes the valiadtion</returns>
         private Vector2D CheckVertex(Edge2D edge, Vector2D vertexToAdd)
         {
             var v1 = edge.V1;
@@ -459,6 +528,13 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return vertexToAdd;
         }
 
+        /// <summary>
+        ///  Returns the circumcircle of the triangle formed by the specified edge and vertex
+        /// </summary>
+        /// <param name="edge">The edge the triangle is based of</param>
+        /// <param name="vector2D">The vertex opposite the edge</param>
+        /// <param name="cc">The circumcenter</param>
+        /// <param name="cr">The circumradius</param>
         private void GetCircumcicle(Edge2D edge, Vector2D vector2D, out Vector2D cc, out double cr)
         {
             var v1 = edge.V1;
@@ -470,7 +546,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             cr = cc.GetDistance(v1);
         }
 
-        private void GetNewVertexForEdge(Edge2D edge, out Vector2D newv, out bool isInwards, out int iedge)
+        /// <summary>
+        ///  Find a new vertex for the specified edge to extend a triangle with
+        /// </summary>
+        /// <param name="edge">The edge to base the triangle of</param>
+        /// <param name="newv">The new vertex created for the triangle</param>
+        /// <param name="isInwards">If it's going inwards (depending on which front the edge is in)</param>
+        /// <param name="edgeIndex">The index of the edge in the front</param>
+        private void GetNewVertexForEdge(Edge2D edge, out Vector2D newv, out bool isInwards, out int edgeIndex)
         {
             DaftFront daftw;
             // tries to use the inward front first
@@ -481,9 +564,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 daftw = OutwardsDict[edge];
             }
 
-            iedge = daftw.GetEdgeIndex(edge);
+            edgeIndex = daftw.GetEdgeIndex(edge);
 
-            var normal = daftw.GetNormal(iedge);
+            var normal = daftw.GetNormal(edgeIndex);
             var m = (edge.V1 + edge.V2)/2;
             var size = SizeField(m.X, m.Y);
             var len = edge.Length;

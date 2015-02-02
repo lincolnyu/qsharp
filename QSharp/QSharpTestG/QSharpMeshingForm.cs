@@ -261,7 +261,7 @@ namespace QSharpTestG
         private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var daft = new Daft();
-            daft.
+            //daft
         }
 
         private void shineToolStripMenuItem_Click(object sender, EventArgs e)
