@@ -251,7 +251,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <param name="v">The vertex to add</param>
         private void AddVertexToQuadTree(Vector2D v)
         {
-            var bucket = Qst.GetOrCreateBucket(v.X, v.Y);
+            var bucket = (Bucket)Qst.GetOrCreateBucket(v.X, v.Y);
             bucket.Vertices.Add(v);
         }
 
@@ -287,7 +287,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             if (vc == nv)
             {
                 // adds new vertex to the tree
-                var bucket = Qst.GetOrCreateBucket(nv.X, nv.Y);
+                var bucket = (Bucket)Qst.GetOrCreateBucket(nv.X, nv.Y);
                 bucket.Vertices.Add(nv);
             }
 

@@ -17,11 +17,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         {
             get
             {
-                IBucket bucket;
-                if (!TryGetBucket(row, col, out bucket))
-                {
-                    bucket = null;
-                }
+                var bucket = GetBucket(row, col);
                 return bucket;
             }
         }
@@ -124,7 +120,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             {
                 throw new ArgumentException("Input position out of boundary");
             }
-            return TryGetBucket(row, col, out bucket);
+            return GetBucket(row, col);
         }
 
         /// <summary>
@@ -177,6 +173,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             if (!_buckets.TryGetValue(row, out dict))
             {
                 dict = new Dictionary<int, IBucket>();
+                _buckets[row] = dict;
             }
             IBucket bucket;
             if (!dict.TryGetValue(col, out bucket))
