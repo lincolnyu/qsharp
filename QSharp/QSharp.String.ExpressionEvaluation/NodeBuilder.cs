@@ -81,7 +81,10 @@ namespace QSharp.String.ExpressionEvaluation
             var parentHasChild = (IHasChild)Parent;
             var concluded = Solidify();
 
-            parentHasChild.ReplaceChild(this, concluded);
+            if (parentHasChild != null)
+            {
+                parentHasChild.ReplaceChild(this, concluded);    
+            }
 
             return concluded;
         }
