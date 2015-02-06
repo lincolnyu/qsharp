@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Collections\Bucket.cs" />
     <Compile Include="Collections\QuadTree.cs" />
+    <Compile Include="Helpers\SegmentationHelper.cs" />
     <Compile Include="Methods\Daft.cs" />
     <Compile Include="Helpers\DelaunayHelper.cs" />
     <Compile Include="Methods\DaftFront.cs" />

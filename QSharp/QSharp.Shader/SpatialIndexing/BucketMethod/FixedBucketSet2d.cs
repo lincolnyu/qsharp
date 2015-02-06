@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QSharp.Shader.SpatialIndexing.BucketMethod
 {
-    public class FixedBucketSet2D
+    public abstract class FixedBucketSet2D
     {
         #region Fields
 
@@ -17,11 +17,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         {
             get
             {
-                IBucket bucket;
-                if (!TryGetBucket(row, col, out bucket))
-                {
-                    bucket = null;
-                }
+                var bucket = GetBucket(row, col);
                 return bucket;
             }
         }
@@ -110,36 +106,88 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             return true;
         }
 
-        public bool TryGetBucket(double x, double y, out IBucket bucket)
+        /// <summary>
+        ///  Gets the bucket at the specified location, returning null if no bucket exists at that location
+        ///  or throwing an ArgumentException if the location is out of valid region
+        /// </summary>
+        /// <param name="x">The x coordinate of the location to get the bucket at</param>
+        /// <param name="y">The y coordinate of the location to get the bucket at</param>
+        /// <returns>The bucket if available or null if not</returns>
+        public IBucket GetBucket(double x, double y)
         {
             int row, col;
             if (!TryGetBucket(x, y, out row, out col))
             {
-                bucket = null;
-                return false;
+                throw new ArgumentException("Input position out of boundary");
             }
-            return TryGetBucket(row, col, out bucket);
+            return GetBucket(row, col);
         }
 
-        public bool TryGetBucket(int row, int col, out IBucket bucket)
+        /// <summary>
+        ///  Gets the bucket at the specified bucket 2D index, returning null if no bucket exists at that location
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        ///<returns>The bucket if available or null if not</returns>
+        public IBucket GetBucket(int row, int col)
         {
             Dictionary<int, IBucket> dict;
             if (!_buckets.TryGetValue(row, out dict))
             {
-                bucket = null;
-                return false;
+                return null;
             }
+            IBucket bucket;
             if (!dict.TryGetValue(col, out bucket))
             {
-                return false;
+                return null;
             }
-            return true;
+            return bucket;
         }
 
-        public void AddBucket(int row, int col, IBucket bucket)
+        /// <summary>
+        ///  Gets the bucket at the specified location or creates one if it doesn't yet exist
+        /// </summary>
+        /// <param name="x">The X coordinate</param>
+        /// <param name="y">The Y coordinate</param>
+        /// <returns>The bucket obtained or created or null if the location is invalid</returns>
+        public IBucket GetOrCreateBucket(double x, double y)
         {
-            _buckets[row][col] = bucket;
+            int row, col;
+            if (!TryGetBucket(x, y, out row, out col))
+            {
+                return null;
+            }
+
+            return GetOrCreateBucket(row, col);
         }
+
+        /// <summary>
+        ///  Gets the bucket at the specifed 2D index or creates one if it doesn't exist
+        /// </summary>
+        /// <param name="row">The row of the cell</param>
+        /// <param name="col">The column of the cell</param>
+        /// <returns>The bucket obtained or created</returns>
+        public IBucket GetOrCreateBucket(int row, int col)
+        {
+            Dictionary<int, IBucket> dict;
+            if (!_buckets.TryGetValue(row, out dict))
+            {
+                dict = new Dictionary<int, IBucket>();
+                _buckets[row] = dict;
+            }
+            IBucket bucket;
+            if (!dict.TryGetValue(col, out bucket))
+            {
+                bucket = CreateBucket();
+            }
+            return bucket;
+        }
+
+        /// <summary>
+        ///  Methods that instantiates a bucket
+        /// </summary>
+        /// <returns>The bucket created</returns>
+        protected abstract IBucket CreateBucket();
 
         /// <summary>
         ///  returns positions of the four sides of the bucket
@@ -156,6 +204,14 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             ymin = YMin + row*XSize;
             xmax = XMin + (col+1) * XSize;
             ymax = YMin + (row + 1)*YSize;
+        }
+
+        /// <summary>
+        ///  Clears out the set
+        /// </summary>
+        public virtual void Clear()
+        {
+            _buckets.Clear();
         }
 
         #endregion

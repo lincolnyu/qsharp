@@ -515,11 +515,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <summary>
         ///  Adds an edge to the front loop at the specified location
         /// </summary>
-        /// <param name="iedge">The location to add the edge at</param>
+        /// <param name="edgeIndex">The location to add the edge at</param>
         /// <param name="edge">The edge to add</param>
-        public void AddEdge(int iedge, Edge2D edge)
+        public void AddEdge(int edgeIndex, Edge2D edge)
         {
-            Edges.Insert(iedge, edge);
+            Edges.Insert(edgeIndex, edge);
         }
 
         /// <summary>

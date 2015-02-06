@@ -9,6 +9,7 @@ using QSharp.Shader.Geometry.Triangulation.Methods;
 using QSharp.Shader.Geometry.Triangulation.Primitive;
 using QSharpTest.Shader.Geometry.Triangulation;
 using Vector2D = QSharp.Shader.Geometry.Triangulation.Primitive.Vector2D;
+using QSharp.Shader.Geometry.Triangulation.Helpers;
 
 namespace QSharpTestG
 {
@@ -23,6 +24,7 @@ namespace QSharpTestG
             DefiningPolylines,
             DefiningPoints,
             Deleting,
+            DefiningSizeField
         }
 
         public enum PolygonState
@@ -43,6 +45,10 @@ namespace QSharpTestG
 
         private readonly List<Vector2D> _points = new List<Vector2D>();
 
+        private readonly Dictionary<int, double> _fieldPoints = new Dictionary<int, double>();
+
+        private readonly List<Vector2D> _segPoints = new List<Vector2D>();
+
         private HashSet<Edge2D> _meshEdges = new HashSet<Edge2D>();
 
         private Pen _polygonPen;
@@ -51,6 +57,7 @@ namespace QSharpTestG
         private Pen _polylinePen;
 
         private Brush _pointBrush;
+        private Brush _segPointBrush;
 
         private Pen _drawnPolygonPen;
 
@@ -169,6 +176,16 @@ namespace QSharpTestG
                 case Modes.Deleting:
                     DeleteAt(e.X, e.Y);
                     break;
+                case Modes.DefiningSizeField:
+                {
+                    var fmf = new FieldMagnitudeForm();
+                    if (fmf.ShowDialog() == DialogResult.OK)
+                    {
+                        _points.Add(new Vector2D { X = e.X, Y = e.Y });
+                        _fieldPoints[_points.Count - 1] = fmf.Magnitude;
+                    }
+                    break;
+                }
             }
             InvalidateView();
         }
@@ -211,6 +228,7 @@ namespace QSharpTestG
             definePolygonsToolStripMenuItem.Checked = false;
             definePointsToolStripMenuItem.Checked = false;
             deleteToolStripMenuItem.Checked = false;
+            DefineSizeFieldToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -219,6 +237,7 @@ namespace QSharpTestG
             definePolylinesToolStripMenuItem.Checked = false;
             definePointsToolStripMenuItem.Checked = false;
             deleteToolStripMenuItem.Checked = false;
+            DefineSizeFieldToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -227,6 +246,7 @@ namespace QSharpTestG
             definePolylinesToolStripMenuItem.Checked = false;
             definePolygonsToolStripMenuItem.Checked = false;
             deleteToolStripMenuItem.Checked = false;
+            DefineSizeFieldToolStripMenuItem.Checked = false;
             UpdateState();
         }
 
@@ -234,6 +254,17 @@ namespace QSharpTestG
         {
             definePolygonsToolStripMenuItem.Checked = false;
             definePolylinesToolStripMenuItem.Checked = false;
+            definePointsToolStripMenuItem.Checked = false;
+            DefineSizeFieldToolStripMenuItem.Checked = false;
+            UpdateState();
+        }
+
+
+        private void DefineSizeFieldToolStripMenuItemOnClick(object sender, EventArgs e)
+        {
+            definePolylinesToolStripMenuItem.Checked = false;
+            definePolygonsToolStripMenuItem.Checked = false;
+            deleteToolStripMenuItem.Checked = false;
             definePointsToolStripMenuItem.Checked = false;
             UpdateState();
         }
@@ -260,8 +291,36 @@ namespace QSharpTestG
 
         private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var daft = new Daft();
-            daft.
+            var daft = new Daft {SizeField = (x, y) => 20};
+          
+
+            
+            daft.SetupQuadtree(20);
+            daft.LoadFronts();
+            //daft
+        }
+
+        private void LoadPolygonToFronts(Daft daft)
+        {
+            for (int i = 0; i < _polygons.Count; i++)
+            {
+                var polygon = _polygons[i];
+                var state = _polygonStates[i];
+
+                if (state == PolygonState.Contained)
+                {
+                    var outwards = new DaftFront(false);
+
+                    // segmentation?
+
+                    //outwards.AddEdge();
+                }
+                else
+                {
+                    var inwards = new DaftFront(true);
+
+                }
+            }
         }
 
         private void shineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -308,6 +367,28 @@ namespace QSharpTestG
             InvalidateView();
         }
 
+        private void SegmentStraightLinesToolStripMenuItemOnClick(object sender, EventArgs e)
+        {
+            _segPoints.Clear();
+            foreach (var polyline in _polylines)
+            {
+                for (var i = 0; i < polyline.Count-1; i++)
+                {
+                    var v1 = polyline[i];
+                    var v2 = polyline[i + 1];
+                    var segs = SegmentationHelper.SegmentLine(v1, v2, GetSize);
+                    for (var j = 0; j < segs.Count; j++)
+                    {
+                        var d = segs[j];
+                        var v = v1 * (1 - d) + v2 * d;
+                        var vv = new Vector2D{ X = v.X, Y = v.Y};
+                        _segPoints.Add(vv);
+                    }
+                }
+            }
+            InvalidateView();
+        }
+
         #endregion
 
         private void DeleteAt(int x, int y)
@@ -335,6 +416,7 @@ namespace QSharpTestG
             definePolygonsToolStripMenuItem.CheckOnClick = true;
             definePointsToolStripMenuItem.CheckOnClick = true;
             deleteToolStripMenuItem.CheckOnClick = true;
+            DefineSizeFieldToolStripMenuItem.CheckOnClick = true;
         }
 
         private void InitializeGraphics()
@@ -343,6 +425,7 @@ namespace QSharpTestG
             _internalPolygonPen = new Pen(Color.Purple, 1);
             _polylinePen = new Pen(Color.Green, 2);
             _pointBrush = new SolidBrush(Color.Red);
+            _segPointBrush = new SolidBrush(Color.Pink);
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
             _shinyLinePen = new Pen(Color.Orange, 1);
@@ -369,6 +452,10 @@ namespace QSharpTestG
             else if (deleteToolStripMenuItem.Checked)
             {
                 CurrentMode = Modes.Deleting;
+            }
+            else if (DefineSizeFieldToolStripMenuItem.Checked)
+            {
+                CurrentMode = Modes.DefiningSizeField;
             }
             else
             {
@@ -399,6 +486,13 @@ namespace QSharpTestG
                     var y = (float)point.Y;
                     g.FillEllipse(_pointBrush, x - r, y - r, 2*r, 2*r);
                 }
+                foreach (var point in _segPoints)
+                {
+                    var x = (float)point.X;
+                    var y = (float)point.Y;
+                    g.FillEllipse(_segPointBrush, x - r, y - r, 2 * r, 2 * r);
+                }
+
                 if (_isDrawing)
                 {
                     switch (CurrentMode)
@@ -489,7 +583,25 @@ namespace QSharpTestG
             }
         }
 
-        #endregion
+        private double GetSize(double x, double y)
+        {
+            var total = 0.0;
+            var mtotal = 0.0;
+            foreach (var kvp in _fieldPoints)
+            {
+                var k = kvp.Key;
+                var v = kvp.Value;
+                var point = _points[k];
+                var dx = point.X - x;
+                var dy = point.Y - y;
+                var sqrdist = dx * dx + dy * dy;
+                total += 1 / sqrdist;
+                mtotal += v / sqrdist;
+            }
+            var m = mtotal / total;
+            return m;
+        }
 
+        #endregion
     }
 }
