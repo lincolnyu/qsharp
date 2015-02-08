@@ -203,10 +203,44 @@ namespace QSharp.String.ExpressionEvaluation
 
             Attractor = newParameter;
             ParameterCell = newParameter;
+            AtomicNode = null;
         }
 
+        private Node FindFuncInsertPoint(Node startNode, int priority)
+        {
+            // find the place to insert the operator
+            var p = startNode;
 
-        private Node FindInsertPoint(Node startNode, int priority)
+            for (; p != null; p = p.Parent)
+            {
+                if (p is NodeBuilder) // parameter, bracket keeper
+                {
+                    break;
+                }
+                if (p.Parent.NodeType == Node.Type.BinaryOperator)
+                {
+                    var prioCurrParent = Precedence.GetBinaryOperatorPrecedence(p.Parent.Content);
+                    if (priority < prioCurrParent)
+                    {
+                        break;
+                    }
+                }
+                else if (p.Parent.NodeType == Node.Type.UnaryOperator)
+                {
+                    break; // Unary operator less priority than function
+
+                    // however this basically means obj.!func() is not allowed (but currently not checked)
+                    // because this triggers the contradictory condition that
+                    //  ! higher than any binary
+                    //  . higher than function
+                    //  function higher than !
+                }
+            }
+
+            return p;
+        }
+
+        private Node FindBinaryInsertPoint(Node startNode, int priority)
         {
             // find the place to insert the operator
             var p = startNode;
@@ -239,7 +273,7 @@ namespace QSharp.String.ExpressionEvaluation
             
             // find the place to insert the operator
             var prioThis = Precedence.GetBinaryOperatorPrecedence(token.Content);
-            var p = FindInsertPoint(AtomicNode, prioThis);
+            var p = FindBinaryInsertPoint(AtomicNode, prioThis);
 
             var placeHolderToUse = p as NodeBuilder;
             var rhsHolder = new NodeBuilder { IsAttractor = true };
@@ -306,18 +340,11 @@ namespace QSharp.String.ExpressionEvaluation
                 {
                     symbolNode = Attractor.Close();
                 }
-                
+
+                // TODO review this:
                 // updates Atomic node
-                for (var p = symbolNode; p != null; p = p.Parent)
-                {
-                    var pAsPlaceHolder = p as NodeBuilder;
-                    if (pAsPlaceHolder != null && (pAsPlaceHolder.IsBracketKeeper || pAsPlaceHolder.IsParemeterCell)
-                        || p.Parent == null || p.Parent.NodeType != Node.Type.UnaryOperator)
-                    {
-                        AtomicNode = p;
-                        break;
-                    }
-                }
+                AtomicNode = symbolNode;
+                
 
                 Attractor = null;
                 return;
@@ -331,7 +358,7 @@ namespace QSharp.String.ExpressionEvaluation
             Debug.Assert(AtomicNode != null);
 
             var prioThis = Precedence.FunctionPrecedence;
-            var insertPoint = FindInsertPoint(AtomicNode, prioThis);
+            var insertPoint = FindFuncInsertPoint(AtomicNode, prioThis);
 
             var placeHolderToUse = insertPoint as NodeBuilder;
 

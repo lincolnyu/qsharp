@@ -86,5 +86,16 @@ namespace QSharpTest.String.ExpressionEvaluation
             st.Parse(expression);
             Assert.IsTrue(st.ToString() == expected);
         }
+
+        [TestMethod]
+        public void TestNotFunc()
+        {
+            const string expression = "any(o.connectedlinks, not islike(l, l.endnode=o))";
+            const string expected = "{F;;{S;any}{B;.;{S;o}{S;connectedlinks}}{U;!;{F;;{S;islike}{S;l}{B;==;{B;.;{S;l}{S;endnode}}{S;o}}}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            var actual = st.ToString();
+            Assert.IsTrue(actual == expected);
+        }
     }
 }
