@@ -61,9 +61,8 @@ namespace QSharp.String.ExpressionEvaluation
         {
             var lastIsEntity = false;
             var tokens = new LinkedList<Token>();
-            for (var i = 0; i < expression.Length; )
+            for (var i = SkipSpaces(expression, 0); i < expression.Length; i = SkipSpaces(expression, i))
             {
-                i = SkipSpaces(expression, i);
                 var c = expression[i];
                 Token token;
                 if (char.IsLetter(c) || c == '_')
