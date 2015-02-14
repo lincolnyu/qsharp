@@ -47,7 +47,8 @@ namespace QSharpTestG
 
         private readonly Dictionary<int, double> _fieldPoints = new Dictionary<int, double>();
 
-        private readonly List<Vector2D> _segPoints = new List<Vector2D>();
+        private readonly List<List<Vector2D>> _simplifiedPolylines = new List<List<Vector2D>>();
+        
 
         private HashSet<Edge2D> _meshEdges = new HashSet<Edge2D>();
 
@@ -55,6 +56,7 @@ namespace QSharpTestG
         private Pen _internalPolygonPen;
 
         private Pen _polylinePen;
+        private Pen _simplifiedPolylinePen;
 
         private Brush _pointBrush;
         private Brush _segPointBrush;
@@ -369,22 +371,17 @@ namespace QSharpTestG
 
         private void SegmentStraightLinesToolStripMenuItemOnClick(object sender, EventArgs e)
         {
-            _segPoints.Clear();
+            _simplifiedPolylines.Clear();
+            
             foreach (var polyline in _polylines)
             {
-                for (var i = 0; i < polyline.Count-1; i++)
+                var output = SegmentationHelper.Output(polyline, false, GetSize);
+                var outputPolyline = output.Select(o => new Vector2D
                 {
-                    var v1 = polyline[i];
-                    var v2 = polyline[i + 1];
-                    var segs = SegmentationHelper.SegmentLine(v1, v2, GetSize);
-                    for (var j = 0; j < segs.Count; j++)
-                    {
-                        var d = segs[j];
-                        var v = v1 * (1 - d) + v2 * d;
-                        var vv = new Vector2D{ X = v.X, Y = v.Y};
-                        _segPoints.Add(vv);
-                    }
-                }
+                    X = o.X, Y = o.Y
+                }).ToList();
+
+                _simplifiedPolylines.Add(outputPolyline);
             }
             InvalidateView();
         }
@@ -424,6 +421,7 @@ namespace QSharpTestG
             _polygonPen = new Pen(Color.Blue, 2);
             _internalPolygonPen = new Pen(Color.Purple, 1);
             _polylinePen = new Pen(Color.Green, 2);
+            _simplifiedPolylinePen = new Pen(Color.Brown, 1);
             _pointBrush = new SolidBrush(Color.Red);
             _segPointBrush = new SolidBrush(Color.Pink);
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
@@ -479,6 +477,11 @@ namespace QSharpTestG
                 {
                     DrawPolyline(g, _polylinePen, polyline);
                 }
+                foreach (var polyline in _simplifiedPolylines)
+                {
+                    DrawPolyline(g, _simplifiedPolylinePen, polyline);
+                }
+
                 const float r = 2;
                 foreach (var point in _points)
                 {
@@ -486,13 +489,7 @@ namespace QSharpTestG
                     var y = (float)point.Y;
                     g.FillEllipse(_pointBrush, x - r, y - r, 2*r, 2*r);
                 }
-                foreach (var point in _segPoints)
-                {
-                    var x = (float)point.X;
-                    var y = (float)point.Y;
-                    g.FillEllipse(_segPointBrush, x - r, y - r, 2 * r, 2 * r);
-                }
-
+                
                 if (_isDrawing)
                 {
                     switch (CurrentMode)

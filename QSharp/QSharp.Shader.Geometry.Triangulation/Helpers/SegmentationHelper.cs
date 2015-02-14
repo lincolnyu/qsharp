@@ -78,7 +78,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="loop">If it's a polygon</param>
         /// <param name="sizeField">The field that specifies desired size</param>
         /// <returns>The output</returns>
-        public static IEnumerable<IVector2D> Output(IList<Vector2D> input, bool loop, Daft.SizeFieldDelegate sizeField)
+        public static IEnumerable<IVector2D> Output<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
         {
             var simplified = Simplify(input, loop, sizeField).ToList();
 
@@ -113,11 +113,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="loop">If it's a polygon</param>
         /// <param name="sizeField">The size field that specifies the requested line segment length</param>
         /// <returns>The indices of selected vertices in the original list (<paramref name="input"/>)</returns>
-        public static IEnumerable<int> Simplify(IList<Vector2D> input, bool loop, Daft.SizeFieldDelegate sizeField)
+        public static IEnumerable<int> Simplify<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
         {
             var edgesInfo = GetInitEdgesInfo(input, loop, sizeField).ToList();
             int nexti;
-            for (var i = 0; i < edgesInfo.Count && (loop && edgesInfo.Count > 2) || (!loop && edgesInfo.Count > 1); i = nexti)
+            for (var i = 0; i < edgesInfo.Count && (loop && edgesInfo.Count > 2 || !loop && edgesInfo.Count > 1); i = nexti)
             {
                 var edgeInfo = edgesInfo[i];
                 if (edgeInfo.IsTooShort())
@@ -171,10 +171,24 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             yield return edgesInfo[edgesInfo.Count - 1].EndIndex;
         }
 
-        public static IEnumerable<Vector2D> SegmentLineToVertices(Vector2D start, Vector2D end, Daft.SizeFieldDelegate sizeField)
+        /// <summary>
+        ///  This calls SegmentLine() and returns the vertices instead of just the indcies
+        /// </summary>
+        /// <param name="start">The start point of the line</param>
+        /// <param name="end">The end point of the line</param>
+        /// <param name="sizeField">The underlying size field</param>
+        /// <returns>A list of vertices segmenting the straightline connecting <paramref name="start"/> and <paramref name="end"/></returns>
+        public static IEnumerable<Vector2D> SegmentLineToVertices(IVector2D start, IVector2D end, Daft.SizeFieldDelegate sizeField)
         {
             var rlist = SegmentLine(start, end, sizeField);
-            return rlist.Select(r => start * (1 - r) + end * r).Select(v => new Vector2D{ X = v.X, Y = v.Y});
+            return rlist.Select(r =>
+            {
+                var v1 = new Vector2D();
+                start.Multiply(1 - r, v1);
+                var v2 = new Vector2D();
+                end.Multiply(r, v2);
+                return v1 + v2;
+            }).Select(v => new Vector2D{ X = v.X, Y = v.Y});
         }
 
         /// <summary>
@@ -249,8 +263,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         ///  If it's a polyline the edge chain consists of all the edges (so the second vertex of the last edge is the last vertex of the polyline)
         ///  If it's a polygon the edge chain consists of all edges of the polygon (so the second vertex of the last edge is the first vertex repeated)
         /// </remarks>
-        private static IEnumerable<EdgeInfo> GetInitEdgesInfo(IList<Vector2D> input, bool loop,
-            Daft.SizeFieldDelegate sizeField)
+        private static IEnumerable<EdgeInfo> GetInitEdgesInfo<TVector2D>(IList<TVector2D> input, bool loop,
+            Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
         {
             for (var i = 0; i < input.Count - 1; i++)
             {
@@ -264,11 +278,21 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
         }
 
-        private static EdgeInfo CreateEdge(IList<Vector2D> input, int iv1, int iv2, Daft.SizeFieldDelegate sizeField)
+        /// <summary>
+        ///  creates a edge info object based on the specified edge info
+        /// </summary>
+        /// <param name="input">The input polygon or polyline</param>
+        /// <param name="iv1">The index of the first vertex in the original list</param>
+        /// <param name="iv2">The index of the second vertex in the original list</param>
+        /// <param name="sizeField">The size field</param>
+        /// <returns>The created edge info</returns>
+        private static EdgeInfo CreateEdge<TVector2D>(IList<TVector2D> input, int iv1, int iv2, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
         {
             var v1 = input[iv1];
             var v2 = input[iv2];
-            var vm = (v1 + v2) / 2;
+            var vm = new Vector2D();
+            v1.Add(v2, vm);
+            vm /= 2;
 
             var expectedLength = sizeField(vm.X, vm.Y);
             var actualLength = v1.GetDistance(v2);

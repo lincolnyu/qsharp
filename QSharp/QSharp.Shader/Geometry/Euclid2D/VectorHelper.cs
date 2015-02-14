@@ -31,6 +31,18 @@ namespace QSharp.Shader.Geometry.Euclid2D
         }
 
         /// <summary>
+        ///  Multiplies a vector and a floating value and gives the result
+        /// </summary>
+        /// <param name="v">The vector</param>
+        /// <param name="scale">The factor</param>
+        /// <param name="res">The result</param>
+        public static void Multiply(this IVector2D v, double scale, IMutableVector2D res)
+        {
+            res.X = v.X*scale;
+            res.Y = v.Y*scale;
+        }
+
+        /// <summary>
         ///  The magnitude of the outer product of two 2D vectors (direction being parellel to z always)
         /// </summary>
         /// <param name="v1">The first vector</param>
