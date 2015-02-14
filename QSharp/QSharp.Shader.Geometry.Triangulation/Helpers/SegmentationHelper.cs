@@ -49,12 +49,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             }
 
             /// <summary>
-            ///  The ratio of actual to expected
+            ///  The ratio of expected to actual
             /// </summary>
             /// <returns></returns>
-            public double AeRatio()
+            public double GetEaRatio()
             {
-                return ActualLength/ExpectedLength;
+                return ExpectedLength/ActualLength;
             }
         }
 
@@ -122,21 +122,21 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 var edgeInfo = edgesInfo[i];
                 if (edgeInfo.IsTooShort())
                 {
-                    var i1 = GetNextIndex(i, edgesInfo.Count, loop);
-                    var i2 = GetPreviousIndex(i, edgesInfo.Count, loop);
-                    double aePrev = -1, aeNext = -1;
+                    var i1 = GetPreviousIndex(i, edgesInfo.Count, loop);
+                    var i2 = GetNextIndex(i, edgesInfo.Count, loop);
+                    double eaPrev = -1, eaNext = -1;
                     EdgeInfo prevEdge = null, nextEdge = null;
                     if (i1 >= 0)
                     {
                         prevEdge = edgesInfo[i1];
-                        aePrev = prevEdge.AeRatio();
+                        eaPrev = prevEdge.GetEaRatio();
                     }
                     if (i2 >= 0)
                     {
                         nextEdge = edgesInfo[i2];
-                        aeNext = nextEdge.AeRatio();
+                        eaNext = nextEdge.GetEaRatio();
                     }
-                    if (aePrev < aeNext)
+                    if (eaPrev > eaNext)
                     {
                         // merge with prev
                         Debug.Assert(prevEdge != null, "prevEdge != null");
@@ -298,8 +298,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             var actualLength = v1.GetDistance(v2);
             var edgeInfo = new EdgeInfo
             {
-                StartIndex = input.Count - 1,
-                EndIndex = 0,
+                StartIndex = iv1,
+                EndIndex = iv2,
                 ExpectedLength = expectedLength,
                 ActualLength = actualLength
             };
@@ -313,16 +313,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="count">The total number</param>
         /// <param name="loop">If it's a loop</param>
         /// <returns>The next or -1 if invalid</returns>
-        private static int GetNextIndex(int i, int count, bool loop)
+        private static int GetPreviousIndex(int i, int count, bool loop)
         {
-            if (loop)
-            {
-                return i > 0 ? i - 1 : count - 1;
-            }
-            else
-            {
-                return i - 1;
-            }
+            return (!loop || i > 0) ? i - 1 : count - 1;
         }
 
         /// <summary>
@@ -332,18 +325,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="count">The total number</param>
         /// <param name="loop">If it's a loop</param>
         /// <returns>The previous or -1 if invalid</returns>
-        private static int GetPreviousIndex(int i, int count, bool loop)
+        private static int GetNextIndex(int i, int count, bool loop)
         {
-            if (loop)
-            {
-                return (i + 1)%count;
-            }
-            else
-            {
-                return i < count-1 ? i + 1 : -1;
-            }
+            return loop ? (i + 1)%count : (i < count - 1 ? i + 1 : -1);
         }
-        
+
         private static Vector2D GetIntermediateVertex(IVector2D start, IVector2D end, double len)
         {
             var dx = end.X - start.X;

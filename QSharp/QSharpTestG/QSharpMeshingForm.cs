@@ -56,10 +56,10 @@ namespace QSharpTestG
         private Pen _internalPolygonPen;
 
         private Pen _polylinePen;
-        private Pen _simplifiedPolylinePen;
+        private Pen _simplifiedPolyPen;
+        private Brush _simplifiedPolyPointBrush;
 
         private Brush _pointBrush;
-        private Brush _segPointBrush;
 
         private Pen _drawnPolygonPen;
 
@@ -421,9 +421,9 @@ namespace QSharpTestG
             _polygonPen = new Pen(Color.Blue, 2);
             _internalPolygonPen = new Pen(Color.Purple, 1);
             _polylinePen = new Pen(Color.Green, 2);
-            _simplifiedPolylinePen = new Pen(Color.Brown, 1);
+            _simplifiedPolyPen = new Pen(Color.Brown, 1);
+            _simplifiedPolyPointBrush = new SolidBrush(Color.Brown);
             _pointBrush = new SolidBrush(Color.Red);
-            _segPointBrush = new SolidBrush(Color.Pink);
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
             _shinyLinePen = new Pen(Color.Orange, 1);
@@ -477,12 +477,18 @@ namespace QSharpTestG
                 {
                     DrawPolyline(g, _polylinePen, polyline);
                 }
+                const float r = 2;
                 foreach (var polyline in _simplifiedPolylines)
                 {
-                    DrawPolyline(g, _simplifiedPolylinePen, polyline);
+                    DrawPolyline(g, _simplifiedPolyPen, polyline);
+                    foreach (var point in polyline)
+                    {
+                        var x = (float)point.X;
+                        var y = (float)point.Y;
+                        g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
+                    }
                 }
 
-                const float r = 2;
                 foreach (var point in _points)
                 {
                     var x = (float)point.X;
