@@ -97,5 +97,27 @@ namespace QSharpTest.String.ExpressionEvaluation
             var actual = st.ToString();
             Assert.IsTrue(actual == expected);
         }
+
+        [TestMethod]
+        public void TestPrecedence1()
+        {
+            const string expression = "l.sn=o and l.en.el > o.el or n.en=o and n.sn.el>o.el";
+            const string expected = "{B;||;{B;&&;{B;==;{B;.;{S;l}{S;sn}}{S;o}}{B;>;{B;.;{B;.;{S;l}{S;en}}{S;el}}{B;.;{S;o}{S;el}}}}{B;&&;{B;==;{B;.;{S;n}{S;en}}{S;o}}{B;>;{B;.;{B;.;{S;n}{S;sn}}{S;el}}{B;.;{S;o}{S;el}}}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            var actual = st.ToString();
+            Assert.IsTrue(actual == expected);
+        }
+
+        [TestMethod]
+        public void TestPrecedence2()
+        {
+            const string expression = "all(o.cl, islike(l, l.sn=o and l.en.el > o.el or n.en=o and n.sn.el>o.el))";
+            const string expected = "{F;;{S;all}{B;.;{S;o}{S;cl}}{F;;{S;islike}{S;l}{B;||;{B;&&;{B;==;{B;.;{S;l}{S;sn}}{S;o}}{B;>;{B;.;{B;.;{S;l}{S;en}}{S;el}}{B;.;{S;o}{S;el}}}}{B;&&;{B;==;{B;.;{S;n}{S;en}}{S;o}}{B;>;{B;.;{B;.;{S;n}{S;sn}}{S;el}}{B;.;{S;o}{S;el}}}}}}}";
+            var st = new SyntaxTree();
+            st.Parse(expression);
+            var actual = st.ToString();
+            Assert.IsTrue(actual == expected);
+        }
     }
 }
