@@ -444,6 +444,59 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
         }
 
+        /// <summary>
+        ///  Enumerates through the vertex list plus the first vertex reappearing at the end, which is useful
+        ///  to loop a polygon if the list contains no duplicate vertices
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list</typeparam>
+        /// <param name="list">The vertex list</param>
+        /// <returns>The resultant enumerable</returns>
+        public static IEnumerable<T> EnumerablePlusLast<T>(IEnumerable<T> list) where T : IVector2D
+        {
+            var isFirst = true;
+            var first = default(T);
+            foreach (var v in list)
+            {
+                if (isFirst)
+                {
+                    first = v;
+                    isFirst = false;
+                }
+                yield return v;
+            }
+            if (!isFirst)
+            {
+                yield return first;
+            }
+        }
+
+        /// <summary>
+        ///  Enumerates through the vertex list minus the last vertex which might well be a repeated starting vertex
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list</typeparam>
+        /// <param name="list">The vertex list</param>
+        /// <returns>The resultant enumerable</returns>
+        public static IEnumerable<T> EnumerableMinusLast<T>(IEnumerable<T> list) where T : IVector2D
+        {
+            var isFirst = true;
+            var last = default(T);
+            foreach (var v in list)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    yield return last;
+                }
+                last = v;
+            }
+            if (!isFirst)
+            {
+                yield return last;
+            }
+        }
         
         #endregion
     }
