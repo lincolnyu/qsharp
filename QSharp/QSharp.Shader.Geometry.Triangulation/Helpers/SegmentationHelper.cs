@@ -233,18 +233,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     if (ex > l / 2)
                     {
                         lenSofar -= l;
-                        list.RemoveAt(list.Count - 1);
-                        for (var i = 0; i < list.Count; i++)
+                        if (list.Count > 0)
                         {
-                            list[i] *= totalLen / lenSofar;
+                            list.RemoveAt(list.Count - 1);
                         }
                     }
-                    else
+                    for (var i = 0; i < list.Count; i++)
                     {
-                        for (var i = 0; i < list.Count; i++)
-                        {
-                            list[i] *= totalLen / lenSofar;
-                        }
+                        list[i] *= totalLen / lenSofar;
                     }
                     break;
                 }

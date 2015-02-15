@@ -37,10 +37,8 @@ namespace QSharpTestG
 
         #region Fields
 
-        private readonly List<List<Vector2D>> _polygons = new List<List<Vector2D>>();
-
         private PolygonState[] _polygonStates;
-
+        private readonly List<List<Vector2D>> _polygons = new List<List<Vector2D>>();
         private readonly List<List<Vector2D>> _polylines = new List<List<Vector2D>>();
 
         private readonly List<Vector2D> _points = new List<Vector2D>();
@@ -48,7 +46,8 @@ namespace QSharpTestG
         private readonly Dictionary<int, double> _fieldPoints = new Dictionary<int, double>();
 
         private readonly List<List<Vector2D>> _simplifiedPolylines = new List<List<Vector2D>>();
-        
+        private readonly List<List<Vector2D>> _simplifiedPolygons = new List<List<Vector2D>>();
+
 
         private HashSet<Edge2D> _meshEdges = new HashSet<Edge2D>();
 
@@ -383,6 +382,19 @@ namespace QSharpTestG
 
                 _simplifiedPolylines.Add(outputPolyline);
             }
+
+            foreach (var polygon in _polygons)
+            {
+                var output = SegmentationHelper.Output(polygon, true, GetSize);
+                var outputPolygon = output.Select(o => new Vector2D
+                {
+                    X = o.X,
+                    Y = o.Y
+                }).ToList();
+
+                _simplifiedPolygons.Add(outputPolygon);
+            }
+
             InvalidateView();
         }
 
@@ -477,11 +489,23 @@ namespace QSharpTestG
                 {
                     DrawPolyline(g, _polylinePen, polyline);
                 }
+                // simplified polylines
                 const float r = 2;
                 foreach (var polyline in _simplifiedPolylines)
                 {
                     DrawPolyline(g, _simplifiedPolyPen, polyline);
                     foreach (var point in polyline)
+                    {
+                        var x = (float)point.X;
+                        var y = (float)point.Y;
+                        g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
+                    }
+                }
+                // simplified polygons
+                foreach (var polygon in _simplifiedPolygons)
+                {
+                    DrawPolygon(g, _simplifiedPolyPen, polygon);
+                    foreach (var point in polygon)
                     {
                         var x = (float)point.X;
                         var y = (float)point.Y;
