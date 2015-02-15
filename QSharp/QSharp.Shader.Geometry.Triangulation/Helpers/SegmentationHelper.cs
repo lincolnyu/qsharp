@@ -8,7 +8,7 @@ using QSharp.Shader.Geometry.Triangulation.Methods;
 namespace QSharp.Shader.Geometry.Triangulation.Helpers
 {
     /// <summary>
-    ///  
+    ///  Class that helps segmenting and simplifying polygons and polylines based on size field
     /// </summary>
     public static class SegmentationHelper
     {
@@ -326,6 +326,14 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             return loop ? (i + 1)%count : (i < count - 1 ? i + 1 : -1);
         }
 
+        /// <summary>
+        ///  Returns the vertex on the radiant line frokm <paramref name="start"/> towards <paramref name="end"/> 
+        ///  and <paramref name="len"/> away from <paramref name="start"/>
+        /// </summary>
+        /// <param name="start">The start point</param>
+        /// <param name="end">The end point</param>
+        /// <param name="len">The distance between the target point and <paramref name="start"/></param>
+        /// <returns>The point</returns>
         private static Vector2D GetIntermediateVertex(IVector2D start, IVector2D end, double len)
         {
             var dx = end.X - start.X;
