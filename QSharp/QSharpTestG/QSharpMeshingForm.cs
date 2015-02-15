@@ -292,13 +292,62 @@ namespace QSharpTestG
 
         private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var daft = new Daft {SizeField = (x, y) => 20};
-          
+            var daft = new Daft {SizeField = GetSize};
+            var meanSize = GetMeanSize();
 
+            SetFronts(daft);
+
+            daft.SetupQuadtree(meanSize);
             
-            daft.SetupQuadtree(20);
             daft.LoadFronts();
-            //daft
+
+            daft.GenerateMesh();
+
+            InvalidateView();
+        }
+
+        private void SetFronts(Daft daft)
+        {
+            SimplifyPolygonsAndPolylines();
+
+            foreach (var polygon in _simplifiedPolygons)
+            {
+                var d = polygon.GetSignedPolygonArea();
+                var front = new DaftFront(true);
+                var poly = polygon;
+                if (d < 0)
+                {
+                    poly = polygon.ToList();
+                    poly.Reverse();
+                }
+
+                for (var i = 0; i < poly.Count; i++)
+                {
+                    var edge = new Edge2D();
+                    edge.Connect(poly[i], poly[(i+1)%poly.Count]);
+                    front.AddEdge(i, edge);
+                }
+
+                daft.Inwards.Add(front);
+            }
+
+            foreach (var polyline in _simplifiedPolylines)
+            {
+                var front = new DaftFront(false);
+                for (var i = 0; i < polyline.Count - 1; i++)
+                {
+                    var edge = new Edge2D();
+                    edge.Connect(polyline[i], polyline[i + 1]);
+                    front.AddEdge(i, edge);
+                }
+                for (var i = polyline.Count - 1; i > 0; i--)
+                {
+                    var edge = new Edge2D();
+                    edge.Connect(polyline[i], polyline[i - 1]);
+                    front.AddEdge(i, edge);
+                }
+                daft.Outwards.Add(front);
+            }
         }
 
         private void LoadPolygonToFronts(Daft daft)
@@ -370,14 +419,24 @@ namespace QSharpTestG
 
         private void SegmentStraightLinesToolStripMenuItemOnClick(object sender, EventArgs e)
         {
+            SimplifyPolygonsAndPolylines();
+            InvalidateView();
+        }
+
+        #endregion
+
+        private void SimplifyPolygonsAndPolylines()
+        {
             _simplifiedPolylines.Clear();
-            
+            _simplifiedPolygons.Clear();
+
             foreach (var polyline in _polylines)
             {
                 var output = SegmentationHelper.Output(polyline, false, GetSize);
                 var outputPolyline = output.Select(o => new Vector2D
                 {
-                    X = o.X, Y = o.Y
+                    X = o.X,
+                    Y = o.Y
                 }).ToList();
 
                 _simplifiedPolylines.Add(outputPolyline);
@@ -394,11 +453,7 @@ namespace QSharpTestG
 
                 _simplifiedPolygons.Add(outputPolygon);
             }
-
-            InvalidateView();
         }
-
-        #endregion
 
         private void DeleteAt(int x, int y)
         {
@@ -627,6 +682,12 @@ namespace QSharpTestG
             }
             var m = mtotal / total;
             return m;
+        }
+
+        private double GetMeanSize()
+        {
+            var total = _fieldPoints.Sum(kvp => kvp.Value);
+            return total/_fieldPoints.Count;
         }
 
         #endregion

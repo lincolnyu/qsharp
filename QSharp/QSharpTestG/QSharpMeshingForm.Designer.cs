@@ -36,6 +36,7 @@
             this.definePolylinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.definePointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DefineSizeFieldToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.demoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomVerticesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,7 +47,7 @@
             this.circumcirclesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SegmentStraightLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
-            this.DefineSizeFieldToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.triangulateOneStepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -120,6 +121,13 @@
             this.deleteToolStripMenuItem.Text = "Dele&te";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // DefineSizeFieldToolStripMenuItem
+            // 
+            this.DefineSizeFieldToolStripMenuItem.Name = "DefineSizeFieldToolStripMenuItem";
+            this.DefineSizeFieldToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.DefineSizeFieldToolStripMenuItem.Text = "Define Size Field";
+            this.DefineSizeFieldToolStripMenuItem.Click += new System.EventHandler(this.DefineSizeFieldToolStripMenuItemOnClick);
+            // 
             // demoToolStripMenuItem
             // 
             this.demoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -139,7 +147,8 @@
             // 
             this.solveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.triangulateVerticesToolStripMenuItem,
-            this.triangulateAllToolStripMenuItem});
+            this.triangulateAllToolStripMenuItem,
+            this.triangulateOneStepToolStripMenuItem});
             this.solveToolStripMenuItem.Name = "solveToolStripMenuItem";
             this.solveToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.solveToolStripMenuItem.Text = "&Solve";
@@ -147,14 +156,14 @@
             // triangulateVerticesToolStripMenuItem
             // 
             this.triangulateVerticesToolStripMenuItem.Name = "triangulateVerticesToolStripMenuItem";
-            this.triangulateVerticesToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.triangulateVerticesToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.triangulateVerticesToolStripMenuItem.Text = "Triangulate Vertices";
             this.triangulateVerticesToolStripMenuItem.Click += new System.EventHandler(this.triangulateVerticesToolStripMenuItem_Click);
             // 
             // triangulateAllToolStripMenuItem
             // 
             this.triangulateAllToolStripMenuItem.Name = "triangulateAllToolStripMenuItem";
-            this.triangulateAllToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.triangulateAllToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.triangulateAllToolStripMenuItem.Text = "Triangulate All";
             this.triangulateAllToolStripMenuItem.Click += new System.EventHandler(this.triangulateAllToolStripMenuItem_Click);
             // 
@@ -204,12 +213,11 @@
             this.MeshingPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseMove);
             this.MeshingPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshingPictureBox_MouseUp);
             // 
-            // DefineSizeFieldToolStripMenuItem
+            // triangulateOneStepToolStripMenuItem
             // 
-            this.DefineSizeFieldToolStripMenuItem.Name = "DefineSizeFieldToolStripMenuItem";
-            this.DefineSizeFieldToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.DefineSizeFieldToolStripMenuItem.Text = "Define Size Field";
-            this.DefineSizeFieldToolStripMenuItem.Click += new System.EventHandler(this.DefineSizeFieldToolStripMenuItemOnClick);
+            this.triangulateOneStepToolStripMenuItem.Name = "triangulateOneStepToolStripMenuItem";
+            this.triangulateOneStepToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.triangulateOneStepToolStripMenuItem.Text = "Triangulate One Step";
             // 
             // QSharpMeshingForm
             // 
@@ -253,5 +261,6 @@
         private System.Windows.Forms.ToolStripMenuItem circumcirclesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SegmentStraightLinesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DefineSizeFieldToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem triangulateOneStepToolStripMenuItem;
     }
 }

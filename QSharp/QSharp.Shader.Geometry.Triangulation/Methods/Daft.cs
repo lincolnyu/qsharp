@@ -256,6 +256,21 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         }
 
         /// <summary>
+        ///  Go one step in meshing
+        /// </summary>
+        /// <returns>True if one step has been performed</returns>
+        public bool GenerateMeshOneStep()
+        {
+            if (SortedFrontEdges.Count > 0)
+            {
+                var edge = SortedFrontEdges.First().Value;
+                GenerateFromEdge(edge);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         ///  The main loop that generates mesh
         /// </summary>
         public void GenerateMesh()

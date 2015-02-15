@@ -270,7 +270,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
             var vertices = GetVertices(IncIndex(edgeIndex), targetEdge2Index);
             var area = vertices.GetSignedPolygonArea();
-            var isNewInwards = area > 0 ^ rel > 0;
+            var isNewInwards = area < 0;
             var wasInwards = IsInwards;
 
             newFront = new DaftFront(true);
@@ -282,6 +282,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
             if (wasInwards || isNewInwards)
             {
+                // the one to pick is inwards so it's fine
                 for (var i = IncIndex(edgeIndex); i != targetEdge2Index; i = IncIndex(i))
                 {
                     var e = Edges[i];
@@ -295,7 +296,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
             else
             {
-                for (var i = targetEdge2Index; i != DecIndex(edgeIndex); i = IncIndex(i))
+                // pick the inwards (hole)
+                for (var i = targetEdge2Index; i != edgeIndex; i = IncIndex(i))
                 {
                     var e = Edges[i];
                     newFront.Edges.Add(e);
