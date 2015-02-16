@@ -456,6 +456,25 @@ namespace QSharpTestG
             InvalidateView();
         }
 
+        private void squareToMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fv = new Vector2D{X = MeshingPictureBox.Width/2.0, Y = MeshingPictureBox.Height/2.0};
+            _points.Add(fv);
+            _fieldPoints[_points.Count - 1] = 50;
+
+            const int d = 200;
+            var rect = new List<Vector2D>
+            {
+                new Vector2D {X = fv.X - d, Y = fv.Y - d},
+                new Vector2D {X = fv.X + d, Y = fv.Y - d},
+                new Vector2D {X = fv.X + d, Y = fv.Y + d},
+                new Vector2D {X = fv.X - d, Y = fv.Y + d}
+            };
+            _polygons.Add(rect);
+            UpdatePolygonStates();
+            InvalidateView();
+        }
+
         #endregion
 
         private void SimplifyPolygonsAndPolylines()

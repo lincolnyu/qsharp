@@ -246,6 +246,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <param name="bridge1"></param>
         /// <param name="bridge2"></param>
         /// <param name="newTriangle"></param>
+        /// <returns>true if <paramref name="newFront"/>contains<paramref name="bridge2"/></returns>
         /// <remarks>
         /// 
         ///   targetEdge2Index    targetEdge1Index       
@@ -259,7 +260,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         ///                          edgeIndex
         /// 
         /// </remarks>
-        public void Convolve(int edgeIndex, int targetEdge1Index, int targetEdge2Index, out DaftFront newFront, 
+        public bool Convolve(int edgeIndex, int targetEdge1Index, int targetEdge2Index, out DaftFront newFront, 
             out Edge2D bridge1, out Edge2D bridge2, out Triangle2D newTriangle)
         {
             var edge = Edges[edgeIndex];
@@ -280,7 +281,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             bridge2 = new Edge2D();
             bridge2.Connect(v2, vc);
 
-            if (wasInwards || isNewInwards)
+            var res = wasInwards || isNewInwards; 
+            if (res)
             {
                 // the one to pick is inwards so it's fine
                 for (var i = IncIndex(edgeIndex); i != targetEdge2Index; i = IncIndex(i))
@@ -318,6 +320,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             {
                 newTriangle.Setup(v1, vc, v2, bridge1, bridge2, edge);
             }
+            return res;
         }
 
         /// <summary>
@@ -362,7 +365,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Edges.Insert(edgeIndex, bridge1);
             int i, j;
             var count = other.Edges.Count;
-            for (i = edgeIndex + 1, j = targetEdge2Index; count > 0; i = IncIndex(i), j = other.IncIndex(j), count--)
+            for (i = IncIndex(edgeIndex), j = targetEdge2Index; count > 0; i = IncIndex(i), j = other.IncIndex(j), count--)
             {
                 var otherEdge = other.Edges[j];
                 Edges.Insert(i, otherEdge);

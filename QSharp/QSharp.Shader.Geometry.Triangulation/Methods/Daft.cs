@@ -338,6 +338,61 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return newTriangle;
         }
 
+        private void RemoveFrontEdge(Edge2D edge)
+        {
+            SortedFrontEdges.Remove(edge);
+
+            if (!InwardsDict.Remove(edge))
+            {
+                OutwardsDict.Remove(edge);
+            }
+        }
+
+        /// <summary>
+        ///  Removes the specified edge
+        /// </summary>
+        /// <param name="edge">The edge to remvoe</param>
+        /// <param name="isInWards">If it's on the inward front</param>
+        private void RemoveFrontEdge(Edge2D edge, bool isInWards)
+        {
+            SortedFrontEdges.Remove(edge);
+
+            if (isInWards)
+            {
+                InwardsDict.Remove(edge);
+            }
+            else
+            {
+                OutwardsDict.Remove(edge);
+            }
+        }
+
+        private void AddFrontEdge(Edge2D edge, DaftFront front)
+        {
+            SortedFrontEdges.Add(edge, edge);
+
+            if (front.IsInwards)
+            {
+                InwardsDict.Add(edge, front);
+            }
+            else
+            {
+                OutwardsDict.Add(edge, front);
+            }
+        }
+
+        private void RemoveFront(DaftFront front)
+        {
+            if (front.IsInwards)
+            {
+                Inwards.Remove(front);
+            }
+            else
+            {
+                Outwards.Remove(front);
+            }
+        }
+
         /// <summary>
         ///  Adds a triangle with an existing vertex
         /// </summary>
@@ -358,15 +413,27 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Edge2D edgeOffFront;
             Triangle2D newTriangle;
             int edgeIndex1, edgeIndex2;
-            if (conn1 != null || conn2 != null)
+
+            if (conn1 != null && conn2 != null)
+            {
+                // last triangle (for this inwards)
+                // TODO assertion?
+                RemoveFrontEdge(conn1, w.IsInwards);
+                RemoveFrontEdge(conn2, w.IsInwards);
+                RemoveFrontEdge(edge, w.IsInwards);
+                RemoveFront(w);
+                newTriangle = new Triangle2D();
+                newTriangle.SetupU(vc, v1, v2, conn1, edge, conn2);
+            }
+            else if (conn1 != null || conn2 != null)
             {
                 Edge2D edge2OffFront;
                 Edge2D newEdge;
                 w.Fill(edgeIndex, vc, out edgeOffFront, out edge2OffFront, out newEdge, out newTriangle);
 
-                SortedFrontEdges.Remove(edgeOffFront);
-                SortedFrontEdges.Remove(edge2OffFront);
-                SortedFrontEdges.Add(newEdge, newEdge);
+                RemoveFrontEdge(edgeOffFront, w.IsInwards);
+                RemoveFrontEdge(edge2OffFront, w.IsInwards);
+                AddFrontEdge(newEdge, w);
 
                 AddEdgeToQuadTree(newEdge);
             }
@@ -374,12 +441,20 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             {
                 DaftFront newFront;
                 Edge2D bridge1, bridge2;
-                w.Convolve(edgeIndex, edgeIndex1, edgeIndex2, out newFront, out bridge1, out bridge2, out newTriangle);
+                var nf2 = w.Convolve(edgeIndex, edgeIndex1, edgeIndex2, out newFront, out bridge1, out bridge2, out newTriangle);
                 Inwards.Add(newFront);
 
-                SortedFrontEdges.Remove(edge);
-                SortedFrontEdges.Add(bridge1, bridge1);
-                SortedFrontEdges.Add(bridge2, bridge1);
+                RemoveFrontEdge(edge, w.IsInwards);
+                if (nf2)
+                {
+                    AddFrontEdge(bridge1, w);
+                    AddFrontEdge(bridge2, newFront);
+                }
+                else
+                {
+                    AddFrontEdge(bridge1, newFront);
+                    AddFrontEdge(bridge2, w);
+                }
 
                 AddEdgeToQuadTree(bridge1);
                 AddEdgeToQuadTree(bridge2);
@@ -396,9 +471,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                     Edge2D bridge1, bridge2;
                     w.Join(edgeIndex, other, edge1Index, edge2Index, out bridge1, out bridge2, out newTriangle);
 
-                    SortedFrontEdges.Remove(edge);
-                    SortedFrontEdges.Add(bridge1, bridge2);
-                    SortedFrontEdges.Add(bridge2, bridge2);
+                    RemoveFront(other);
+
+                    RemoveFrontEdge(edge, w.IsInwards);
+                    AddFrontEdge(bridge1, w);
+                    AddFrontEdge(bridge2, w);
+                    foreach (var oldEdge in other.Edges)
+                    {
+                        AddFrontEdge(oldEdge, w);
+                    }
 
                     AddEdgeToQuadTree(bridge1);
                     AddEdgeToQuadTree(bridge2);
@@ -408,9 +489,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                     Edge2D newEdge1, newEdge2;
                     w.Stoke(edgeIndex, vc, out edgeOffFront, out newEdge1, out newEdge2, out newTriangle);
 
-                    SortedFrontEdges.Remove(edge);
-                    SortedFrontEdges.Add(newEdge1, newEdge1);
-                    SortedFrontEdges.Add(newEdge2, newEdge2);
+                    RemoveFrontEdge(edge, w.IsInwards);
+                    AddFrontEdge(newEdge1, w);
+                    AddFrontEdge(newEdge2, w);
 
                     AddEdgeToQuadTree(newEdge1);
                     AddEdgeToQuadTree(newEdge2);
