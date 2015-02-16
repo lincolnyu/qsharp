@@ -76,11 +76,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// </summary>
         /// <param name="input">The input</param>
         /// <param name="loop">If it's a polygon</param>
-        /// <param name="sizeField">The field that specifies desired size</param>
+        /// <param name="lengthField">The field that specifies desired length</param>
         /// <returns>The output</returns>
-        public static IEnumerable<IVector2D> Output<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
+        public static IEnumerable<IVector2D> Output<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
         {
-            var simplified = Simplify(input, loop, sizeField).ToList();
+            var simplified = Simplify(input, loop, lengthField).ToList();
 
             if (simplified.Count == 0)
             {
@@ -93,7 +93,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                 var v1 = input[simplified[i]];
                 var v2 = input[simplified[i+1]];
 
-                var segmented = SegmentLineToVertices(v1, v2, sizeField);
+                var segmented = SegmentLineToVertices(v1, v2, lengthField);
                 yield return v1;
                 foreach (var seg in segmented)
                 {
@@ -107,15 +107,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         }
 
         /// <summary>
-        ///  Simplifies polygon/polyline <paramref name="input"/> (depending on <paramref name="loop"/>) according to <paramref name="sizeField"/>
+        ///  Simplifies polygon/polyline <paramref name="input"/> (depending on <paramref name="loop"/>) according to <paramref name="lengthField"/>
         /// </summary>
         /// <param name="input">The vertex list of a polygon or polyline</param>
         /// <param name="loop">If it's a polygon</param>
-        /// <param name="sizeField">The size field that specifies the requested line segment length</param>
+        /// <param name="lengthField">The size field that specifies the requested line segment length</param>
         /// <returns>The indices of selected vertices in the original list (<paramref name="input"/>)</returns>
-        public static IEnumerable<int> Simplify<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
+        public static IEnumerable<int> Simplify<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
         {
-            var edgesInfo = GetInitEdgesInfo(input, loop, sizeField).ToList();
+            var edgesInfo = GetInitEdgesInfo(input, loop, lengthField).ToList();
             int nexti;
             for (var i = 0; i < edgesInfo.Count && (loop && edgesInfo.Count > 2 || !loop && edgesInfo.Count > 1); i = nexti)
             {
@@ -140,7 +140,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     {
                         // merge with prev
                         Debug.Assert(prevEdge != null, "prevEdge != null");
-                        var newEdge = CreateEdge(input, prevEdge.StartIndex, edgeInfo.EndIndex, sizeField);
+                        var newEdge = CreateEdge(input, prevEdge.StartIndex, edgeInfo.EndIndex, lengthField);
                         edgesInfo[i1] = newEdge;
                         nexti = i1;
                     }
@@ -148,7 +148,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                     {
                         // merge with next
                         Debug.Assert(nextEdge != null, "nextEdge != null");
-                        var newEdge = CreateEdge(input, edgeInfo.StartIndex, nextEdge.EndIndex, sizeField);
+                        var newEdge = CreateEdge(input, edgeInfo.StartIndex, nextEdge.EndIndex, lengthField);
                         edgesInfo[i2] = newEdge;
                         nexti = i;
                     }
@@ -176,11 +176,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// </summary>
         /// <param name="start">The start point of the line</param>
         /// <param name="end">The end point of the line</param>
-        /// <param name="sizeField">The underlying size field</param>
+        /// <param name="lengthField">The underlying size field</param>
         /// <returns>A list of vertices segmenting the straightline connecting <paramref name="start"/> and <paramref name="end"/></returns>
-        public static IEnumerable<Vector2D> SegmentLineToVertices(IVector2D start, IVector2D end, Daft.SizeFieldDelegate sizeField)
+        public static IEnumerable<Vector2D> SegmentLineToVertices(IVector2D start, IVector2D end, Daft.SizeFieldDelegate lengthField)
         {
-            var rlist = SegmentLine(start, end, sizeField);
+            var rlist = SegmentLine(start, end, lengthField);
             return rlist.Select(r =>
             {
                 var v1 = new Vector2D();
@@ -196,12 +196,12 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// </summary>
         /// <param name="start">The start point of the line</param>
         /// <param name="end">The end point of the line</param>
-        /// <param name="sizeField">The underlying size field</param>
+        /// <param name="lengthField">The underlying length field</param>
         /// <returns>
         ///  A list of real values between 0 and 1 (exclusive) indicating the locations of the segmenting points proportionate 
         ///  to the total line length
         /// </returns>
-        public static IList<double> SegmentLine(IVector2D start, IVector2D end, Daft.SizeFieldDelegate sizeField)
+        public static IList<double> SegmentLine(IVector2D start, IVector2D end, Daft.SizeFieldDelegate lengthField)
         {
             var totalLen = end.GetDistance(start);
             var lenSofar = 0.0;
@@ -211,15 +211,15 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
 
             while (true)
             {
-                var a = sizeField(p.X, p.Y);
+                var a = lengthField(p.X, p.Y);
                 var next = GetIntermediateVertex(p, end, a);
-                var b = sizeField(next.X, next.Y);
+                var b = lengthField(next.X, next.Y);
 
                 var x = a / (3 * a - b);
 
                 var d = x * a;
                 var c = GetIntermediateVertex(p, end, d);
-                var l = sizeField(c.X, c.Y);
+                var l = lengthField(c.X, c.Y);
 
                 lenSofar += l;
                 if (lenSofar < totalLen)
@@ -253,23 +253,23 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// </summary>
         /// <param name="input">The original polygon or polyline</param>
         /// <param name="loop">If it's a polygon</param>
-        /// <param name="sizeField">The size field</param>
+        /// <param name="lengthField">The length field</param>
         /// <returns>The edge chain</returns>
         /// <remarks>
         ///  If it's a polyline the edge chain consists of all the edges (so the second vertex of the last edge is the last vertex of the polyline)
         ///  If it's a polygon the edge chain consists of all edges of the polygon (so the second vertex of the last edge is the first vertex repeated)
         /// </remarks>
         private static IEnumerable<EdgeInfo> GetInitEdgesInfo<TVector2D>(IList<TVector2D> input, bool loop,
-            Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
+            Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
         {
             for (var i = 0; i < input.Count - 1; i++)
             {
-                var edgeInfo = CreateEdge(input, i, i + 1, sizeField);
+                var edgeInfo = CreateEdge(input, i, i + 1, lengthField);
                 yield return edgeInfo;
             }
             if (loop)
             {
-                var edgeInfo = CreateEdge(input, input.Count - 1, 0, sizeField);
+                var edgeInfo = CreateEdge(input, input.Count - 1, 0, lengthField);
                 yield return edgeInfo;
             }
         }
@@ -280,9 +280,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="input">The input polygon or polyline</param>
         /// <param name="iv1">The index of the first vertex in the original list</param>
         /// <param name="iv2">The index of the second vertex in the original list</param>
-        /// <param name="sizeField">The size field</param>
+        /// <param name="lengthField">The length field</param>
         /// <returns>The created edge info</returns>
-        private static EdgeInfo CreateEdge<TVector2D>(IList<TVector2D> input, int iv1, int iv2, Daft.SizeFieldDelegate sizeField) where TVector2D : IVector2D
+        private static EdgeInfo CreateEdge<TVector2D>(IList<TVector2D> input, int iv1, int iv2, Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
         {
             var v1 = input[iv1];
             var v2 = input[iv2];
@@ -290,7 +290,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             v1.Add(v2, vm);
             vm /= 2;
 
-            var expectedLength = sizeField(vm.X, vm.Y);
+            var expectedLength = lengthField(vm.X, vm.Y);
             var actualLength = v1.GetDistance(v2);
             var edgeInfo = new EdgeInfo
             {

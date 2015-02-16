@@ -157,6 +157,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
                 for (var col = colmin; col <= colmax; col++)
                 {
                     var bucket = (Bucket)GetBucket(row, col);
+                    if (bucket == null)
+                    {
+                        continue;
+                    }
                     foreach (var v in bucket.Vertices)
                     {
                         var dd = v.GetSquareDistance(circle);
@@ -197,6 +201,10 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
                 for (var col = colmin; col <= colmax; col++)
                 {
                     var bucket = (Bucket)GetBucket(row, col);
+                    if (bucket == null)
+                    {
+                        continue;
+                    }
                     foreach (var v in bucket.Vertices)
                     {
                         foreach (var e in v.Edges)

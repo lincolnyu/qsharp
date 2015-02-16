@@ -86,6 +86,8 @@ namespace QSharpTestG
         private readonly List<double> _circumradius = new List<double>();
         private List<Edge2D> _hull;
 
+        private Daft _oneStepDaft;
+
         #endregion
 
         #region Constructors
@@ -306,6 +308,37 @@ namespace QSharpTestG
             InvalidateView();
         }
 
+
+        private void triangulateOneStepToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_oneStepDaft == null)
+            {
+                _oneStepDaft = new Daft { SizeField = GetSize };
+                var meanSize = GetMeanSize();
+
+                SetFronts(_oneStepDaft);
+
+                _oneStepDaft.SetupQuadtree(meanSize);
+
+                _oneStepDaft.LoadFronts();
+            }
+
+            _oneStepDaft.GenerateMeshOneStep();
+            UpdateMesh();
+
+            InvalidateView();
+        }
+
+        private void UpdateMesh()
+        {
+            _meshEdges.Clear();
+
+            foreach (var e in _oneStepDaft.Qst.SortedEdges.Values)
+            {
+                _meshEdges.Add(e);
+            }
+        }
+
         private void SetFronts(Daft daft)
         {
             SimplifyPolygonsAndPolylines();
@@ -315,7 +348,7 @@ namespace QSharpTestG
                 var d = polygon.GetSignedPolygonArea();
                 var front = new DaftFront(true);
                 var poly = polygon;
-                if (d < 0)
+                if (d > 0) // make sure they are counterclockwise
                 {
                     poly = polygon.ToList();
                     poly.Reverse();
@@ -432,7 +465,7 @@ namespace QSharpTestG
 
             foreach (var polyline in _polylines)
             {
-                var output = SegmentationHelper.Output(polyline, false, GetSize);
+                var output = SegmentationHelper.Output(polyline, false, GetLength);
                 var outputPolyline = output.Select(o => new Vector2D
                 {
                     X = o.X,
@@ -444,7 +477,7 @@ namespace QSharpTestG
 
             foreach (var polygon in _polygons)
             {
-                var output = SegmentationHelper.Output(polygon, true, GetSize);
+                var output = SegmentationHelper.Output(polygon, true, GetLength);
                 var outputPolygon = output.Select(o => new Vector2D
                 {
                     X = o.X,
@@ -666,6 +699,13 @@ namespace QSharpTestG
         }
 
         private double GetSize(double x, double y)
+        {
+            var len = GetLength(x, y);
+            var size = len*len*Math.Sqrt(3)/4;
+            return size;
+        }
+
+        private double GetLength(double x, double y)
         {
             var total = 0.0;
             var mtotal = 0.0;

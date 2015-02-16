@@ -582,6 +582,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             edgeIndex = daftw.GetEdgeIndex(edge);
 
             var normal = daftw.GetNormal(edgeIndex);
+            normal.Normalize();
             var m = (edge.V1 + edge.V2)/2;
             var size = SizeField(m.X, m.Y);
             var len = edge.Length;
