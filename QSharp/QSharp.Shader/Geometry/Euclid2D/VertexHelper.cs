@@ -120,22 +120,47 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return intExists;
         }
 
+        /// <summary>
+        ///  Returns if two edges intersect
+        /// </summary>
+        /// <param name="e1V1"></param>
+        /// <param name="e1V2"></param>
+        /// <param name="e2V1"></param>
+        /// <param name="e2V2"></param>
+        /// <param name="intersect"></param>
+        /// <returns></returns>
+        /// <remarks>
+        ///  
+        ///  x = (1-lambda1) * e1V1.X + lambda1 * e1V2.X
+        ///  y = (1-lambda1) * e1V1.Y + lambda1 * e1V2.Y
+        /// 
+        ///  x = (1-lambda2) * e2V1.X + lambda2 * e2V2.X
+        ///  y = (1-lambda2) * e2V1.Y + lambda2 * e2V2.Y
+        /// 
+        ///  Therefore,
+        /// 
+        ///  (e1V1.X - e1V2.X) * lambda1 + (e2V2.X - e2V1.X) * lambda2 + (e2V1.X - e1V1.X) = 0
+        ///  (e1V1.Y - e1V2.Y) * lambda1 + (e2V2.Y - e2V1.Y) * lambda2 + (e2V1.Y - e1V1.Y) = 0
+        /// 
+        ///  ...
+        /// </remarks>
         public static bool EdgesIntersect(IVector2D e1V1, IVector2D e1V2, IVector2D e2V1, IVector2D e2V2,
             IMutableVector2D intersect)
         {
             var a1 = e1V1.X - e1V2.X;
             var b1 = e2V2.X - e2V1.X;
-            var c1 = e1V2.X - e2V2.X;
+            var c1 = e2V1.X - e1V1.X;
             var a2 = e1V1.Y - e1V2.Y;
             var b2 = e2V2.Y - e2V1.Y;
-            var c2 = e1V2.Y - e2V2.Y;
-            if (Math.Abs(a1*b2 - a2*b1) < double.Epsilon)
+            var c2 = e2V1.Y - e1V1.Y;
+            var delta = a1*b2 - a2*b1;
+            if (Math.Abs(delta) < double.Epsilon)
             {
                 return false; // parallel or colinear
             }
 
-            var labmda1 = (c2*b1 - c1*b2)/(a1*b2 - a2*b1);
-            var labmda2 = (c2*a1 - c1*a2)/(b1*a2 - b2*a1);
+            var labmda1 = (c2*b1 - c1*b2)/delta;
+            var labmda2 = (c1*a2 - c2*a1)/delta;
 
             if (labmda1 < 0 || labmda1 > 1) return false;
             if (labmda2 < 0 || labmda2 > 1) return false;

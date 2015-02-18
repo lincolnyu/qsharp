@@ -327,9 +327,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Triangle2D newTriangle;
             w.Stoke(edgeIndex, nv, out edgeOffFront, out newEdge1, out newEdge2, out newTriangle);
 
-            SortedFrontEdges.Remove(edge);
-            SortedFrontEdges.Add(newEdge1, newEdge1);
-            SortedFrontEdges.Add(newEdge2, newEdge1);
+            RemoveFrontEdge(edge, w.IsInwards);
+            AddFrontEdge(newEdge1, w);
+            AddFrontEdge(newEdge2, w);
 
             AddEdgeToQuadTree(newEdge1);
             AddEdgeToQuadTree(newEdge2);
@@ -611,17 +611,44 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
 
             // TODO check if the new triangle will intersect with existing edges
 
-            var ie = Qst.IntersectWithAnyEdge(v1, vertexToAdd);
-            if (ie != null)
+            var ie1 = Qst.IntersectWithAnyEdge(v1, vertexToAdd);
+            if (ie1 != null)
             {
-                var c1 = ie.V1;
-                var c2 = ie.V2;
-                var minAngle1 = DelaunayHelper.GetMinAngle(v1, v2, c1);
-                var minAngle2 = DelaunayHelper.GetMinAngle(v1, v2, c2);
-                vertexToAdd = minAngle1 < minAngle2 ? c2 : c1;
+                return SelectCuttingEdgeVertex(v1, v2, ie1);
+            }
+            var ie2 = Qst.IntersectWithAnyEdge(v2, vertexToAdd);
+            if (ie2 != null)
+            {
+                return SelectCuttingEdgeVertex(v1, v2, ie2);
             }
 
+            // TODO attracts vertex close enough?
+
             return vertexToAdd;
+        }
+
+        private Vector2D SelectCuttingEdgeVertex(IVector2D v1, IVector2D v2, Edge2D edge)
+        {
+            Vector2D res;
+            var c1 = edge.V1;
+            var c2 = edge.V2;
+
+            if (c1 == v1 || c2 == v1)
+            {
+                res = c1 == v1 ? c2 : c1;
+            }
+            else if (c1 == v2 || c2 == v2)
+            {
+                res = c1 == v2 ? c2 : c1;
+            }
+            else
+            {
+                var minAngle1 = DelaunayHelper.GetMinAngle(v1, v2, c1);
+                var minAngle2 = DelaunayHelper.GetMinAngle(v1, v2, c2);
+                res = minAngle1 < minAngle2 ? c2 : c1;
+            }
+
+            return res;
         }
 
         /// <summary>

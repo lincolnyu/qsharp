@@ -175,6 +175,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
 
         /// <summary>
         ///  Returns the edge that intersects with the edge formed by <paramref name="v1"/> and <paramref name="v2"/>
+        ///  and of which the vertices might be same as either of those in the specified edge
         /// </summary>
         /// <param name="v1"></param>
         /// <param name="v2"></param>
@@ -215,7 +216,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
                 }
             }
             var dummy = new Vector2D();
-            return edgesToCheck.FirstOrDefault(e => VertexHelper.EdgesIntersect(v1, v2, e.V1, e.V2, dummy));
+            return edgesToCheck.FirstOrDefault(e => 
+                VertexHelper.EdgesIntersect(v1, v2, e.V1, e.V2, dummy));
         }
 
         /// <summary>
