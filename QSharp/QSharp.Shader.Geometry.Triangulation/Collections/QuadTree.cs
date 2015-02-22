@@ -231,6 +231,19 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
             {
                 MaxEdgeLength = edge.Length;
             }
+            AddVertex(edge.V1);
+            AddVertex(edge.V2);
+        }
+
+        /// <summary>
+        ///  Adds a vertex to the quad tree
+        /// </summary>
+        /// <param name="v">The vertex to add</param>
+        /// <returns>True if it's been added as a new vertex or false if the same vertex already exists</returns>
+        public bool AddVertex(Vector2D v)
+        {
+            var b = (Bucket)GetOrCreateBucket(v.X, v.Y);
+            return b.Vertices.Add(v);
         }
 
         /// <summary>

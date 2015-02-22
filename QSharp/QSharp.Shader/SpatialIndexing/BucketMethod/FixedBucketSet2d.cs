@@ -65,7 +65,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
         /// <param name="ymin"></param>
         /// <param name="xsize"></param>
         /// <param name="ysize"></param>
-        public FixedBucketSet2D(int nx, int ny, double xmin, double ymin, double xsize, double ysize)
+        protected FixedBucketSet2D(int nx, int ny, double xmin, double ymin, double xsize, double ysize)
         {
             _buckets = new Dictionary<int, Dictionary<int, IBucket>>();
             XMin = xmin;
@@ -179,6 +179,7 @@ namespace QSharp.Shader.SpatialIndexing.BucketMethod
             if (!dict.TryGetValue(col, out bucket))
             {
                 bucket = CreateBucket();
+                dict[col] = bucket;
             }
             return bucket;
         }
