@@ -183,7 +183,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         }
 
         /// <summary>
-        ///  
+        ///  Create a triangle based of the specified edge to the specified vertex which is a vertex on
+        ///  the front next to one of the vertices of the edge
         /// </summary>
         /// <param name="edgeIndex">The index of the base edge</param>
         /// <param name="ev">The vertex opposite the base edge</param>
@@ -218,21 +219,34 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var prev = Edges[prevIndex];
             if (next.V1 == ev || next.V2 == ev)
             {
-                Edges.RemoveAt(nextIndex);
-                Edges.RemoveAt(edgeIndex);
+                DualRemove(nextIndex, ref edgeIndex);
                 edge2OffFront = next;
                 newEdge.Connect(v1, ev);
                 Edges.Insert(edgeIndex, newEdge);
-                newTriangle.Setup(v1, ev, v2, newEdge, next, edgeOffFront);
+                newTriangle.SetupU(v1, v2, ev, edgeOffFront, next, newEdge);
             }
             else
             {
-                Edges.RemoveAt(edgeIndex);
-                Edges.RemoveAt(prevIndex);
+                DualRemove(edgeIndex, ref prevIndex);
                 edge2OffFront = prev;
                 newEdge.Connect(v2, ev);
                 Edges.Insert(prevIndex, newEdge);
-                newTriangle.Setup(v1, v2, ev, edgeOffFront, newEdge, prev);
+                newTriangle.SetupU(v1, v2, ev, edgeOffFront, newEdge, prev);
+            }
+        }
+
+        private void DualRemove(int index1, ref int index2)
+        {
+            if (index1 > index2)
+            {
+                Edges.RemoveAt(index1);
+                Edges.RemoveAt(index2);
+            }
+            else
+            {
+                Edges.RemoveAt(index2);
+                Edges.RemoveAt(index1);
+                index2--;
             }
         }
 
@@ -534,7 +548,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <returns></returns>
         public int GetEdgeIndex(Edge2D edge)
         {
-            // Optimize this with balanced binary tree?
+            // TODO Optimize this with balanced binary tree?
             return Edges.IndexOf(edge);
         }
 

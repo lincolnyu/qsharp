@@ -49,22 +49,22 @@ namespace QSharp.Shader.Geometry.Euclid2D
             Y = b.Y - a.Y;
         }
 
-        public double InnerProductWith(Vector2D other)
+        public double InnerProductWith(IVector2D other)
         {
             return this.InnerProduct(other);
         }
 
-        public double OuterProductWith(Vector2D other)
+        public double OuterProductWith(IVector2D other)
         {
             return this.OuterProduct(other);
         }
 
-        public Vector2D Add(Vector2D other)
+        public Vector2D Add(IVector2D other)
         {
             return Instantiate(X + other.X, Y + other.Y);
         }
 
-        public Vector2D Subtract(Vector2D other)
+        public Vector2D Subtract(IVector2D other)
         {
             return Instantiate(X - other.X, Y - other.Y);
         }

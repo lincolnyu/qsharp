@@ -64,6 +64,9 @@ namespace QSharpTestG
 
         private Pen _drawnPolylinePen;
 
+        private Pen _inwardsPen;
+        private Pen _outwardsPen;
+
         private Bitmap[] _bitmaps;
 
         private int _currentBimapIndex;
@@ -549,6 +552,9 @@ namespace QSharpTestG
             _meshPen = new Pen(Color.DeepPink, 1);
             _hullPen = new Pen(Color.Brown, 2);
             _ccPen = new Pen(Color.GreenYellow, 1);
+
+            _inwardsPen = new Pen(Color.Red, 2);
+            _outwardsPen = new Pen(Color.Orange, 2);
         }
 
         private void UpdateState()
@@ -654,6 +660,30 @@ namespace QSharpTestG
                         g.DrawLine(_meshPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
                     }
                 }
+
+                if (_oneStepDaft != null)
+                {
+                    foreach (var inwards in _oneStepDaft.Inwards)
+                    {
+                        foreach (var e in inwards.Edges)
+                        {
+                            var v1 = e.V1;
+                            var v2 = e.V2;
+                            g.DrawLine(_inwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                        }
+                    }
+
+                    foreach (var outwards in _oneStepDaft.Outwards)
+                    {
+                        foreach (var e in outwards.Edges)
+                        {
+                            var v1 = e.V1;
+                            var v2 = e.V2;
+                            g.DrawLine(_outwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                        }
+                    }
+                }
+
                 if (_hull != null)
                 {
                     foreach (var edge in _hull)

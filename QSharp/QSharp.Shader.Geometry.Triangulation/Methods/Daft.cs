@@ -571,6 +571,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             double cr;
             GetCircumcicle(edge, vertexToAdd, out cc, out cr);
             var verticesInCircle = new HashSet<Vector2D>();
+            cr = cr * 0.999; // to avoid arguable points
             Qst.GetAllVerticesInCircle(cc, cr, verticesInCircle);
 
             // remove the vertices of the edge if any
@@ -610,18 +611,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
 
             // TODO check if the new triangle will intersect with existing edges
-
             var ie1 = Qst.IntersectWithAnyEdge(v1, vertexToAdd);
             if (ie1 != null)
             {
-                return SelectCuttingEdgeVertex(v1, v2, ie1);
+                vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie1);
             }
             var ie2 = Qst.IntersectWithAnyEdge(v2, vertexToAdd);
             if (ie2 != null)
             {
-                return SelectCuttingEdgeVertex(v1, v2, ie2);
+                vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie2);
             }
-
+            
             // TODO attracts vertex close enough?
 
             return vertexToAdd;
@@ -666,7 +666,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             var vv2 = v2 - vector2D;
             cc= new Vector2D();
             TriangleHelper.GetCircumcenter(vv1, vv2, cc);
-            cr = cc.GetDistance(v1);
+            cr = cc.Length;
+            cc = (Vector2D)cc.Add(vector2D);
         }
 
         /// <summary>

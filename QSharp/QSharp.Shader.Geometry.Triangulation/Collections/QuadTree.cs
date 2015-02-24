@@ -216,8 +216,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Collections
                 }
             }
             var dummy = new Vector2D();
-            return edgesToCheck.FirstOrDefault(e => 
-                VertexHelper.EdgesIntersect(v1, v2, e.V1, e.V2, dummy));
+            return edgesToCheck.FirstOrDefault(e =>
+                VertexHelper.EdgesIntersect(v1, v2, e.V1, e.V2, dummy) && v1 != e.V1 && v1 != e.V2 && v2 != e.V1 &&
+                v2 != e.V2);
         }
 
         /// <summary>
