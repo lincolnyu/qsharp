@@ -327,6 +327,8 @@ namespace QSharpTestG
             }
 
             _oneStepDaft.GenerateMeshOneStep();
+            _oneStepDaft.CheckDaftIntegrity();
+
             UpdateMesh();
 
             InvalidateView();

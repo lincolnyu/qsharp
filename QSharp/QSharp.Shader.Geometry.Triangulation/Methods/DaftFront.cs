@@ -179,7 +179,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Edges.Insert(edgeIndex+1, newEdge2);
 
             newTriangle = new Triangle2D();
-            newTriangle.Setup(v1, nv, v2, newEdge1, newEdge2, edgeOffFront);
+            newTriangle.Setup(v1, v2, nv, edgeOffFront, newEdge2, newEdge1);
         }
 
         /// <summary>
@@ -444,28 +444,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <returns>The list of vertices</returns>
         public IEnumerable<Vector2D> GetVertices(int startEdgeIndex, int endEdgeIndexPlus1)
         {
-            var first = Edges[startEdgeIndex];
-            var second = Edges[IncIndex(startEdgeIndex)];
-            Vector2D vlast;
-            if (first.V2 == second.V1 || first.V2 == second.V2)
-            {
-                yield return first.V1;
-                yield return first.V2;
-                vlast = first.V2;
-            }
-            else
-            {
-                yield return first.V2;
-                yield return first.V1;
-                vlast = first.V1;
-            }
-            for (var i = IncIndex(startEdgeIndex); i != endEdgeIndexPlus1; i = IncIndex(i))
-            {
-                var v1 = Edges[i].V1;
-                var v2 = Edges[i].V2;
-                vlast = v1 == vlast ? v2 : v1;
-                yield return vlast;
-            }
+            return PolygonHelper.GetVertices<Vector2D, Edge2D>(Edges, startEdgeIndex, endEdgeIndexPlus1);
         }
 
         /// <summary>
@@ -477,28 +456,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <returns>The list of vertices</returns>
         public IEnumerable<Vector2D> GetVerticesReverse(int startEdgeIndex, int endEdgeIndexMinus1)
         {
-            var first = Edges[startEdgeIndex];
-            var second = Edges[DecIndex(startEdgeIndex)];
-            Vector2D vlast;
-            if (first.V2 == second.V1 || first.V2 == second.V2)
-            {
-                yield return first.V1;
-                yield return first.V2;
-                vlast = first.V2;
-            }
-            else
-            {
-                yield return first.V2;
-                yield return first.V1;
-                vlast = first.V1;
-            }
-            for (var i = DecIndex(startEdgeIndex); i != endEdgeIndexMinus1; i = DecIndex(i))
-            {
-                var v1 = Edges[i].V1;
-                var v2 = Edges[i].V2;
-                vlast = v1 == vlast ? v2 : v1;
-                yield return vlast;
-            }
+            return PolygonHelper.GetVerticesReverse<Vector2D, Edge2D>(Edges, startEdgeIndex, endEdgeIndexMinus1);
         }
 
         /// <summary>

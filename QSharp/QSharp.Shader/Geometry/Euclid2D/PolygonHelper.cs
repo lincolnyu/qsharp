@@ -414,6 +414,84 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2;
         }
 
+        public static IEnumerable<TVector2D> GetVertices<TVector2D, TEdge2D>(IList<TEdge2D> edges, int startEdgeIndex,
+            int endEdgeIndexPlus1) where TEdge2D : IEdge2D where TVector2D : IVector2D
+        {
+            var first = edges[startEdgeIndex];
+            var secondIndex = IncIndex(startEdgeIndex, edges.Count);
+            var second = edges[secondIndex];
+            TVector2D vlast;
+            if (first.Vertex2 == second.Vertex1 || first.Vertex2 == second.Vertex2)
+            {
+                yield return (TVector2D)first.Vertex1;
+                yield return (TVector2D)first.Vertex2;
+                vlast = (TVector2D)first.Vertex2;
+            }
+            else
+            {
+                yield return (TVector2D)first.Vertex2;
+                yield return (TVector2D)first.Vertex1;
+                vlast = (TVector2D)first.Vertex1;
+            }
+            for (var i = secondIndex; i != endEdgeIndexPlus1; i = IncIndex(i, edges.Count))
+            {
+                var v1 = edges[i].Vertex1;
+                var v2 = edges[i].Vertex2;
+                vlast = (TVector2D) (v1.Equals(vlast) ? v2 : v1);
+                yield return vlast;
+            }
+        }
+
+        public static IEnumerable<TVector2D> GetVerticesReverse<TVector2D, TEdge2D>(IList<TEdge2D> edges, int startEdgeIndex, int endEdgeIndexMinus1)
+            where TEdge2D : IEdge2D
+            where TVector2D : IVector2D
+        {
+            var first = edges[startEdgeIndex];
+            var secondIndex = DecIndex(startEdgeIndex, edges.Count);
+            var second = edges[secondIndex];
+            TVector2D vlast;
+            if (first.Vertex2 == second.Vertex1 || first.Vertex2 == second.Vertex2)
+            {
+                yield return (TVector2D)first.Vertex1;
+                yield return (TVector2D)first.Vertex2;
+                vlast = (TVector2D)first.Vertex2;
+            }
+            else
+            {
+                yield return (TVector2D)first.Vertex2;
+                yield return (TVector2D)first.Vertex1;
+                vlast = (TVector2D)first.Vertex1;
+            }
+            for (var i = secondIndex; i != endEdgeIndexMinus1; i = DecIndex(i, edges.Count))
+            {
+                var v1 = edges[i].Vertex1;
+                var v2 = edges[i].Vertex2;
+                vlast = (TVector2D)(v1.Equals(vlast) ? v2 : v1);
+                yield return vlast;
+            }
+        }
+
+        public static int IncIndex(int index, int total)
+        {
+            index++;
+            if (index >= total)
+            {
+                index -= total;
+            }
+            return index;
+        }
+
+        public static int DecIndex(int index, int total)
+        {
+            index--;
+            if (index < 0)
+            {
+                index += total;
+            }
+            return index;
+        }
+
+
         /// <summary>
         ///  Removes a continuous range of items from a looped list
         /// </summary>
