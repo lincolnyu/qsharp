@@ -253,6 +253,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <summary>
         ///  Extends the front with a triangle which splits the front out to a new front
         /// </summary>
+        /// <param name="daft">The DAFT performer</param>
         /// <param name="edgeIndex"></param>
         /// <param name="targetEdge1Index"></param>
         /// <param name="targetEdge2Index"></param>
@@ -260,7 +261,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <param name="bridge1"></param>
         /// <param name="bridge2"></param>
         /// <param name="newTriangle"></param>
-        /// <returns>true if <paramref name="newFront"/>contains<paramref name="bridge2"/></returns>
+        /// <returns>true if <paramref name="newFront"/>contains<paramref name="bridge2"/>or<paramref name="bridge1"/></returns>
         /// <remarks>
         /// 
         ///   targetEdge2Index    targetEdge1Index       
@@ -326,6 +327,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             }
 
             newTriangle = new Triangle2D();
+            // TODO isn't rel>0 guaranteed?
             if (rel > 0)
             {
                 newTriangle.Setup(v1, v2, vc, edge, bridge2, bridge1);
@@ -340,6 +342,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// <summary>
         ///  Reach out to another front and join it in, and that front will be deleted afterwards by the caller
         /// </summary>
+        /// <param name="daft">The DAFT performer</param>
         /// <param name="edgeIndex">The edge from which the front extends to the other</param>
         /// <param name="other">The front to join with</param>
         /// <param name="targetEdge1Index">The first edge</param>
@@ -358,7 +361,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         ///    --------------} v1 ---------------} v2 ----------}  this front
         ///                          edgeIndex
         /// </remarks>
-        public void Join(int edgeIndex, DaftFront other, int targetEdge1Index, int targetEdge2Index,
+        public void Join(Daft daft, int edgeIndex, DaftFront other, int targetEdge1Index, int targetEdge2Index,
               out Edge2D bridge1, out Edge2D bridge2, out Triangle2D newTriangle)
         {
             var edge = Edges[edgeIndex];
@@ -387,6 +390,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             Edges.Insert(i, bridge2);
 
             newTriangle = new Triangle2D();
+            // TODO isn't rel>0 guaranteed?
             if (rel > 0)
             {
                 newTriangle.Setup(v1, v2, vc, edge, bridge2, bridge1);

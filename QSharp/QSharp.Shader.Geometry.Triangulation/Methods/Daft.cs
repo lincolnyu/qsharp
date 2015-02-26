@@ -441,18 +441,30 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             {
                 DaftFront newFront;
                 Edge2D bridge1, bridge2;
+
+                var wasInwards = w.IsInwards;
+
                 var nf2 = w.Convolve(edgeIndex, edgeIndex1, edgeIndex2, out newFront, out bridge1, out bridge2, out newTriangle);
                 Inwards.Add(newFront);
+
+                foreach (var e in newFront.Edges)
+                {
+                    if (!wasInwards)
+                    {
+                        OutwardsDict.Remove(e);
+                    }
+                    InwardsDict[e] = newFront;
+                }
 
                 RemoveFrontEdge(edge, w.IsInwards);
                 if (nf2)
                 {
                     AddFrontEdge(bridge1, w);
-                    AddFrontEdge(bridge2, newFront);
+                    SortedFrontEdges.Add(bridge2, bridge2); // already added to InwardsDict with 'newFront'
                 }
                 else
                 {
-                    AddFrontEdge(bridge1, newFront);
+                    SortedFrontEdges.Add(bridge1, bridge1); // already added to InwardsDict with 'newFront'
                     AddFrontEdge(bridge2, w);
                 }
 
@@ -469,8 +481,17 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 if (found)
                 {
                     Edge2D bridge1, bridge2;
-                    w.Join(edgeIndex, other, edge1Index, edge2Index, out bridge1, out bridge2, out newTriangle);
+                    var wasIn = w.IsInwards;
+                    w.Join(this, edgeIndex, other, edge1Index, edge2Index, out bridge1, out bridge2, out newTriangle);
 
+                    foreach (var e in other.Edges)
+                    {
+                        if (wasIn && !other.IsInwards)
+                        {
+                            OutwardsDict.Remove(e);
+                        }
+                        InwardsDict[e] = w;
+                    }
                     RemoveFront(other);
 
                     RemoveFrontEdge(edge, w.IsInwards);
@@ -562,8 +583,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         /// </summary>
         /// <param name="edge">The edge to base the triangle of</param>
         /// <param name="vertexToAdd">The vertex to check</param>
+        /// <param name="isNew"></param>
         /// <returns>The vertex itself if it passes the valiation or a vertex nearby that passes the valiadtion</returns>
-        private Vector2D CheckVertex(Edge2D edge, Vector2D vertexToAdd)
+        private Vector2D CheckVertex(Edge2D edge, Vector2D vertexToAdd, bool isNew=true)
         {
             var v1 = edge.V1;
             var v2 = edge.V2;
@@ -606,8 +628,9 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 }
                 if (bestv != null)
                 {
-                    return CheckVertex(edge, bestv);
+                    return CheckVertex(edge, bestv, false);
                 }
+                isNew = false;
             }
 
             // TODO check if the new triangle will intersect with existing edges
@@ -615,14 +638,28 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             if (ie1 != null)
             {
                 vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie1);
+                isNew = false;
             }
             var ie2 = Qst.IntersectWithAnyEdge(v2, vertexToAdd);
             if (ie2 != null)
             {
                 vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie2);
+                isNew = false;
             }
-            
-            // TODO attracts vertex close enough?
+
+            if (isNew)
+            {
+                var targetArea = SizeField(vertexToAdd.X, vertexToAdd.Y);
+                var targetLen = Math.Sqrt(4 * targetArea / Math.Sqrt(3));
+                var lenThr = targetLen / 2;
+                var neightbours = new List<Vector2D>();
+                Qst.GetAllVerticesInCircle(vertexToAdd, lenThr, neightbours);
+                if (neightbours.Count > 0)
+                {
+                    var v = neightbours.First();
+                    return CheckVertex(edge, v, false);
+                }
+            }
 
             return vertexToAdd;
         }
@@ -662,12 +699,27 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
         {
             var v1 = edge.V1;
             var v2 = edge.V2;
-            var vv1 = v1 - vector2D;
-            var vv2 = v2 - vector2D;
-            cc= new Vector2D();
-            TriangleHelper.GetCircumcenter(vv1, vv2, cc);
-            cr = cc.Length;
-            cc = (Vector2D)cc.Add(vector2D);
+            var vm = (v1 + v2)/2;
+            var distVmV = vm.GetDistance(vector2D);
+            const double flipThr = 3.0;
+
+            cc = new Vector2D();
+            if (distVmV < edge.Length * flipThr)
+            {
+                var vv1 = v1 - vector2D;
+                var vv2 = v2 - vector2D;
+                TriangleHelper.GetCircumcenter(vv1, vv2, cc);
+                cr = cc.Length;
+                cc = (Vector2D) cc.Add(vector2D);
+            }
+            else
+            {
+                var v2V = vector2D - v2;
+                var v21 = v1 - v2;
+                TriangleHelper.GetCircumcenter(v2V, v21, cc);
+                cr = cc.Length;
+                cc = (Vector2D) cc.Add(v2);
+            }
         }
 
         /// <summary>
