@@ -240,7 +240,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
             // TODO this check is still not thorough
             // TODO more thorough check
             var vertices = front.GetVertices(0, 0);
-            var area = vertices.GetSignedPolygonArea();
+            var area = vertices.GetSignedPolygonArea2();
             if (front.IsInwards)
             {
                 if (area > 0.0001)

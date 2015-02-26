@@ -63,8 +63,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 else
                 {
                     vfirst = v;
-                    vlast = v;
                 }
+                vlast = v;
             }
             if (vfirst != null)
             {
@@ -92,10 +92,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 {
                     res += v.X*vlast.Y - vlast.X*v.Y;
                 }
-                else
-                {
-                    vlast = v;
-                }
+                vlast = v;
             }
             return res;
         }
