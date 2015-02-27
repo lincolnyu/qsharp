@@ -338,16 +338,6 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return newTriangle;
         }
 
-        private void RemoveFrontEdge(Edge2D edge)
-        {
-            SortedFrontEdges.Remove(edge);
-
-            if (!InwardsDict.Remove(edge))
-            {
-                OutwardsDict.Remove(edge);
-            }
-        }
-
         /// <summary>
         ///  Removes the specified edge
         /// </summary>
@@ -633,25 +623,43 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 isNew = false;
             }
 
-            // TODO check if the new triangle will intersect with existing edges
-            var ie1 = Qst.IntersectWithAnyEdge(v1, vertexToAdd);
-            if (ie1 != null)
+            // checks if the new triangle will intersect with existing edges
+
+            while (true)
             {
-                vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie1);
-                isNew = false;
-            }
-            var ie2 = Qst.IntersectWithAnyEdge(v2, vertexToAdd);
-            if (ie2 != null)
-            {
-                vertexToAdd = SelectCuttingEdgeVertex(v1, v2, ie2);
-                isNew = false;
+                var ie1 = Qst.IntersectWithAnyEdge(v1, vertexToAdd);
+                if (ie1 != null)
+                {
+                    vertexToAdd = SelectEdgeCuttingVertex(v1, v2, ie1);
+                    isNew = false;
+                }
+                else
+                {
+                    break;
+                }
             }
 
+            while (true)
+            {
+                var ie2 = Qst.IntersectWithAnyEdge(v2, vertexToAdd);
+                if (ie2 != null)
+                {
+                    vertexToAdd = SelectEdgeCuttingVertex(v1, v2, ie2);
+                    isNew = false;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // checks if any existing vertices close by can be selected
             if (isNew)
             {
+                const double lenThrR = 0.6;
                 var targetArea = SizeField(vertexToAdd.X, vertexToAdd.Y);
                 var targetLen = Math.Sqrt(4 * targetArea / Math.Sqrt(3));
-                var lenThr = targetLen / 2;
+                var lenThr = targetLen *lenThrR;
                 var neightbours = new List<Vector2D>();
                 Qst.GetAllVerticesInCircle(vertexToAdd, lenThr, neightbours);
                 if (neightbours.Count > 0)
@@ -664,7 +672,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
             return vertexToAdd;
         }
 
-        private Vector2D SelectCuttingEdgeVertex(IVector2D v1, IVector2D v2, Edge2D edge)
+        private Vector2D SelectEdgeCuttingVertex(IVector2D v1, IVector2D v2, Edge2D edge)
         {
             Vector2D res;
             var c1 = edge.V1;

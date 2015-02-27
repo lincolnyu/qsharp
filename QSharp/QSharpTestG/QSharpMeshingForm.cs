@@ -91,6 +91,8 @@ namespace QSharpTestG
 
         private Daft _oneStepDaft;
 
+        private int _iterationCounter; // for debugging purposes only
+
         #endregion
 
         #region Constructors
@@ -324,10 +326,14 @@ namespace QSharpTestG
                 _oneStepDaft.SetupQuadtree(meanSize);
 
                 _oneStepDaft.LoadFronts();
+
+                _iterationCounter = 0;
             }
 
             _oneStepDaft.GenerateMeshOneStep();
             _oneStepDaft.CheckDaftIntegrity();
+
+            _iterationCounter++;
 
             UpdateMesh();
 
