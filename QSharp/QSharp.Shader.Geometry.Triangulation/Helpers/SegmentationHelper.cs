@@ -30,6 +30,11 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
             public int EndIndex { get; set; }
 
             /// <summary>
+            ///  If the edge has been approved by simplifiecation process as simplified
+            /// </summary>
+            public bool Approved { get; set; }
+
+            /// <summary>
             ///  The actual length of the edge
             /// </summary>
             public double ActualLength { private get; set; }
@@ -78,7 +83,8 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <param name="loop">If it's a polygon</param>
         /// <param name="lengthField">The field that specifies desired length</param>
         /// <returns>The output</returns>
-        public static IEnumerable<IVector2D> Output<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
+        public static IEnumerable<IVector2D> Output<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate lengthField) 
+            where TVector2D : IVector2D
         {
             var simplified = Simplify(input, loop, lengthField).ToList();
 
@@ -115,9 +121,19 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
         /// <returns>The indices of selected vertices in the original list (<paramref name="input"/>)</returns>
         public static IEnumerable<int> Simplify<TVector2D>(IList<TVector2D> input, bool loop, Daft.SizeFieldDelegate lengthField) where TVector2D : IVector2D
         {
+            if (input.Count < 3 || input.Count < 4 && loop)
+            {
+                for (var i = 0; i < input.Count; i++)
+                {
+                    yield return i;
+                }
+                yield break;
+            }
+
             var edgesInfo = GetInitEdgesInfo(input, loop, lengthField).ToList();
             int nexti;
-            for (var i = 0; i < edgesInfo.Count && (loop && edgesInfo.Count > 2 || !loop && edgesInfo.Count > 1); i = nexti)
+            var countDown = edgesInfo.Count;
+            for (var i = 0; countDown > 0; i = nexti)
             {
                 var edgeInfo = edgesInfo[i];
                 if (edgeInfo.IsTooShort())
@@ -136,27 +152,39 @@ namespace QSharp.Shader.Geometry.Triangulation.Helpers
                         nextEdge = edgesInfo[i2];
                         eaNext = nextEdge.GetEaRatio();
                     }
+
+                    bool mergedWasApproved;
                     if (eaPrev > eaNext)
                     {
                         // merge with prev
                         Debug.Assert(prevEdge != null, "prevEdge != null");
+                        mergedWasApproved = prevEdge.Approved;
                         var newEdge = CreateEdge(input, prevEdge.StartIndex, edgeInfo.EndIndex, lengthField);
                         edgesInfo[i1] = newEdge;
-                        nexti = i1;
+
+                        nexti = i1 > i ? i1 - 1 : i1;
                     }
                     else
                     {
                         // merge with next
                         Debug.Assert(nextEdge != null, "nextEdge != null");
+                        mergedWasApproved = nextEdge.Approved;
                         var newEdge = CreateEdge(input, edgeInfo.StartIndex, nextEdge.EndIndex, lengthField);
                         edgesInfo[i2] = newEdge;
-                        nexti = i;
+
+                        nexti = i < edgesInfo.Count - 1 ? i : 0;
                     }
                     edgesInfo.RemoveAt(i);
+                    if (!mergedWasApproved)
+                    {
+                        countDown--;
+                    }
                 }
                 else
                 {
-                    nexti = i + 1;
+                    edgeInfo.Approved = true;
+                    nexti = GetNextIndex(i, edgesInfo.Count, loop);
+                    countDown--;
                 }
             }
 
