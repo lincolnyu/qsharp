@@ -354,33 +354,82 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="polygon">The polygon to see if containing <paramref name="testee"/></param>
         /// <param name="testee">The polygon to see if contained</param>
         /// <returns>true if it is inside</returns>
-        public static bool PolygonIsInside<TVector2D>(this IList<TVector2D> polygon, IList<TVector2D> testee)
+        public static bool PolygonIsInside<TVector2D>(this ICollection<TVector2D> polygon, ICollection<TVector2D> testee)
             where TVector2D : IVector2D
         {
-            var v = testee[0];
-            var inside = polygon.VertexIsInside(v);
+            var vl2 = testee.Last();
+            var inside = polygon.VertexIsInside(vl2);
             if (!inside)
             {
                 return false;
             }
-            var intersect = new Vector2D();
-            for (var i = 0; i < testee.Count; i++)
+
+            return polygon.PolygonEdgesIntersect(testee).Any();
+        }
+
+        /// <summary>
+        ///  Tests if the two polygons overlap
+        /// </summary>
+        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <param name="polygon1">The first polygon</param>
+        /// <param name="polygon2">The second polygon</param>
+        /// <returns>true if they overlap</returns>
+        public static bool PolygonsOverlap<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
+            where TVector2D : IVector2D
+        {
+            if (polygon2.Count < polygon1.Count)
             {
-                var a1 = testee[i];
-                var a2 = testee[(i + 1) % testee.Count];
+                return polygon2.PolygonsOverlap1(polygon1);
+            }
+            return polygon1.PolygonsOverlap1(polygon2);
+        }
 
-                for (var j = 0; j < polygon.Count; j++)
+        /// <summary>
+        ///  Tests if the two polygons overlap with the first one having no more vertices than the second
+        /// </summary>
+        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <param name="polygon1">The first polygon</param>
+        /// <param name="polygon2">The second polygon</param>
+        /// <returns>true if they overlap</returns>
+        private static bool PolygonsOverlap1<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
+            where TVector2D : IVector2D
+        {
+            foreach (var v in polygon1)
+            {
+                var isInside = polygon2.VertexIsInside(v);
+                if (isInside)
                 {
-                    var b1 = polygon[j];
-                    var b2 = polygon[(j + 1) % polygon.Count];
+                    return true;
+                }
+            }
 
-                    if (VertexHelper.EdgesIntersect(a1, a2, b1, b2, intersect))
+            return polygon1.PolygonEdgesIntersect(polygon2).Any();
+        }
+
+        /// <summary>
+        ///  Tests if the two polygons have any edges intersecting
+        /// </summary>
+        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <param name="polygon1">The first polygon</param>
+        /// <param name="polygon2">The second polygon</param>
+        /// <returns>true if have intersecting edges</returns>
+        private static IEnumerable<IVector2D> PolygonEdgesIntersect<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
+            where TVector2D : IVector2D
+        {
+            var intersect = new Vector2D();
+            var vl1 = polygon1.Last();
+            var vl2 = polygon2.Last();
+            foreach (var v1 in polygon1)
+            {
+                foreach (var v2 in polygon2)
+                {
+                    if (VertexHelper.EdgesIntersect(vl1, v1, vl2, v2, intersect))
                     {
-                        return false;
+                        yield return intersect;
+                        intersect = new Vector2D();
                     }
                 }
             }
-            return true;
         }
 
         /// <summary>
