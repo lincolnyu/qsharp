@@ -119,16 +119,16 @@ namespace QSharp.Shader.Graphics.Extended.Objects
         /// <returns>true if the ray starts from inside the sphere</returns>
         public override bool IsRayInside(Base.Optics.Ray ray)
         {
-            const float Epsilon = 0.01f;
+            const float epsilon = 0.01f;
             Vector4f raySource = ray.Source;
             Vector4f r = raySource - Sphere.Center;
             float dist = r.GetLengthNormalized();
 
-            if (dist < Sphere.Radius - Epsilon)
+            if (dist < Sphere.Radius - epsilon)
             {
                 return true;
             }
-            if (dist > Sphere.Radius + Epsilon)
+            if (dist > Sphere.Radius + epsilon)
             {
                 return false;
             }

@@ -1,5 +1,4 @@
-﻿using System;
-using QSharp.Shader.Graphics.Base.Exceptions;
+﻿using QSharp.Shader.Graphics.Base.Exceptions;
 using QSharp.Shader.Graphics.Base.Optics;
 
 namespace QSharp.Shader.Graphics.RayTracing
@@ -12,9 +11,9 @@ namespace QSharp.Shader.Graphics.RayTracing
     ///  theoretically (in simplified terms), as these coefficients are
     ///  used on both sides, they must observe the law of conservation
     ///  of energy, i.e.
-    ///  rou_s + rou_st <= 1
-    ///  rou_d + rou_dt <= 1
-    ///  rou_rg + tou_tg <= 1
+    ///  rou_s + rou_st &lt;= 1
+    ///  rou_d + rou_dt &lt;= 1
+    ///  rou_rg + tou_tg &lt;= 1
     /// </remarks>
     public class SimpleSurfaceCharacteristics
     {
@@ -114,6 +113,7 @@ namespace QSharp.Shader.Graphics.RayTracing
             RouS = s;
             RouD = d;
             RouSt = st;
+            RouDt = dt;
             RouSi = si;
             RouDi = di;
             RouA = a;
@@ -129,31 +129,31 @@ namespace QSharp.Shader.Graphics.RayTracing
         ///  the object and the corresponding coefficient)
         /// </summary>
         /// <param name="clr">colour of the object</param>
-        /// <param name="r_s">specular reflection coeff</param>
-        /// <param name="r_d">diffuse reflection coeff</param>
-        /// <param name="r_st">specular refraction (transmission) coeff</param>
-        /// <param name="r_dt">diffuse refraciton coeff</param>
-        /// <param name="r_si">internal specular reflection coeff</param>
-        /// <param name="r_di">internal diffuse reflection coeff</param>
-        /// <param name="r_a">ambient reflection coeff</param>
-        /// <param name="r_rg">fraction of reflection for tracing</param>
-        /// <param name="r_tg">fraction of refraction for tracing</param>
-        /// <param name="r_ri">fraction of internal reflection for tracing</param>
+        /// <param name="rS">specular reflection coeff</param>
+        /// <param name="rD">diffuse reflection coeff</param>
+        /// <param name="rSt">specular refraction (transmission) coeff</param>
+        /// <param name="rDt">diffuse refraciton coeff</param>
+        /// <param name="rSi">internal specular reflection coeff</param>
+        /// <param name="rDi">internal diffuse reflection coeff</param>
+        /// <param name="rA">ambient reflection coeff</param>
+        /// <param name="rRg">fraction of reflection for tracing</param>
+        /// <param name="rTg">fraction of refraction for tracing</param>
+        /// <param name="rRi">fraction of internal reflection for tracing</param>
         /// <param name="f">exponent of specular sharpness</param>
-        public SimpleSurfaceCharacteristics(BlendedColor clr, float r_s, float r_d,
-            float r_st, float r_dt, float r_si, float r_di, float r_a,
-            float r_rg, float r_tg, float r_ri, float f)
+        public SimpleSurfaceCharacteristics(BlendedColor clr, float rS, float rD,
+            float rSt, float rDt, float rSi, float rDi, float rA,
+            float rRg, float rTg, float rRi, float f)
         {
-            RouS = clr * r_s;
-            RouD = clr * r_d;
-            RouSt = clr * r_st;
-            RouDt = clr * r_dt;
-            RouSi = clr * r_si;
-            RouDi = clr * r_di;
-            RouA = clr * r_a;
-            RouRg = clr * r_rg;
-            RouTg = clr * r_tg;
-            RouRi = clr * r_ri;
+            RouS = clr * rS;
+            RouD = clr * rD;
+            RouSt = clr * rSt;
+            RouDt = clr * rDt;
+            RouSi = clr * rSi;
+            RouDi = clr * rDi;
+            RouA = clr * rA;
+            RouRg = clr * rRg;
+            RouTg = clr * rTg;
+            RouRi = clr * rRi;
             F = f;
         }
 
