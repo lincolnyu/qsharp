@@ -379,9 +379,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             if (polygon2.Count < polygon1.Count)
             {
-                return polygon2.PolygonsOverlap1(polygon1);
+                return polygon2.PolygonsOverlap2(polygon1);
             }
-            return polygon1.PolygonsOverlap1(polygon2);
+            return polygon1.PolygonsOverlap2(polygon2);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="polygon1">The first polygon</param>
         /// <param name="polygon2">The second polygon</param>
         /// <returns>true if they overlap</returns>
-        private static bool PolygonsOverlap1<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
+        public static bool PolygonsOverlap2<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
             where TVector2D : IVector2D
         {
             foreach (var v in polygon1)
