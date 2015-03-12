@@ -1,6 +1,6 @@
 ﻿using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  interface that represents a scene where objects and atmosphere are potentially

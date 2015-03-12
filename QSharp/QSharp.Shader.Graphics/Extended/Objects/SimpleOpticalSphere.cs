@@ -1,6 +1,6 @@
 ﻿using System;
 using QSharp.Shader.Graphics.Base.Geometry;
-using QSharp.Shader.Graphics.RayTracer;
+using QSharp.Shader.Graphics.RayTracing;
 
 namespace QSharp.Shader.Graphics.Extended.Objects
 {

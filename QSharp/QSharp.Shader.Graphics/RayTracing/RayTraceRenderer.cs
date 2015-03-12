@@ -1,7 +1,7 @@
 ﻿using QSharp.Shader.Graphics.Base.World;
 using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  class whose instance renders the model using ray-tracing approach

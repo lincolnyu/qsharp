@@ -107,18 +107,18 @@
     <Compile Include="Raster\Plot\BresenhamLine.cs" />
     <Compile Include="Raster\Plot\MidPointCircle.cs" />
     <Compile Include="Raster\Plot\VisitDelegate.cs" />
-    <Compile Include="RayTracer\IRayTraceLuminant.cs" />
-    <Compile Include="RayTracer\IRayTraceOptical.cs" />
-    <Compile Include="RayTracer\IRayTraceScene.cs" />
-    <Compile Include="RayTracer\IRayTraceSurface.cs" />
-    <Compile Include="RayTracer\PointLight.cs" />
-    <Compile Include="RayTracer\RayTraceOptical.cs" />
-    <Compile Include="RayTracer\RayTraceRenderer.cs" />
-    <Compile Include="RayTracer\SimpleEther.cs" />
-    <Compile Include="RayTracer\SimpleOptical.cs" />
-    <Compile Include="RayTracer\SimpleScene.cs" />
-    <Compile Include="RayTracer\SimpleSurface.cs" />
-    <Compile Include="RayTracer\SimpleSurfaceCharacteristics.cs" />
+    <Compile Include="RayTracing\IRayTraceLuminant.cs" />
+    <Compile Include="RayTracing\IRayTraceOptical.cs" />
+    <Compile Include="RayTracing\IRayTraceScene.cs" />
+    <Compile Include="RayTracing\IRayTraceSurface.cs" />
+    <Compile Include="RayTracing\PointLight.cs" />
+    <Compile Include="RayTracing\RayTraceOptical.cs" />
+    <Compile Include="RayTracing\RayTraceRenderer.cs" />
+    <Compile Include="RayTracing\SimpleEther.cs" />
+    <Compile Include="RayTracing\SimpleOptical.cs" />
+    <Compile Include="RayTracing\SimpleScene.cs" />
+    <Compile Include="RayTracing\SimpleSurface.cs" />
+    <Compile Include="RayTracing\SimpleSurfaceCharacteristics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="QSharp.Shader.Graphics.cd" />

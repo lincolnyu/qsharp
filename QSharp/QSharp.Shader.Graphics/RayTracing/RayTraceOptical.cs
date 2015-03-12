@@ -1,6 +1,6 @@
 ﻿using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  an abstract class that specifies functionalities a ray-trace optical

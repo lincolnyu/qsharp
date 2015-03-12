@@ -1,7 +1,7 @@
 ﻿using QSharp.Shader.Graphics.Base.Exceptions;
 using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  an abstract extention to ray-trace optical object with a simplied

@@ -36,12 +36,12 @@ namespace QSharp.Shader.Graphics.Extended.Objects
 
         #endregion
 
-        public override RayTracer.IRayTraceSurface OuterSurface
+        public override RayTracing.IRayTraceSurface OuterSurface
         {
             get { return null; }
         }
 
-        public override RayTracer.IRayTraceSurface InnerSurface
+        public override RayTracing.IRayTraceSurface InnerSurface
         {
             get { return null; }
         }

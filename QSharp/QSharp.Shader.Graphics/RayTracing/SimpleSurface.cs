@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using QSharp.Shader.Graphics.Base.Geometry;
 using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  a surface class that provides ray-trace feature

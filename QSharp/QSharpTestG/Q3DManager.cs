@@ -10,7 +10,7 @@ using QSharp.Shader.Graphics.Base.Objects;
 using QSharp.Shader.Graphics.Base.Optics;
 using QSharp.Shader.Graphics.Extended.Objects;
 using QSharp.Shader.Graphics.Extended.Wireframe;
-using QSharp.Shader.Graphics.RayTracer;
+using QSharp.Shader.Graphics.RayTracing;
 using System.Drawing;
 
 namespace QSharpTestG

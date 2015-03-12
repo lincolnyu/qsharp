@@ -4,7 +4,7 @@ using QSharp.Shader.Graphics.Base.Objects;
 using QSharp.Shader.Graphics.Base.Optics;
 using QSharp.Shared;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  simple ether space where lights can freely travels

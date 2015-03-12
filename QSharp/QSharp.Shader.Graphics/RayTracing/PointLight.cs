@@ -2,7 +2,7 @@
 using QSharp.Shader.Graphics.Base.Objects;
 using QSharp.Shader.Graphics.Base.Optics;
 
-namespace QSharp.Shader.Graphics.RayTracer
+namespace QSharp.Shader.Graphics.RayTracing
 {
     /// <summary>
     ///  class that represents point light type

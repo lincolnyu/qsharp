@@ -3,7 +3,7 @@
 using QSharp.Shader.Graphics.Csg;
 using QSharp.Shader.Graphics.Base.Optics;
 using QSharp.Shader.Graphics.Extended.Objects;
-using QSharp.Shader.Graphics.RayTracer;
+using QSharp.Shader.Graphics.RayTracing;
 
 namespace QSharpTestG
 {

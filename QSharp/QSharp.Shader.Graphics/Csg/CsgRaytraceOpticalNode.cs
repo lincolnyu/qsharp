@@ -1,7 +1,7 @@
 ﻿using System;
 using QSharp.Shader.Graphics.Base.Exceptions;
 using QSharp.Shader.Graphics.Base.Optics;
-using QSharp.Shader.Graphics.RayTracer;
+using QSharp.Shader.Graphics.RayTracing;
 using QSharp.Shared;
 
 namespace QSharp.Shader.Graphics.Csg
