@@ -370,37 +370,24 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <summary>
         ///  Tests if the two polygons overlap
         /// </summary>
-        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <typeparam name="TV1">The type of vertices of the first polygon</typeparam>
+        /// <typeparam name="TV2">The type of vertices of the second polygon</typeparam>
         /// <param name="polygon1">The first polygon</param>
         /// <param name="polygon2">The second polygon</param>
         /// <returns>true if they overlap</returns>
-        public static bool PolygonsOverlap<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
-            where TVector2D : IVector2D
+        public static bool PolygonsOverlap<TV1, TV2>(this ICollection<TV1> polygon1,
+            ICollection<TV2> polygon2)
+            where TV1 : IVector2D
+            where TV2 : IVector2D
         {
-            if (polygon2.Count < polygon1.Count)
+            if (polygon1.Select(v => polygon2.VertexIsInside(v)).Any())
             {
-                return polygon2.PolygonsOverlap2(polygon1);
+                return true;
             }
-            return polygon1.PolygonsOverlap2(polygon2);
-        }
 
-        /// <summary>
-        ///  Tests if the two polygons overlap with the first one having no more vertices than the second
-        /// </summary>
-        /// <typeparam name="TVector2D">The type of vertices</typeparam>
-        /// <param name="polygon1">The first polygon</param>
-        /// <param name="polygon2">The second polygon</param>
-        /// <returns>true if they overlap</returns>
-        public static bool PolygonsOverlap2<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
-            where TVector2D : IVector2D
-        {
-            foreach (var v in polygon1)
+            if (polygon2.Select(v => polygon1.VertexIsInside(v)).Any())
             {
-                var isInside = polygon2.VertexIsInside(v);
-                if (isInside)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return polygon1.PolygonEdgesIntersect(polygon2).Any();
@@ -409,12 +396,14 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <summary>
         ///  Tests if the two polygons have any edges intersecting
         /// </summary>
-        /// <typeparam name="TVector2D">The type of vertices</typeparam>
+        /// <typeparam name="TV1">The type of vertices of the first polygon</typeparam>
+        /// <typeparam name="TV2">The type of vertices of the second polygon</typeparam>
         /// <param name="polygon1">The first polygon</param>
         /// <param name="polygon2">The second polygon</param>
         /// <returns>true if have intersecting edges</returns>
-        private static IEnumerable<IVector2D> PolygonEdgesIntersect<TVector2D>(this ICollection<TVector2D> polygon1, ICollection<TVector2D> polygon2)
-            where TVector2D : IVector2D
+        private static IEnumerable<IVector2D> PolygonEdgesIntersect<TV1, TV2>(
+            this ICollection<TV1> polygon1, ICollection<TV2> polygon2)
+            where TV1 : IVector2D where TV2 : IVector2D
         {
             var intersect = new Vector2D();
             var vl1 = polygon1.Last();
