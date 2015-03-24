@@ -417,7 +417,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
                         yield return intersect;
                         intersect = new Vector2D();
                     }
+                    vl2 = v2;
                 }
+                vl1 = v1;
             }
         }
 

@@ -12,7 +12,7 @@ namespace QSharpTest.Scheme.Classical.Sequential
         public void TestCase001()
         {
             var rand = new Random();
-            for (int t = 0; t < 10000; t++)
+            for (int t = 0; t < 100; t++)
             {
                 Console.WriteLine("Test {0}\n", t);
                 var n = rand.Next(5, 15);

@@ -198,6 +198,7 @@ namespace QSharpTest.Scheme.Classical.Hash
         }
 
         [TestMethod]
+        [Ignore]
         public void SoHashLinearAddItemPressureTest()
         {
             var hash = new AccessibleSoHashLinear<int>(2);
@@ -206,6 +207,7 @@ namespace QSharpTest.Scheme.Classical.Hash
 
 
         [TestMethod]
+        [Ignore]
         public void SoHashDynamicAddItemPressureTest()
         {
             var hash = new AccessibleSoHashDyn<int>(2);
@@ -213,6 +215,7 @@ namespace QSharpTest.Scheme.Classical.Hash
         }
 
         [TestMethod]
+        [Ignore]
         public void SoHashLinearClearPressureTest()
         {
             var hash = new AccessibleSoHashLinear<int>(2);
@@ -220,6 +223,7 @@ namespace QSharpTest.Scheme.Classical.Hash
         }
 
         [TestMethod]
+        [Ignore]
         public void SoHashDynamicClearPressureTest()
         {
             var hash = new AccessibleSoHashDyn<int>(2);
