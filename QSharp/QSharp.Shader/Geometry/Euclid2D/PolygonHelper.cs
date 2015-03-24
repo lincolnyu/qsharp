@@ -407,9 +407,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             var intersect = new Vector2D();
             var vl1 = polygon1.Last();
-            var vl2 = polygon2.Last();
             foreach (var v1 in polygon1)
             {
+                var vl2 = polygon2.Last();
                 foreach (var v2 in polygon2)
                 {
                     if (VertexHelper.EdgesIntersect(vl1, v1, vl2, v2, intersect))
