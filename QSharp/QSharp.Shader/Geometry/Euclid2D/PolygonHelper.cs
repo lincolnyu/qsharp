@@ -286,6 +286,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         
         /// <summary>
         ///  Returns if the vertex is inside the specified polygon
+        ///  Note the input polygon must not have duplicate vertices
         /// </summary>
         /// <typeparam name="TVector2D">The vertex type</typeparam>
         /// <param name="polygon">The polygon to test</param>
@@ -300,7 +301,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
             double firsta = 0;
             double lasta = 0;
             var vlist = polygon.ToList();
-            vlist.Add(vlist[0]);
+            // replicate the ending vertex to close the sweeping, that's why the input polygon shouldn't have
+            // duplicate vertices which will make the calculation unstable
+            vlist.Add(vlist[0]); 
             foreach (var v in vlist)
             {
                 v.Subtract(vertex, vv);
