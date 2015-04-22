@@ -32,8 +32,8 @@ namespace QSharpTest
 #endif
 
 
-           // var met = new MathExpressionTest();
-            //met.Test();
+            var met = new MathExpressionTest();
+            met.Test();
 
 #if false
     //QSharp.String.Compiler.IntegratedTest.TestEntry();
@@ -44,7 +44,7 @@ namespace QSharpTest
             t.SoHashLinearClearPressureTest();
 #endif
 
-            AlgorithmXTests.Demo();
+            //AlgorithmXTests.Demo();
         }
     }
 }
