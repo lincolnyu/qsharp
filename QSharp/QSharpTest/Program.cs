@@ -4,6 +4,7 @@
 //using System.Collections.Generic;
 //using QSharp.Scheme.Classical.Trees;
 using QSharpTest.Scheme.Classical.Hash;
+using QSharpTest.Scheme.ExactCover;
 //using QSharpTest.Scheme.Classical.Trees;
 using QSharpTest.String.Compiler;
 
@@ -31,8 +32,8 @@ namespace QSharpTest
 #endif
 
 
-            var met = new MathExpressionTest();
-            met.Test();
+           // var met = new MathExpressionTest();
+            //met.Test();
 
 #if false
     //QSharp.String.Compiler.IntegratedTest.TestEntry();
@@ -42,6 +43,8 @@ namespace QSharpTest
             //t.SoHashDynamicAddItemPressureTest();
             t.SoHashLinearClearPressureTest();
 #endif
+
+            AlgorithmXTests.Demo();
         }
     }
 }

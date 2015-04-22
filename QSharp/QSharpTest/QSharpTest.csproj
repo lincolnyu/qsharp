@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheme.ExactCover\AlgorithmXTests.cs" />
     <Compile Include="Scheme.Mathematics\UnlimitedIntegerTest.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashDyn.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashLinear.cs" />
@@ -173,6 +174,10 @@
     <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
       <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
       <Name>QSharp.Scheme.Classical.Trees</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.ExactCover\QSharp.Scheme.ExactCover.csproj">
+      <Project>{b0c01ea7-99a0-454c-8836-ea4be34ff3cb}</Project>
+      <Name>QSharp.Scheme.ExactCover</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj">
       <Project>{f9e4a9b9-9712-40cf-860e-bdf96009f861}</Project>
