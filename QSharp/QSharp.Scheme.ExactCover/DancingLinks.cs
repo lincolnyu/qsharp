@@ -14,7 +14,7 @@ namespace QSharp.Scheme.ExactCover
     ///  References:
     ///  http://en.wikipedia.org/wiki/Dancing_Links
     /// </remarks>
-    public class DancingLinks
+    public class DancingLinks<TRow, TCol>
     {
         #region Enumerations
 
@@ -28,21 +28,22 @@ namespace QSharp.Scheme.ExactCover
 
         #endregion
 
+        #region Delegates
+
+        public delegate int RowToIntConvert(TRow row);
+
+        public delegate int ColToIntConvert(TCol col);
+
+        #endregion
+
         #region Nested types
 
-        public class Set : IEnumerable<int>
+        public class Set
         {
-            #region Methods
+            #region Properties
 
-            public IEnumerator<int> GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
+            public TRow Row { get; set; }
+            public ICollection<TCol> Contents { get; set; }
 
             #endregion
         }
@@ -57,8 +58,8 @@ namespace QSharp.Scheme.ExactCover
 
             #region Properties
 
-            public int Row { get; set; }
-            public int Col { get; set; }
+            public TRow Row { get; set; }
+            public TCol Col { get; set; }
 
             #endregion
 
@@ -66,7 +67,7 @@ namespace QSharp.Scheme.ExactCover
 
             public IEnumerator<int> GetEnumerator()
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -74,16 +75,16 @@ namespace QSharp.Scheme.ExactCover
                 return GetEnumerator();
             }
 
-            public void Add(int item)
+            public void Add(object item)
             {
                 // one off
                 if (_inputPointer == 0)
                 {
-                    Row = item;
+                    Row = (TRow)item;
                 }
                 else if (_inputPointer == 1)
                 {
-                    Col = item;
+                    Col = (TCol)item;
                 }
                 _inputPointer++;
             }
@@ -105,6 +106,11 @@ namespace QSharp.Scheme.ExactCover
             ///  Total number nodes (non-zero) cells in the column
             /// </summary>
             public int Count { get; set; }
+
+            /// <summary>
+            ///  The data the column represents
+            /// </summary>
+            public TCol Col { get; set; }
         }
 
         private class Node : BaseNode
@@ -117,7 +123,7 @@ namespace QSharp.Scheme.ExactCover
             /// <summary>
             ///  Row number
             /// </summary>
-            public int Row { get; set; }
+            public TRow Row { get; set; }
         }
 
         #endregion
@@ -137,27 +143,50 @@ namespace QSharp.Scheme.ExactCover
 
         public States State { get; private set; }
 
-        public IEnumerable<int> Solution
+        public IEnumerable<TRow> Solution
         {
             get { return Selected.Reverse().Select(x => x.Row); }
         }
+
+        /// <summary>
+        ///  Row count when populated (by Populate())
+        /// </summary>
+        public int OriginalRowCount { get; private set; }
+
+        /// <summary>
+        ///  Column count when populated (by Populate())
+        /// </summary>
+        public int OriginalColumnCount { get; private set; }
+
+        /// <summary>
+        ///  Row count after reduction (by Fix())
+        /// </summary>
+        public int ActualRowCount { get; private set; }
+
+        /// <summary>
+        ///  Column count after reduction (by Fix())
+        /// </summary>
+        public int ActualColumnCount { get; private set; }
 
         /// <summary>
         ///  Pointing to the first column node as a reference from this class to the linked nodes
         /// </summary>
         private ColumnHeader FirstColumn { get; set; }
 
+        /// <summary>
+        ///  Total node count
+        /// </summary>
         private int TotalCount { get; set; }
 
         /// <summary>
         ///  Total columns, for display purposes only
         /// </summary>
-        private int ColumnCount { get; set; }
+        private int CurrentColumnCount { get; set; }
 
         /// <summary>
         ///  Total rows, for display purposes only
         /// </summary>
-        private int RowCount { get; set; }
+        private int CurrentRowCount { get; set; }
 
         private LinkedList<BaseNode> RemovedNodes { get; set; }
 
@@ -169,22 +198,19 @@ namespace QSharp.Scheme.ExactCover
 
         #region Methods
 
-        #region object members
-
-        public override string ToString()
+        public string ToString(RowToIntConvert rowToInt, ColToIntConvert colToInt)
         {
-            var map = new char[RowCount, ColumnCount];
+            var map = new char[OriginalRowCount, OriginalColumnCount];
             int i;
-            for (i = 0; i < RowCount; i++)
+            for (i = 0; i < OriginalRowCount; i++)
             {
-                for (var j = 0; j < ColumnCount; j++)
+                for (var j = 0; j < OriginalColumnCount; j++)
                 {
                     map[i, j] = '.';
                 }
             }
             var first = true;
-            i = 0;
-            for (var n = FirstColumn; first || n != FirstColumn; n = (ColumnHeader)n.Right, i++)
+            for (var n = FirstColumn; n != null && (first || n != FirstColumn); n = (ColumnHeader)n.Right)
             {
                 if (n.Count == 0)
                 {
@@ -194,19 +220,21 @@ namespace QSharp.Scheme.ExactCover
                 for (var p = n.Bottom; p != n; p = p.Bottom)
                 {
                     var pn = (Node) p;
-                    map[pn.Row, i] = '1';
+                    var irow = rowToInt(pn.Row);
+                    var icol = colToInt(pn.Column.Col);
+                    map[irow, icol] = '1';
                 }
 
                 first = false;
             }
             var sb = new StringBuilder();
-            for (i = 0; i < RowCount; i++)
+            for (i = 0; i < OriginalRowCount; i++)
             {
-                for (var j = 0; j < ColumnCount; j++)
+                for (var j = 0; j < OriginalColumnCount; j++)
                 {
                     sb.Append(map[i, j]);
                 }
-                if (i < RowCount - 1)
+                if (i < OriginalRowCount - 1)
                 {
                     sb.AppendLine();
                 }
@@ -214,9 +242,13 @@ namespace QSharp.Scheme.ExactCover
             return sb.ToString();
         }
 
-        #endregion
-
-        public void SetMatrix(ICollection<ICollection<int>> sets)
+        /// <summary>
+        ///  Sets data
+        /// </summary>
+        /// <param name="sets">The sets</param>
+        /// <param name="allCols">All columns</param>
+        /// <param name="dict">An option dict used for pre-eliminating sets (Fix() method below)</param>
+        public void Populate(ICollection<Set> sets, ICollection<TCol> allCols, IDictionary<TRow, object> dict=null)
         {
             // clear all and discard existing network
             Reset();
@@ -224,42 +256,48 @@ namespace QSharp.Scheme.ExactCover
 
             if (sets.Count == 0)
             {
-                ColumnCount = 0;
-                RowCount = 0;
+                ActualRowCount = OriginalColumnCount = CurrentColumnCount = 0;
+                ActualColumnCount = OriginalColumnCount = CurrentRowCount = 0;
                 return;
             }
 
-            ColumnCount = sets.Max(x => x.Max()) + 1;
+            ActualColumnCount = OriginalColumnCount = CurrentColumnCount = allCols.Count;
 
-            InitializeColumns(ColumnCount);
+            InitializeColumns(CurrentColumnCount);
             
-            var lastRowNodes = new Dictionary<int, BaseNode>(); // last row of col
+            var lastRowNodes = new Dictionary<TCol, BaseNode>(); // last row of col
             BaseNode col = FirstColumn;
 
             Debug.Assert(col != null);
-            for (var i = 0; i < ColumnCount; col = col.Right, i++)
+            foreach (var col1 in allCols)
             {
-                lastRowNodes[i] = col;
+                lastRowNodes[col1] = col;
+                ((ColumnHeader) col).Col = col1;
+                col = col.Right;
             }
 
             var row = 0; // current row index
             foreach (var set in sets)
             {
                 BaseNode lastCol = null;   // last col of current row
-                foreach (var obj in set)
+                foreach (var obj in set.Contents)
                 {
                     var lastRow = lastRowNodes[obj];
                     var newNode = new Node();
                     if (lastCol == null)
                     {
                         AddNode(newNode, newNode, newNode, lastRow, lastRow.Bottom);
+                        if (dict != null)
+                        {
+                            dict[set.Row] = newNode;
+                        }
                     }
                     else
                     {
                         AddNode(newNode, lastCol, lastCol.Right, lastRow, lastRow.Bottom);
                     }
 
-                    newNode.Row = row;
+                    newNode.Row = set.Row;
                     newNode.Column = lastRow as ColumnHeader ?? ((Node)lastRow).Column;
                     newNode.Column.Count++;
                     TotalCount++;
@@ -270,7 +308,24 @@ namespace QSharp.Scheme.ExactCover
 
                 row++;
             }
-            RowCount = row;
+            ActualRowCount = OriginalRowCount = CurrentRowCount = row;
+        }
+
+        public void Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows)
+        {
+            foreach (var fixedRow in fixedRows)
+            {
+                var n = dict[fixedRow];
+                var node = (Node) n;
+                Eliminate(node);
+            }
+            // clear stacks recorded during Eliminate() process as these sets and objects are removed as fixed
+            RemovedCounts.Clear();
+            RemovedNodes.Clear();
+
+            ActualRowCount = CurrentRowCount;
+            ActualColumnCount = CurrentRowCount;
+            // NOTE OriginalRowCount, OriginalColumnCount stay the same (for ToString() to work)
         }
 
         public void Reset()
@@ -391,6 +446,8 @@ namespace QSharp.Scheme.ExactCover
             {
                 // eliminates through the column
 
+                // starting from the first below n and ends before n 
+                // (leaving n (the row itself) to be eliminated at the end, see belkow)
                 for (var c = n.Bottom; c != n; c = c.Bottom)
                 {
                     var cn = c as Node;
@@ -483,10 +540,16 @@ namespace QSharp.Scheme.ExactCover
             {
                 n.Column.Count--;
                 TotalCount--;
+                if (n.Left == n)
+                {
+                    // last one
+                    CurrentRowCount--;
+                }
             }
             else
             {
-                var c = (ColumnHeader) node;
+                CurrentColumnCount--;
+                var c = (ColumnHeader)node;
                 if (c == FirstColumn)
                 {
                     if (c.Right != c)
@@ -512,9 +575,14 @@ namespace QSharp.Scheme.ExactCover
             {
                 n.Column.Count++;
                 TotalCount++;
+                if (n.Left == n)
+                {
+                    CurrentRowCount++;
+                }
             }
             else
             {
+                CurrentColumnCount++;
                 if (FirstColumn == null)
                 {
                     // NOTE this may alter the column ordering
