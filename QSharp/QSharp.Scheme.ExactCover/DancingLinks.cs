@@ -269,6 +269,11 @@ namespace QSharp.Scheme.ExactCover
             Reset();
             FirstColumn = null;
 
+            if (dict != null)
+            {
+                dict.Clear();
+            }
+
             if (sets.Count == 0)
             {
                 ActualRowCount = OriginalColumnCount = CurrentColumnCount = 0;
