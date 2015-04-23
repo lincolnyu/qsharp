@@ -8,7 +8,7 @@ namespace QSharp.Scheme.ExactCover
     ///  This is to demo naively the Algorithm X (without dancing links structure)
     /// </summary>
     /// <remarks>
-    ///  Refererences:
+    ///  References:
     ///  http://en.wikipedia.org/wiki/Knuth%27s_Algorithm_X
     /// </remarks>
     public class AlgorithmX
@@ -17,8 +17,8 @@ namespace QSharp.Scheme.ExactCover
 
         public enum States
         {
-            ToTryNew,
-            ToPop,
+            ToGoForward,
+            ToBackTrack,
             FoundSolution,
             Terminated,
         }
@@ -164,7 +164,7 @@ namespace QSharp.Scheme.ExactCover
             ExcludedObjects.Clear();
             Selected.Clear();
             CurrentLevel = 0;
-            State = States.ToTryNew;
+            State = States.ToGoForward;
         }
 
         /// <summary>
@@ -174,10 +174,10 @@ namespace QSharp.Scheme.ExactCover
         {
             switch (State)
             {
-                case States.ToTryNew:
+                case States.ToGoForward:
                     TryNew();
                     break;
-                case States.ToPop:
+                case States.ToBackTrack:
                 case States.FoundSolution:
                     PopAndTry();
                     break;
@@ -223,13 +223,13 @@ namespace QSharp.Scheme.ExactCover
             }
 
             var selInfo = Selected.Pop();
-            Unremove(selInfo);
+            Restore(selInfo);
 
             var next = GetNextSetForReferenceColumn(selInfo.ReferenceColumn, selInfo.SelectedSet + 1);
 
             if (next < 0)
             {
-                State = States.ToPop;
+                State = States.ToBackTrack;
                 return;
             }
 
@@ -243,7 +243,7 @@ namespace QSharp.Scheme.ExactCover
             var refCol = SelectReferenceColumn();
             if (refCol < 0)
             {
-                State = States.ToPop; // failed
+                State = States.ToBackTrack; // failed
                 return;
             }
 
@@ -259,7 +259,7 @@ namespace QSharp.Scheme.ExactCover
 
         private void Perform(SelectionInfo selInfo)
         {
-            Remove(selInfo);
+            Eliminate(selInfo);
 
             Selected.Push(selInfo);
 
@@ -269,7 +269,7 @@ namespace QSharp.Scheme.ExactCover
             }
             else
             {
-                State = States.ToTryNew;
+                State = States.ToGoForward;
             }
         }
 
@@ -315,7 +315,7 @@ namespace QSharp.Scheme.ExactCover
             return -1;
         }
 
-        private void Remove(SelectionInfo selInfo)
+        private void Eliminate(SelectionInfo selInfo)
         {
             var set = selInfo.SelectedSet;
 
@@ -329,12 +329,12 @@ namespace QSharp.Scheme.ExactCover
                     // rows affected by column i will be removed
                     ExcludedObjects.Add(i);
 
-                    RemoveSetsAffectedByObject(i, selInfo);
+                    EliminateSetsAffectedByObject(i, selInfo);
                 }
             }
         }
 
-        private void RemoveSetsAffectedByObject(int obj, SelectionInfo selInfo)
+        private void EliminateSetsAffectedByObject(int obj, SelectionInfo selInfo)
         {
             for (var i = 0; i < SetCount; i++)
             {
@@ -352,7 +352,7 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
-        private void Unremove(SelectionInfo selInfo)
+        private void Restore(SelectionInfo selInfo)
         {
             var set = selInfo.SelectedSet;
 
