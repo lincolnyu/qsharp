@@ -92,6 +92,21 @@ namespace QSharp.Scheme.ExactCover
             #endregion
         }
 
+        public class SavedBeforeFix
+        {
+            #region Properties
+
+            public LinkedList<object> RemovedNodes { get; set; }
+
+            /// <summary>
+            ///  This is to store the first column for the stability of solving (to generate save results)
+            ///  Mainly only debugging/demo will care
+            /// </summary>
+            public object FirstColumn { get; set; }
+
+            #endregion
+        }
+
         private class BaseNode
         {
             public BaseNode Left { get; set; }
@@ -311,14 +326,30 @@ namespace QSharp.Scheme.ExactCover
             ActualRowCount = OriginalRowCount = CurrentRowCount = row;
         }
 
-        public void Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows)
+        public void Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows, SavedBeforeFix saved = null)
         {
+            if (saved != null)
+            {
+                saved.FirstColumn = FirstColumn;
+            }
+
             foreach (var fixedRow in fixedRows)
             {
                 var n = dict[fixedRow];
                 var node = (Node) n;
                 Eliminate(node);
             }
+
+            if (saved != null)
+            {
+                // NOTE  we don't need to keep RemovedCounts to restore
+                saved.RemovedNodes = new LinkedList<object>(); 
+                foreach (var node in RemovedNodes)
+                {
+                    saved.RemovedNodes.AddLast(node);
+                }
+            }
+
             // clear stacks recorded during Eliminate() process as these sets and objects are removed as fixed
             RemovedCounts.Clear();
             RemovedNodes.Clear();
@@ -326,6 +357,20 @@ namespace QSharp.Scheme.ExactCover
             ActualRowCount = CurrentRowCount;
             ActualColumnCount = CurrentRowCount;
             // NOTE OriginalRowCount, OriginalColumnCount stay the same (for ToString() to work)
+        }
+
+        public void UnFix(SavedBeforeFix saved)
+        {
+            foreach (var s in saved.RemovedNodes)
+            {
+                RemovedNodes.AddLast((BaseNode) s);
+            }
+            RestoreAll();
+
+            FirstColumn = (ColumnHeader)saved.FirstColumn;
+
+            ActualRowCount = CurrentRowCount;
+            ActualColumnCount = CurrentRowCount;
         }
 
         public void Reset()
@@ -498,8 +543,9 @@ namespace QSharp.Scheme.ExactCover
 
         private void RestoreAll()
         {
-            for (var nn = RemovedNodes.Last; RemovedNodes.Count > 0; RemovedNodes.RemoveLast())
+            for (; RemovedNodes.Count > 0; RemovedNodes.RemoveLast())
             {
+                var nn = RemovedNodes.Last;
                 var n = nn.Value;
                 AddNodeBack(n);
             }
@@ -542,6 +588,8 @@ namespace QSharp.Scheme.ExactCover
                 TotalCount--;
                 if (n.Left == n)
                 {
+                    // NOTE mostly only demo cares about these these counters 
+                    // they can be removed for simplification and speed
                     // last one
                     CurrentRowCount--;
                 }

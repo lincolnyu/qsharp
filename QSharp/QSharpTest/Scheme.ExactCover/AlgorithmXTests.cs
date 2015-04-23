@@ -29,13 +29,15 @@ namespace QSharpTest.Scheme.ExactCover
         private static void Check(DancingLinks<int, int> dl, DancingLinks<int, int>.States state, string matrix)
         {
             Assert.IsTrue(dl.State == state);
-            Assert.IsTrue(dl.ToString(x=>x, x=>x) == matrix);
+            var actualString = dl.ToString(x => x, x => x);
+            Assert.IsTrue(actualString == matrix);
         }
 
         private static void CheckSolution(DancingLinks<int, int> dl, string matrix, string sol)
         {
             Assert.IsTrue(dl.State == DancingLinks<int, int>.States.FoundSolution);
-            Assert.IsTrue(dl.ToString(x => x, x => x) == matrix);
+            var actualString = dl.ToString(x => x, x => x);
+            Assert.IsTrue(actualString == matrix);
             Assert.IsTrue(GetStringOfSelected(dl) == sol);
         }
 // ReSharper restore UnusedParameter.Local
@@ -139,7 +141,6 @@ namespace QSharpTest.Scheme.ExactCover
             Check(dl, DancingLinks<int, int>.States.Terminated, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
         }
 
-
         [TestMethod]
         public void TestDl2()
         {
@@ -176,6 +177,65 @@ namespace QSharpTest.Scheme.ExactCover
             dl.Step();
             Check(dl, DancingLinks<int, int>.States.Terminated, ".......\r\n.......\r\n.......\r\n.......\r\n.......\r\n.1....1");
         }
+
+        [TestMethod]
+        public void TestDl3()
+        {
+            var dl = new DancingLinks<int, int>();
+            var data = new[]
+            {
+                new[] {0, 3, 6},
+                new[] {0, 3},
+                new[] {3, 4, 6},
+                new[] {2, 4, 5},
+                new[] {1, 2, 5, 6},
+                new[] {1, 6}
+            };
+
+            ICollection<DancingLinks<int, int>.Set> sets;
+            ICollection<int> allCols;
+            ConvertDataToSets(data, out sets, out allCols);
+
+            IDictionary<int, object> dict = new Dictionary<int, object>();
+            dl.Populate(sets, allCols, dict);
+
+            var saved = new DancingLinks<int, int>.SavedBeforeFix();
+            dl.Fix(dict, new[] { 1, 3 }, saved);
+            dl.UnFix(saved);
+
+            dl.Reset();
+
+            Check(dl, DancingLinks<int, int>.States.ToGoForward, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.ToGoForward, ".......\r\n.......\r\n.......\r\n..1.11.\r\n.......\r\n.......");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.ToBackTrack, ".......\r\n.......\r\n.......\r\n..1.11.\r\n.......\r\n.......");
+
+            dl.Step(); // pop and try next
+            Check(dl, DancingLinks<int, int>.States.ToGoForward, ".......\r\n.......\r\n.......\r\n..1.11.\r\n.11..11\r\n.1....1");
+
+            dl.Step(); // step forward
+            Check(dl, DancingLinks<int, int>.States.ToGoForward, ".......\r\n.......\r\n.......\r\n.......\r\n.......\r\n.1....1");
+
+            dl.Step(); // pop and try next
+            CheckSolution(dl, ".......\r\n.......\r\n.......\r\n.......\r\n.......\r\n.......", "1,3,5");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.ToBackTrack, ".......\r\n.......\r\n.......\r\n.......\r\n.......\r\n.1....1");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.ToBackTrack, ".......\r\n.......\r\n.......\r\n..1.11.\r\n.11..11\r\n.1....1");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.ToBackTrack, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
+
+            dl.Step();
+            Check(dl, DancingLinks<int, int>.States.Terminated, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
+        }
+
+
 
         private static void ConvertDataToSets(ICollection<ICollection<int>> data,
             out ICollection<DancingLinks<int, int>.Set> sets, out ICollection<int> allCols)
