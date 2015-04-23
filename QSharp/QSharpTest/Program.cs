@@ -32,8 +32,8 @@ namespace QSharpTest
 #endif
 
 
-            //var met = new MathExpressionTest();
-          //  met.Test();
+            var met = new MathExpressionTest();
+            met.Test();
 
 #if false
     //QSharp.String.Compiler.IntegratedTest.TestEntry();
@@ -45,7 +45,7 @@ namespace QSharpTest
 #endif
 
             //AlgorithmXTests.Demo();
-            AlgorithmXTests.DemoDancingLinks2();
+            //AlgorithmXTests.DemoDancingLinks2();
         }
     }
 }
