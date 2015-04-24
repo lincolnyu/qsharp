@@ -364,18 +364,31 @@ namespace QSharp.Scheme.ExactCover
             // NOTE OriginalRowCount, OriginalColumnCount stay the same (for ToString() to work)
         }
 
+        /// <summary>
+        ///  undo fix (also resetting the solver)
+        /// </summary>
+        /// <param name="saved">The saved state from last fix to undo it</param>
         public void UnFix(SavedBeforeFix saved)
         {
-            foreach (var s in saved.RemovedNodes)
-            {
-                RemovedNodes.AddLast((BaseNode) s);
-            }
+            // need to make sure its reset before unfixing
             RestoreAll();
+            RemovedCounts.Clear();
+
+            if (saved.RemovedNodes != null)
+            {
+                foreach (var s in saved.RemovedNodes)
+                {
+                    RemovedNodes.AddLast((BaseNode)s);
+                }
+                RestoreAll();
+            }
 
             FirstColumn = (ColumnHeader)saved.FirstColumn;
 
             ActualRowCount = CurrentRowCount;
             ActualColumnCount = CurrentRowCount;
+
+            State = States.ToGoForward;
         }
 
         public void Reset()
