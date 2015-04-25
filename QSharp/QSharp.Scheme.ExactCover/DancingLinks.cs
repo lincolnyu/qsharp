@@ -26,7 +26,7 @@ namespace QSharp.Scheme.ExactCover
             ToGoForward,
             ToBackTrack,
             FoundSolution,
-            Terminated,
+            Terminated
         }
 
         #endregion
@@ -358,9 +358,7 @@ namespace QSharp.Scheme.ExactCover
         /// <param name="dict">An option dict used for pre-eliminating sets (Fix() method below)</param>
         public void Populate(ICollection<Set> sets, ICollection<TCol> allCols, IDictionary<TRow, object> dict=null)
         {
-            // clear all and discard existing network
-            Restart();
-            FirstColumn = null;
+            Clear();
 
             if (dict != null)
             {
@@ -708,6 +706,18 @@ namespace QSharp.Scheme.ExactCover
                 AddNodeBack(n);
             }
             RemovedCounts.Clear();
+        }
+
+        /// <summary>
+        ///  Clears all data in preparation for a re-population
+        /// </summary>
+        private void Clear()
+        {
+            // clear all and discard existing network
+            RemovedNodes.Clear();
+            RemovedCounts.Clear();
+            FirstColumn = null;
+            State = States.ToGoForward;
         }
 
         /// <summary>
