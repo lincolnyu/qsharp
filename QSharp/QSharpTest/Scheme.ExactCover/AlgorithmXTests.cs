@@ -109,7 +109,7 @@ namespace QSharpTest.Scheme.ExactCover
 
             dl.Populate(sets, allCols);
 
-            dl.Reset();
+            dl.Restart();
 
             Check(dl, DancingLinks<int, int>.States.ToGoForward, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
 
@@ -164,7 +164,7 @@ namespace QSharpTest.Scheme.ExactCover
 
             dl.Fix(dict, new[]{1,3});
 
-            dl.Reset();
+            dl.Restart();
 
             Check(dl, DancingLinks<int, int>.States.ToGoForward, ".......\r\n.......\r\n.......\r\n.......\r\n.......\r\n.1....1");
 
@@ -203,7 +203,7 @@ namespace QSharpTest.Scheme.ExactCover
             dl.Fix(dict, new[] { 1, 3 }, saved);
             dl.UnFix(saved);
 
-            dl.Reset();
+            dl.Restart();
 
             Check(dl, DancingLinks<int, int>.States.ToGoForward, "1..1..1\r\n1..1...\r\n...11.1\r\n..1.11.\r\n.11..11\r\n.1....1");
 
@@ -279,7 +279,7 @@ namespace QSharpTest.Scheme.ExactCover
 
             dl.Populate(sets, allCols);
 
-            dl.Reset();
+            dl.Restart();
             Console.WriteLine(dl.ToString(x => x, x => x));
             Console.WriteLine();
             Console.ReadKey(true);
@@ -335,7 +335,7 @@ namespace QSharpTest.Scheme.ExactCover
 
             dl.Fix(dict, new[] { 1, 3 });
 
-            dl.Reset();
+            dl.Restart();
             Console.WriteLine(dl.ToString(x => x, x => x));
             Console.WriteLine();
             Console.ReadKey(true);

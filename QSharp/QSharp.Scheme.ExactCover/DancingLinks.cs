@@ -18,6 +18,9 @@ namespace QSharp.Scheme.ExactCover
     {
         #region Enumerations
 
+        /// <summary>
+        ///  All the possible states
+        /// </summary>
         public enum States
         {
             ToGoForward,
@@ -30,51 +33,96 @@ namespace QSharp.Scheme.ExactCover
 
         #region Delegates
 
+        /// <summary>
+        ///  The method that converts a row to its zero based integer representation
+        /// </summary>
+        /// <param name="row">The row to convert</param>
+        /// <returns>The integer</returns>
         public delegate int RowToIntConvert(TRow row);
 
+        /// <summary>
+        ///  The method that converts a column to its zero based integer representation
+        /// </summary>
+        /// <param name="col">The column to convert</param>
+        /// <returns>The integer</returns>
         public delegate int ColToIntConvert(TCol col);
 
         #endregion
 
         #region Nested types
 
+        /// <summary>
+        ///  The information of a row to input
+        /// </summary>
         public class Set
         {
             #region Properties
 
+            /// <summary>
+            ///  The row object
+            /// </summary>
             public TRow Row { get; set; }
+
+            /// <summary>
+            ///  All the objects (columns) the row contains
+            /// </summary>
             public ICollection<TCol> Contents { get; set; }
 
             #endregion
         }
 
+        /// <summary>
+        ///  class for inputting a cell
+        /// </summary>
         public class Cell : IEnumerable<int> // just to facilitate input a bit
         {
             #region Fields
 
+            /// <summary>
+            ///  recording the current position for Add()
+            /// </summary>
             private int _inputPointer;
 
             #endregion
 
             #region Properties
 
+            /// <summary>
+            ///  The row of the cell
+            /// </summary>
             public TRow Row { get; set; }
+
+            /// <summary>
+            ///  The column of the cell
+            /// </summary>
             public TCol Col { get; set; }
 
             #endregion
 
             #region Methods
 
+            /// <summary>
+            ///  Gets the enumerator, shouldn't be used
+            /// </summary>
+            /// <returns>The enumerator</returns>
             public IEnumerator<int> GetEnumerator()
             {
                 throw new NotSupportedException();
             }
 
+            /// <summary>
+            ///  Gets the enumerator, shouldn't be used
+            /// </summary>
+            /// <returns>The enumerator</returns>
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
 
+            /// <summary>
+            ///  To populate this object
+            /// </summary>
+            /// <param name="item">The item to populate</param>
             public void Add(object item)
             {
                 // one off
@@ -92,6 +140,9 @@ namespace QSharp.Scheme.ExactCover
             #endregion
         }
 
+        /// <summary>
+        ///  Info saved to unfix
+        /// </summary>
         public class SavedBeforeFix
         {
             #region Properties
@@ -107,14 +158,35 @@ namespace QSharp.Scheme.ExactCover
             #endregion
         }
 
+        /// <summary>
+        ///  Base class for nodes
+        /// </summary>
         private class BaseNode
         {
+            /// <summary>
+            ///  Left neighbour
+            /// </summary>
             public BaseNode Left { get; set; }
+
+            /// <summary>
+            ///  Right neighbour
+            /// </summary>
             public BaseNode Right { get; set; }
+
+            /// <summary>
+            ///  Top neighbour
+            /// </summary>
             public BaseNode Top { get; set; }
+
+            /// <summary>
+            ///  Bottom neighbour
+            /// </summary>
             public BaseNode Bottom { get; set; }
         }
 
+        /// <summary>
+        ///  Column header nodes
+        /// </summary>
         private class ColumnHeader : BaseNode
         {
             /// <summary>
@@ -128,6 +200,9 @@ namespace QSharp.Scheme.ExactCover
             public TCol Col { get; set; }
         }
 
+        /// <summary>
+        ///  Normal nodes
+        /// </summary>
         private class Node : BaseNode
         {
             /// <summary>
@@ -145,6 +220,9 @@ namespace QSharp.Scheme.ExactCover
 
         #region Constructors
 
+        /// <summary>
+        ///  Instantiates one
+        /// </summary>
         public DancingLinks()
         {
             RemovedNodes = new LinkedList<BaseNode>();
@@ -203,16 +281,31 @@ namespace QSharp.Scheme.ExactCover
         /// </summary>
         private int CurrentRowCount { get; set; }
 
+        /// <summary>
+        ///  Nodes eliminated so far
+        /// </summary>
         private LinkedList<BaseNode> RemovedNodes { get; set; }
 
+        /// <summary>
+        ///  Number of nodes eliminated in the past selection processes
+        /// </summary>
         private Stack<int> RemovedCounts { get; set; }
 
+        /// <summary>
+        ///  Currently selected rows
+        /// </summary>
         private Stack<Node> Selected { get; set; }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///  Returns the string representation of the current matrix
+        /// </summary>
+        /// <param name="rowToInt">The conversion from row object to integer that represents the row</param>
+        /// <param name="colToInt">The conversion from column object to integer that represents the column</param>
+        /// <returns>The string representation</returns>
         public string ToString(RowToIntConvert rowToInt, ColToIntConvert colToInt)
         {
             var map = new char[OriginalRowCount, OriginalColumnCount];
@@ -266,7 +359,7 @@ namespace QSharp.Scheme.ExactCover
         public void Populate(ICollection<Set> sets, ICollection<TCol> allCols, IDictionary<TRow, object> dict=null)
         {
             // clear all and discard existing network
-            Reset();
+            Restart();
             FirstColumn = null;
 
             if (dict != null)
@@ -331,6 +424,12 @@ namespace QSharp.Scheme.ExactCover
             ActualRowCount = OriginalRowCount = CurrentRowCount = row;
         }
 
+        /// <summary>
+        ///  Fixed the specified items
+        /// </summary>
+        /// <param name="dict">The dict from rows to their corresponding nodes</param>
+        /// <param name="fixedRows">The rows to fix</param>
+        /// <param name="saved">The information to save to restore the fix (using UnFix())</param>
         public void Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows, SavedBeforeFix saved = null)
         {
             if (saved != null)
@@ -372,7 +471,6 @@ namespace QSharp.Scheme.ExactCover
         {
             // need to make sure its reset before unfixing
             RestoreAll();
-            RemovedCounts.Clear();
 
             if (saved.RemovedNodes != null)
             {
@@ -391,13 +489,18 @@ namespace QSharp.Scheme.ExactCover
             State = States.ToGoForward;
         }
 
-        public void Reset()
+        /// <summary>
+        ///  Resets to the initial state (with fixed items unchanged)
+        /// </summary>
+        public void Restart()
         {
             RestoreAll();
-            RemovedCounts.Clear();
             State = States.ToGoForward;
         }
 
+        /// <summary>
+        ///  One step through
+        /// </summary>
         public void Step()
         {
             switch (State)
@@ -412,6 +515,9 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
+        /// <summary>
+        ///  Tries a new selection
+        /// </summary>
         private void TryNew()
         {
             var refCol = SelectReferenceColumn();
@@ -421,6 +527,9 @@ namespace QSharp.Scheme.ExactCover
             Perform(next);
         }
 
+        /// <summary>
+        ///  Pops an item from stack and tries the next selection if possible
+        /// </summary>
         private void PopAndTry()
         {
             if (Selected.Count == 0)
@@ -437,6 +546,10 @@ namespace QSharp.Scheme.ExactCover
             Perform(next);
         }
 
+        /// <summary>
+        ///  Performs eleminate/select process if possible
+        /// </summary>
+        /// <param name="next">The next row to try</param>
         private void Perform(Node next)
         {
             if (next == null)
@@ -452,6 +565,11 @@ namespace QSharp.Scheme.ExactCover
             State = TotalCount == 0 ? States.FoundSolution : States.ToGoForward;
         }
 
+        /// <summary>
+        ///  Returns the next row (not it's used both for first and getting the next)
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
         private static Node GetNextSetForReferenceColumn(BaseNode c)
         {
             var b = c.Bottom;
@@ -459,6 +577,10 @@ namespace QSharp.Scheme.ExactCover
             return n;
         }
 
+        /// <summary>
+        ///  Selects a column with positive minimum non zero rows
+        /// </summary>
+        /// <returns>The header of that column or null if there's a column with no non-zero rows</returns>
         private ColumnHeader SelectReferenceColumn()
         {
             var min = int.MaxValue;
@@ -480,6 +602,10 @@ namespace QSharp.Scheme.ExactCover
             return selected;
         }
 
+        /// <summary>
+        ///  Initializes all columns with column headers
+        /// </summary>
+        /// <param name="numCols">The total number of columns</param>
         private void InitializeColumns(int numCols)
         {
             ColumnHeader lastHeader = null;
@@ -499,6 +625,10 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
+        /// <summary>
+        ///  Selecta and eliminate a set
+        /// </summary>
+        /// <param name="rowRep">The node represents that row</param>
         private void Eliminate(Node rowRep)
         {
             var c1 = RemovedNodes.Count;
@@ -535,6 +665,10 @@ namespace QSharp.Scheme.ExactCover
             RemovedCounts.Push(removed);
         }
 
+        /// <summary>
+        ///  Remove all nodes of the row
+        /// </summary>
+        /// <param name="rowRep">A node in the row</param>
         private void EliminateRow(Node rowRep)
         {
             var p = rowRep;
@@ -548,6 +682,9 @@ namespace QSharp.Scheme.ExactCover
             } while (removeNext);
         }
 
+        /// <summary>
+        ///  Undoes an eliminate
+        /// </summary>
         private void Restore()
         {
             var c = RemovedCounts.Pop();
@@ -559,6 +696,9 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
+        /// <summary>
+        ///  Undoes all eliminates
+        /// </summary>
         private void RestoreAll()
         {
             for (; RemovedNodes.Count > 0; RemovedNodes.RemoveLast())
@@ -567,8 +707,17 @@ namespace QSharp.Scheme.ExactCover
                 var n = nn.Value;
                 AddNodeBack(n);
             }
+            RemovedCounts.Clear();
         }
 
+        /// <summary>
+        ///  Adds a new node
+        /// </summary>
+        /// <param name="node">The node to add</param>
+        /// <param name="left">The node to the left</param>
+        /// <param name="right">The node to the right</param>
+        /// <param name="top">The node on the top</param>
+        /// <param name="bottom">The node at the bottom</param>
         private static void AddNode(BaseNode node, BaseNode left, BaseNode right, BaseNode top, BaseNode bottom)
         {
             node.Left = left;
@@ -593,6 +742,10 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
+        /// <summary>
+        ///  Remove a node (which will be put on stack as well)
+        /// </summary>
+        /// <param name="node">The node to remove</param>
         private void RemoveNode(BaseNode node)
         {
             node.Left.Right = node.Right;
@@ -630,6 +783,10 @@ namespace QSharp.Scheme.ExactCover
             }
         }
 
+        /// <summary>
+        ///  Restore a node
+        /// </summary>
+        /// <param name="node">The node to restore</param>
         private void AddNodeBack(BaseNode node)
         {
             node.Left.Right = node;
