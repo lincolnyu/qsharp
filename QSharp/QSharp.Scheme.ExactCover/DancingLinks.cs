@@ -536,8 +536,7 @@ namespace QSharp.Scheme.ExactCover
                 return;
             }
 
-            var sel = Selected.Pop();
-            Restore();
+            var sel = Restore();
 
             var next = GetNextSetForReferenceColumn(sel);
 
@@ -586,7 +585,7 @@ namespace QSharp.Scheme.ExactCover
             var first = true;
             for (var c = FirstColumn; first || c != FirstColumn; c = (ColumnHeader)c.Right)
             {
-                if (c.Count == 0)
+                if (c == null || c.Count == 0)
                 {
                     return null;
                 }
@@ -681,9 +680,9 @@ namespace QSharp.Scheme.ExactCover
         }
 
         /// <summary>
-        ///  Undoes an eliminate
+        ///  Undoes an eliminate and returns the selected node
         /// </summary>
-        private void Restore()
+        private Node Restore()
         {
             var c = RemovedCounts.Pop();
             for (; c > 0; c--, RemovedNodes.RemoveLast())
@@ -692,6 +691,7 @@ namespace QSharp.Scheme.ExactCover
                 var n = nn.Value;
                 AddNodeBack(n);
             }
+            return Selected.Pop();
         }
 
         /// <summary>
@@ -706,6 +706,7 @@ namespace QSharp.Scheme.ExactCover
                 AddNodeBack(n);
             }
             RemovedCounts.Clear();
+            Selected.Clear();
         }
 
         /// <summary>
@@ -716,6 +717,7 @@ namespace QSharp.Scheme.ExactCover
             // clear all and discard existing network
             RemovedNodes.Clear();
             RemovedCounts.Clear();
+            Selected.Clear();
             FirstColumn = null;
             State = States.ToGoForward;
         }
