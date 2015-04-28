@@ -403,6 +403,7 @@ namespace QSharp.Scheme.ExactCover
             }
 
             var row = 0; // current row index
+            TotalCount = 0;
             foreach (var set in sets)
             {
                 BaseNode lastCol = null;   // last col of current row
