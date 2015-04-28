@@ -145,9 +145,24 @@ namespace QSharp.Scheme.ExactCover
         /// </summary>
         public class SavedBeforeFix
         {
+            #region Constructors
+
+            /// <summary>
+            ///  Instantiates one
+            /// </summary>
+            public SavedBeforeFix()
+            {
+                RemovedNodes = new LinkedList<object>();
+                RemovedNodesSet = new HashSet<object>();
+            }
+
+            #endregion
+
             #region Properties
 
-            public LinkedList<object> RemovedNodes { get; set; }
+            public LinkedList<object> RemovedNodes { get; private set; }
+
+            public ISet<object> RemovedNodesSet { get; private set; }
 
             /// <summary>
             ///  This is to store the first column for the stability of solving (to generate save results)
@@ -428,29 +443,44 @@ namespace QSharp.Scheme.ExactCover
         /// <param name="dict">The dict from rows to their corresponding nodes</param>
         /// <param name="fixedRows">The rows to fix</param>
         /// <param name="saved">The information to save to restore the fix (using UnFix())</param>
-        public void Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows, SavedBeforeFix saved = null)
+        /// <returns>If the fix is valid</returns>
+        public bool Fix(IDictionary<TRow, object> dict, ICollection<TRow> fixedRows, SavedBeforeFix saved = null)
         {
             if (saved != null)
             {
                 saved.FirstColumn = FirstColumn;
+                saved.RemovedNodes.Clear();
+                saved.RemovedNodesSet.Clear();
             }
 
             foreach (var fixedRow in fixedRows)
             {
                 var n = dict[fixedRow];
                 var node = (Node) n;
+                // checks if the ndoe has already been elminated
+                if (saved != null && saved.RemovedNodesSet.Contains(node))
+                {
+                    return false;
+                }
                 Eliminate(node);
+
+                if (saved != null)
+                {
+                    // NOTE  we don't need to keep RemovedCounts to restore
+                    foreach (var rn in RemovedNodes)
+                    {
+                        saved.RemovedNodesSet.Add(rn);
+                    }
+                }
             }
 
             if (saved != null)
             {
-                // NOTE  we don't need to keep RemovedCounts to restore
-                saved.RemovedNodes = new LinkedList<object>(); 
-                foreach (var node in RemovedNodes)
+                foreach (var rn in RemovedNodes)
                 {
-                    saved.RemovedNodes.AddLast(node);
+                    saved.RemovedNodes.AddLast(rn);
                 }
-            }
+            }           
 
             // clear stacks recorded during Eliminate() process as these sets and objects are removed as fixed
             RemovedCounts.Clear();
@@ -459,6 +489,8 @@ namespace QSharp.Scheme.ExactCover
             ActualRowCount = CurrentRowCount;
             ActualColumnCount = CurrentRowCount;
             // NOTE OriginalRowCount, OriginalColumnCount stay the same (for ToString() to work)
+
+            return true;
         }
 
         /// <summary>
@@ -470,16 +502,19 @@ namespace QSharp.Scheme.ExactCover
             // need to make sure its reset before unfixing
             RestoreAll();
 
-            if (saved.RemovedNodes != null)
+            if (saved.RemovedNodes.Count > 0)
             {
                 foreach (var s in saved.RemovedNodes)
                 {
                     RemovedNodes.AddLast((BaseNode)s);
                 }
+                saved.RemovedNodes.Clear();
+                saved.RemovedNodesSet.Clear();
                 RestoreAll();
             }
 
             FirstColumn = (ColumnHeader)saved.FirstColumn;
+            saved.FirstColumn = null;
 
             ActualRowCount = CurrentRowCount;
             ActualColumnCount = CurrentRowCount;
