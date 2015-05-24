@@ -42,6 +42,7 @@
     <Compile Include="Classic\Perceptron.cs" />
     <Compile Include="Classic\Perceptrons\Identity.cs" />
     <Compile Include="Classic\Perceptrons\LogisticSigmoid.cs" />
+    <Compile Include="Classic\Perceptrons\CenSymSigmoid.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
