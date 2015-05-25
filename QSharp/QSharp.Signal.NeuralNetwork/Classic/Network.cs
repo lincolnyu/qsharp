@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace QSharp.Signal.NeuralNetwork.Classic
 {
@@ -23,7 +26,17 @@ namespace QSharp.Signal.NeuralNetwork.Classic
         /// <summary>
         ///  Partial(En)/Weights
         /// </summary>
-        private readonly double[][,] _errorToW;
+        private double[][,] _errorToW;
+
+        /// <summary>
+        ///  XML header
+        /// </summary>
+        public const string XmlHeader = "ClassicNeuralNetwork";
+
+        /// <summary>
+        ///  Layer collection's header
+        /// </summary>
+        public const string LayerCollectionHeader = ".Layers";
 
         #endregion
 
@@ -45,7 +58,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
 
             Layers = new Layer[numLayers];
             var lastLayerSize = numInputs;
-            MaxLayerSize = int.MinValue;
+            MaxLayerSize = 0;
             for (var i = 0; i < numLayers; i++)
             {
                 var currLayerSize = layerSizes[i];
@@ -102,18 +115,72 @@ namespace QSharp.Signal.NeuralNetwork.Classic
         /// </summary>
         public void Dispose()
         {
-            foreach (var layer in Layers)
-            {
-                layer.Dispose();
-            }
-            Layers.Clear();
-            _buffer = null;
-            _buffer2 = null;
-            Input.Clear();
-            Output.Clear();
+            Clear();
         }
 
         #endregion
+
+        public void ReadXml(XmlReader reader, PerceptronRegistry pr)
+        {
+            Clear();
+
+            var lastLen = 0;
+
+            // the header has been read and its content is now in reader
+            while (true)
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Value == XmlHeader)
+                {
+                    var niStr = reader.GetAttribute("NumInputs");
+                    var numInputs = int.Parse(niStr);
+                    Input = new double[lastLen];
+                    lastLen = numInputs;
+                }
+                else if (reader.NodeType == XmlNodeType.Element && reader.Value == Layer.XmlHeader)
+                {
+                    var layer = new Layer(null, 0, lastLen);
+                    layer.ReadXml(reader, pr);
+                    Layers.Add(layer);
+                    lastLen = layer.NumPerceptrons;
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement && reader.Value == XmlHeader)
+                {
+                    break;
+                }
+                var r = reader.Read();
+                if (!r)
+                {
+                    throw new XmlException("Unexpected end of XML");
+                }
+            }
+
+            var numLayers = Layers.Count;
+            _errorToW = new double[numLayers][,];
+            for (var i = 0; i < numLayers; i++)
+            {
+                var layer = Layers[i];
+                _errorToW[i] = new double[layer.NumPerceptrons,layer.NumInputs];
+                if (layer.NumPerceptrons > MaxLayerSize)
+                {
+                    MaxLayerSize = layer.NumPerceptrons;
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement(XmlHeader);
+            writer.WriteAttributeString("NumInputs", Input.Count.ToString());
+            writer.WriteStartElement(XmlHeader + LayerCollectionHeader);
+
+            foreach (var layer in Layers)
+            {
+               layer.WriteXml(writer);
+            }
+
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+        }
 
         /// <summary>
         ///  Performs forward propagation
@@ -203,6 +270,19 @@ namespace QSharp.Signal.NeuralNetwork.Classic
                     }
                 }
             }
+        }
+
+        private void Clear()
+        {
+            _buffer = null;
+            _buffer2 = null;
+            foreach (var layer in Layers)
+            {
+                layer.Dispose();
+            }
+            Layers.Clear();
+            Input = null;
+            _errorToW = null;
         }
 
         #endregion
