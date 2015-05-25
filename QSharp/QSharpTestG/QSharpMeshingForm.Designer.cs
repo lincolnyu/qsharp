@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.MyMenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,24 +49,24 @@
             this.SegmentStraightLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MeshingPictureBox = new System.Windows.Forms.PictureBox();
             this.squareToMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainMenuStrip.SuspendLayout();
+            this.MyMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // MainMenuStrip
+            // MyMenuStrip
             // 
-            this.MainMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MyMenuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.MyMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.demoToolStripMenuItem,
             this.solveToolStripMenuItem,
             this.testToolStripMenuItem});
-            this.MainMenuStrip.Location = new System.Drawing.Point(0, 0);
-            this.MainMenuStrip.Name = "MainMenuStrip";
-            this.MainMenuStrip.Size = new System.Drawing.Size(784, 24);
-            this.MainMenuStrip.TabIndex = 0;
-            this.MainMenuStrip.Text = "MainMenuStrip";
+            this.MyMenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.MyMenuStrip.Name = "MyMenuStrip";
+            this.MyMenuStrip.Size = new System.Drawing.Size(784, 24);
+            this.MyMenuStrip.TabIndex = 0;
+            this.MyMenuStrip.Text = "Main Menu Strip";
             // 
             // fileToolStripMenuItem
             // 
@@ -237,15 +237,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 602);
             this.Controls.Add(this.MeshingPictureBox);
-            this.Controls.Add(this.MainMenuStrip);
+            this.Controls.Add(this.MyMenuStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "QSharpMeshingForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QSharpMeshingForm";
             this.Load += new System.EventHandler(this.QSharpMeshingForm_Load);
-            this.MainMenuStrip.ResumeLayout(false);
-            this.MainMenuStrip.PerformLayout();
+            this.MyMenuStrip.ResumeLayout(false);
+            this.MyMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MeshingPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -254,7 +254,7 @@
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip MainMenuStrip;
+        private System.Windows.Forms.MenuStrip MyMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
