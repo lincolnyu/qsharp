@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using QSharp.String.Stream;
+#if WindowsDesktop
+using ICloneable = System.ICloneable;
+#else
+using ICloneable = QSharp.Shared.ICloneable;
+#endif
+
 
 namespace QSharp.String.Rex
 {
@@ -19,7 +25,7 @@ namespace QSharp.String.Rex
         /// <summary>
         ///  End position of the tag
         /// </summary>
-        public TokenStream.Position End = null;
+        public TokenStream.Position End;
 
         #endregion
 

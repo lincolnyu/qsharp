@@ -453,7 +453,9 @@ namespace QSharp.String.Rex
 
                 uint high;
                 var ct = ss.Read() as CharToken;
+#if WindowsDesktop
                 System.Diagnostics.Trace.Assert(ct != null);
+#endif
                 if (ct.GetChar() == '-')
                 {
                     ss.Move(1);
@@ -465,7 +467,9 @@ namespace QSharp.String.Rex
                     }
 
                     ct = ss.Read() as CharToken;
+#if WindowsDesktop
                     System.Diagnostics.Trace.Assert(ct != null);
+#endif
                     if (ct.GetChar() == '}')
                     {
                         high = Machine<TStream>.Iteration.Infinity;
@@ -485,7 +489,9 @@ namespace QSharp.String.Rex
                 }
 
                 ct = ss.Read() as CharToken;
+#if WindowsDesktop
                 System.Diagnostics.Trace.Assert(ct != null);
+#endif
                 if (ct.GetChar() == ',')
                 {
                     high = high1;
@@ -1017,7 +1023,9 @@ namespace QSharp.String.Rex
                                 throw new Exception(i);
                             }
 
+#if WindowsDesktop
                             System.Diagnostics.Trace.Assert(trap != null);
+#endif
                             trap.Iteration = iteration;
 
                             lpNode = cur.BeginNode as Machine<TStream>.TagOpenState;
