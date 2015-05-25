@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using QSharp.Scheme.Mathematics;
 using QSharp.Scheme.Mathematics.Numerical;
 
 namespace QSharp.Signal.Classic

@@ -61,7 +61,7 @@
       <Name>QSharp.Scheme.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Signal.Classic\QSharp.Signal.Classic.csproj">
-      <Project>{f1fb42ba-a487-4cfd-bab5-066cd540cf74}</Project>
+      <Project>{a651c81c-b078-4476-9f79-606971c97814}</Project>
       <Name>QSharp.Signal.Classic</Name>
     </ProjectReference>
   </ItemGroup>
