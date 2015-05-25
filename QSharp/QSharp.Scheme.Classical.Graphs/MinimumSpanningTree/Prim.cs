@@ -109,7 +109,9 @@ namespace QSharp.Scheme.Classical.Graphs.MinimumSpanningTree
             {
                 var vadd = vset.FirstOrDefault();
 
+#if WindowsDesktop
                 System.Diagnostics.Trace.Assert(vadd != null);
+#endif
 
                 while (true)
                 {
