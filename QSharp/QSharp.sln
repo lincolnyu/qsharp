@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.NeuralNetwork
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Classic", "QSharp.Signal.Classic\QSharp.Signal.Classic.csproj", "{A651C81C-B078-4476-9F79-606971C97814}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Stream.RT", "QSharp.String.Stream\QSharp.String.Stream.RT.csproj", "{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.RT", "QSharp.String\QSharp.String.RT.csproj", "{9FFBFDD7-996D-4511-888C-1722B8ED9272}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +175,14 @@ Global
 		{A651C81C-B078-4476-9F79-606971C97814}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A651C81C-B078-4476-9F79-606971C97814}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A651C81C-B078-4476-9F79-606971C97814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FFBFDD7-996D-4511-888C-1722B8ED9272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FFBFDD7-996D-4511-888C-1722B8ED9272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FFBFDD7-996D-4511-888C-1722B8ED9272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FFBFDD7-996D-4511-888C-1722B8ED9272}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -235,7 +235,7 @@ namespace QSharp.String.Rex
 
         protected TagMapper TagMapper = new TagMapper();
 
-        protected int TagCount = 0;
+        protected int TagCount;
 
         #endregion
 

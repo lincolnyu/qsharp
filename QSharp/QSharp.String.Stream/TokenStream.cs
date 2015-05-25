@@ -5,7 +5,11 @@
  */
 
 using System;
-
+#if WINRT
+using ICloneable = QSharp.Shared.ICloneable;
+#else
+using ICloneable = System.ICloneable;
+#endif
 
 namespace QSharp.String.Stream
 {
@@ -88,7 +92,7 @@ namespace QSharp.String.Stream
 
     public class StreamException : Exception
     {
-        public TokenStream.Position Pos = null;
+        public TokenStream.Position Pos;
 
         public StreamException(string s, TokenStream.Position pos)
             : base(s)
@@ -98,7 +102,7 @@ namespace QSharp.String.Stream
 
         public override string ToString()
         {
-            return base.ToString() + " " + Pos.ToString();
+            return base.ToString() + " " + Pos;
         }
     }
 

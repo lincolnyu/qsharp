@@ -5,27 +5,23 @@
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC875A57-AD64-4AFD-B242-5E868390BD57}</ProjectGuid>
+    <ProjectGuid>{9FFBFDD7-996D-4511-888C-1722B8ED9272}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QSharp.Shared</RootNamespace>
-    <AssemblyName>QSharp.Shared.RT</AssemblyName>
+    <RootNamespace>QSharp.String</RootNamespace>
+    <AssemblyName>QSharp.String</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WINRT</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -39,11 +35,20 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.RT.csproj">
+      <Project>{cc875a57-ad64-4afd-b242-5e868390bd57}</Project>
+      <Name>QSharp.Shared.RT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.RT.csproj">
+      <Project>{a4302ca4-a70a-433c-8ab7-eb0e639b60db}</Project>
+      <Name>QSharp.String.Stream.RT</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ICloneable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QException.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="Wildcard.cs" />
+    <Compile Include="ZMatch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

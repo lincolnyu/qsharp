@@ -11,30 +11,38 @@
 using QSharp.Shared;
 using QSharp.String.Stream;
 
-
 namespace QSharp.String
 {
     public class ZMatch
     {
-        protected class WordManipulator : IWord<char>
+        #region Nested types
+
+        private class WordManipulator : IWord<char>
         {
-            protected string mUnderlyingString;
+            #region Fields
+
+            private readonly string _underlyingString;
+
+            #endregion
+
+            #region Constructors
 
             public WordManipulator(string s)
             {
-                mUnderlyingString = s;
+                _underlyingString = s;
             }
 
-            public override string ToString()
-            {
-                return mUnderlyingString;
-            }
+            #endregion
+
+            #region Properties
+
+            #region IWord<char> members
 
             public int Length
             {
                 get
                 {
-                    return mUnderlyingString.Length;
+                    return _underlyingString.Length;
                 }
             }
 
@@ -42,33 +50,64 @@ namespace QSharp.String
             {
                 get
                 {
-                    return mUnderlyingString[index];
+                    return _underlyingString[index];
                 }
             }
+
+            #endregion
+
+            #endregion
+
+            #region Methods
+
+            #region object members
+
+            public override string ToString()
+            {
+                return _underlyingString;
+            }
+
+            #endregion
+
+            #endregion
         }
 
-        protected int[] mNext;
-        protected WordManipulator mWord;
-        protected NtType mNtType;
-        
-        protected int mIp;
+        #endregion
 
-        protected bool mIgnoreCase;
-        protected Utility.IEqualityComparer<char, char> mEq;
+        #region Enumerations
+
 
         public enum NtType
         {
-            FNT,
-            KMP,
+            Fnt,
+            Kmp,
         }
 
         public int[] Next
         {
             get
             {
-                return mNext;
+                return _next;
             }
         }
+
+
+        #endregion
+
+        #region Fields
+
+        private readonly int[] _next;
+        private readonly WordManipulator _word;
+        private readonly NtType _ntType;
+
+        private int _ip;
+
+        private readonly bool _ignoreCase;
+        private readonly Utility.IEqualityComparer<char, char> _eq;
+
+        #endregion
+
+        #region Properties
 
         /*
          * For the time being, since all properties are readonly
@@ -79,7 +118,7 @@ namespace QSharp.String
         {
             get
             {
-                return mIgnoreCase;
+                return _ignoreCase;
             }
         }
 
@@ -87,7 +126,7 @@ namespace QSharp.String
         {
             get
             {
-                return mWord.ToString();
+                return _word.ToString();
             }
         }
 
@@ -95,9 +134,13 @@ namespace QSharp.String
         {
             get
             {
-                return mNtType;
+                return _ntType;
             }
         }
+
+        #endregion
+
+        #region Constructors
 
         public ZMatch(string word)
             : this(word, false)
@@ -105,7 +148,7 @@ namespace QSharp.String
         }
 
         public ZMatch(string word, bool ignoreCase)
-            : this(word, NtType.KMP, ignoreCase)
+            : this(word, NtType.Kmp, ignoreCase)
         {
         }
 
@@ -116,27 +159,27 @@ namespace QSharp.String
 
         public ZMatch(string word, NtType nt, bool ignoreCase)
         {
-            mNtType = nt;
-            mIgnoreCase = ignoreCase;
+            _ntType = nt;
+            _ignoreCase = ignoreCase;
             
-            if (mIgnoreCase)
+            if (_ignoreCase)
             {
-                mEq = new Utility.CaseInsensitiveComparer();
+                _eq = new Utility.CaseInsensitiveComparer();
             }
             else
             {
-                mEq = new Utility.CaseSensitiveComparer();
+                _eq = new Utility.CaseSensitiveComparer();
             }
 
-            mWord = new WordManipulator(word);
+            _word = new WordManipulator(word);
 
-            switch (mNtType)
+            switch (_ntType)
             {
-                case NtType.FNT:
-                    mNext = GetFNT(mWord, mEq);
+                case NtType.Fnt:
+                    _next = GetFnt(_word, _eq);
                     break;
-                case NtType.KMP:
-                    mNext = GetKMP(mWord, mEq);
+                case NtType.Kmp:
+                    _next = GetKmp(_word, _eq);
                     break;
                 default:
                     throw new QException("Invalid Next-table Type");
@@ -145,15 +188,19 @@ namespace QSharp.String
             Reset();
         }
 
+        #endregion
+
+        #region Methods
+
         public void Reset()
         {
-            mIp = 0;
+            _ip = 0;
         }
 
         /*
          * resume searching from the beginning position of 'target'
          * (the position in the next-table is what it is left in
-         *  last search, indicated by mIp)
+         *  last search, indicated by _ip)
          * returns negative if not matched
          */
         public int Match(string target)
@@ -169,7 +216,7 @@ namespace QSharp.String
         /*
          * resume searching from the specific position of 'target'
          * (the position in the next-table is what it is left in
-         *  last search, indicated by mIp)
+         *  last search, indicated by _ip)
          * returns false if not matched
          */
         public bool Match(string target, ref int p)
@@ -182,13 +229,13 @@ namespace QSharp.String
          * resume searching from the specific position of 'target'
          * to the position specified by 'end'
          * (the position in the next-table is what it is left in
-         *  last search, indicated by mIp)
+         *  last search, indicated by _ip)
          * returns false if not matched
          */
         public bool Match(string target, ref int p, int end)
         {
-            StringStream ss = new StringStream(target, p, end);
-            bool res = Match<char, char>(mWord, mNext, ref mIp, ss, mEq);
+            var ss = new StringStream(target, p, end);
+            var res = Match(_word, _next, ref _ip, ss, _eq);
             p = ((StringStream.Position)ss.Pos).ToInt();
             return res;
         }
@@ -197,12 +244,12 @@ namespace QSharp.String
          * resume searching in tokenstream from the current position
          * it references to
          * (the position in the next-table is what it is left in
-         *  last search, indicated by mIp)
+         *  last search, indicated by _ip)
          * return false if not matched
          */
         public bool Match(ITokenStream<char> target)
         {
-            return Match<char, char>(mWord, mNext, ref mIp, target, mEq);
+            return Match(_word, _next, ref _ip, target, _eq);
         }
 
         /*
@@ -213,18 +260,18 @@ namespace QSharp.String
          * this is the interface for wrapper classes dealing with word manipulation
          * which is used by the following static methods
          */
-        public interface IWord<T>
+        public interface IWord<out T>
         {
             T this[int index] { get; }
             int Length { get; }
         }
 
 
-        public static int[] GetFNT<T>(IWord<T> word, Utility.IEqualityComparer<T, T> eq)
+        public static int[] GetFnt<T>(IWord<T> word, Utility.IEqualityComparer<T, T> eq)
         {   /* full-next-table */
-            int[] next = new int[word.Length];
+            var next = new int[word.Length];
 
-            int i, j, k;
+            int i;
 
             for (i = 0; i < word.Length; i++)
             {
@@ -234,10 +281,11 @@ namespace QSharp.String
                 else
 #endif
                 next[i] = 0;
-                for (j = 1; j < i; j++)
+                
+                for (var j = 1; j < i; j++)
                 {
-                    bool eqSubstr = true;
-                    for (k = 0; k < i - j; k++)
+                    var eqSubstr = true;
+                    for (var k = 0; k < i - j; k++)
                     {
                         if (!eq.Equals(word[k], word[k + j]))
                         {
@@ -257,7 +305,7 @@ namespace QSharp.String
             return next;
         }
 
-        public static int[] GetKMP<T>(IWord<T> word, Utility.IEqualityComparer<T, T> eq)
+        public static int[] GetKmp<T>(IWord<T> word, Utility.IEqualityComparer<T, T> eq)
         {   /* KMP-next-table */
             int[] t = new int[word.Length];
             if (word.Length < 1)
@@ -330,7 +378,7 @@ namespace QSharp.String
 
             for (; !target.IsEos(); )
             {
-                TT token = target.Read();
+                var token = target.Read();
 
                 if (eq.Equals(word[ip], token))
                 {
@@ -364,6 +412,8 @@ namespace QSharp.String
             }
             return false;
         }
+
+        #endregion
     }
 
 #if TEST_String_ZMatch
