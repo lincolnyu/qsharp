@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -58,12 +58,11 @@
     <Compile Include="WrappedUint.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj">
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream%28D%29.csproj">
       <Project>{3f9219d6-8f35-4320-94e5-23c383e64bf6}</Project>
-      <Name>QSharp.String.Stream</Name>
+      <Name>QSharp.String.Stream%28D%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

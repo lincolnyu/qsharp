@@ -1,5 +1,5 @@
 ﻿using System;
-#if !WINRT
+#if WindowsDesktop
 using System.Runtime.Serialization;
 #endif
 
@@ -41,7 +41,7 @@ namespace QSharp.Shared
         {
         }
 
-#if !WINRT
+#if WindowsDesktop
 
         /// <summary>
         ///  instantiates an exception with serialisation information and context

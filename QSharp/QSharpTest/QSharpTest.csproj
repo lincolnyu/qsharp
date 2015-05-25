@@ -159,21 +159,21 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs.csproj">
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs%28D%29.csproj">
       <Project>{52a5c8be-ef54-48e7-a170-f3e6c5561e71}</Project>
-      <Name>QSharp.Scheme.Classical.Graphs</Name>
+      <Name>QSharp.Scheme.Classical.Graphs%28D%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj">
       <Project>{855cfe2a-eb4b-4ae1-9390-7211c4a1739c}</Project>
       <Name>QSharp.Scheme.Classical.Hash</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential%28D%29.csproj">
       <Project>{231bd960-427b-4094-8014-328750d34303}</Project>
-      <Name>QSharp.Scheme.Classical.Sequential</Name>
+      <Name>QSharp.Scheme.Classical.Sequential%28D%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees%28D%29.csproj">
       <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
-      <Name>QSharp.Scheme.Classical.Trees</Name>
+      <Name>QSharp.Scheme.Classical.Trees%28D%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.ExactCover\QSharp.Scheme.ExactCover.csproj">
       <Project>{b0c01ea7-99a0-454c-8836-ea4be34ff3cb}</Project>
@@ -203,9 +203,9 @@
       <Project>{57a8521f-b6ad-4a99-97c5-606d93202aea}</Project>
       <Name>QSharp.Shader</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
       <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
-      <Name>QSharp.Shared</Name>
+      <Name>QSharp.Shared%28D%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj">
       <Project>{afcb6760-0fbf-4a80-9310-3c0f7dcef67b}</Project>
@@ -219,21 +219,21 @@
       <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
       <Name>QSharp.String.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation%28RT%29.csproj">
+    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
       <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
-      <Name>QSharp.String.ExpressionEvaluation%28RT%29</Name>
+      <Name>QSharp.String.ExpressionEvaluation</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
       <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>
       <Name>QSharp.String.Rex</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj">
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream%28D%29.csproj">
       <Project>{3f9219d6-8f35-4320-94e5-23c383e64bf6}</Project>
-      <Name>QSharp.String.Stream</Name>
+      <Name>QSharp.String.Stream%28D%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String\QSharp.String.csproj">
+    <ProjectReference Include="..\QSharp.String\QSharp.String%28D%29.csproj">
       <Project>{8cd77005-0e95-4ba7-b21c-4499e37c9baf}</Project>
-      <Name>QSharp.String</Name>
+      <Name>QSharp.String%28D%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

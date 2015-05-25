@@ -7,7 +7,7 @@ namespace QSharp.Scheme.Utility
     /// <summary>
     ///  simple LRU cache manager
     /// </summary>
-    public class EasyLRUCache
+    public class EasyLruCache
     {
         #region Nested types
 
@@ -21,7 +21,7 @@ namespace QSharp.Scheme.Utility
             /// <summary>
             ///  length of the cache
             /// </summary>
-            public int      nLen = 0;
+            public int      Len = 0;
 
             /// <summary>
             ///  the backing field for cached data
@@ -41,18 +41,18 @@ namespace QSharp.Scheme.Utility
             /// <summary>
             ///  index of the page
             /// </summary>
-            public int      Index = 0;
+            public int      Index;
 
             /// <summary>
             ///  true if the cahce is dirty and requires a write-back
             /// </summary>
-            public bool     Dirty = false;
+            public bool     Dirty;
 
             /// <summary>
             ///  node where the page sits in the linked list of cached pages in the 
             ///  cache manager
             /// </summary>
-            public LinkedListNode<CachePage>  lruNode;
+            public LinkedListNode<CachePage>  LruNode;
 
             #endregion
 
@@ -65,6 +65,7 @@ namespace QSharp.Scheme.Utility
             public CachePage(int nIndex)
             {
                 Index = nIndex;
+                Dirty = false;
             }
 
             #endregion
@@ -138,23 +139,23 @@ namespace QSharp.Scheme.Utility
         /// <summary>
         ///  list of cached page accessed by index
         /// </summary>
-        protected List<CachePage> myPagesByIndex = new List<CachePage>();
+        private readonly List<CachePage> _pagesByIndex = new List<CachePage>();
 
         /// <summary>
         ///  linked list of cached pages that are ordered in such way that
         ///  underpins LRU policy
         /// </summary>
-        protected LinkedList<CachePage> myPagesLRU = new LinkedList<CachePage>();
+        private readonly LinkedList<CachePage> _pagesLru = new LinkedList<CachePage>();
 
         /// <summary>
         ///  backing field for max page num setting
         /// </summary>
-        protected int myMaxPageNum = -1;
+        private int _maxPageNum;
 
         /// <summary>
         ///  
         /// </summary>
-        protected IndexComparer myIndexComp = new IndexComparer();
+        private readonly IndexComparer _indexComp = new IndexComparer();
 
         #endregion
 
@@ -167,7 +168,7 @@ namespace QSharp.Scheme.Utility
         {
             get
             {
-                return myMaxPageNum;
+                return _maxPageNum;
             }
         }
 
@@ -180,11 +181,11 @@ namespace QSharp.Scheme.Utility
         {
             get
             {
-                if (iByIndex < 0 || iByIndex >= myPagesByIndex.Count)
+                if (iByIndex < 0 || iByIndex >= _pagesByIndex.Count)
                 {
                     return null;
                 }
-                return myPagesByIndex[iByIndex];
+                return _pagesByIndex[iByIndex];
             }
         }
 
@@ -196,18 +197,18 @@ namespace QSharp.Scheme.Utility
         ///  paramterless constructor that sets maximum page number to -1
         ///  which indicates that there is no limit on the page number
         /// </summary>
-        public EasyLRUCache()
+        public EasyLruCache()
         {
-            myMaxPageNum = -1;
+            _maxPageNum = -1;
         }
 
         /// <summary>
         ///  constructor that allows user to specify the maxium page number
         /// </summary>
         /// <param name="nMaxPageNum">the maximum page number to set</param>
-        public EasyLRUCache(int nMaxPageNum)
+        public EasyLruCache(int nMaxPageNum)
         {
-            myMaxPageNum = nMaxPageNum;
+            _maxPageNum = nMaxPageNum;
         }
 
         #endregion
@@ -219,8 +220,8 @@ namespace QSharp.Scheme.Utility
         /// </summary>
         public void Clear()
         {
-            myPagesByIndex.Clear();
-            myPagesLRU.Clear();
+            _pagesByIndex.Clear();
+            _pagesLru.Clear();
         }
 
 
@@ -231,7 +232,7 @@ namespace QSharp.Scheme.Utility
         public void Config(int nMaxPageNum)
         {
             Clear();
-            myMaxPageNum = nMaxPageNum;
+            _maxPageNum = nMaxPageNum;
         }
 
         /// <summary>
@@ -245,14 +246,14 @@ namespace QSharp.Scheme.Utility
             out LinkedListNode<CachePage> lruNode, int iPage)
         {
             CachePage target = new CachePage(iPage);
-            iByIndex = myPagesByIndex.BinarySearch(target, myIndexComp);
+            iByIndex = _pagesByIndex.BinarySearch(target, _indexComp);
             if (iByIndex < 0)
             {   // cache miss
                 iByIndex = -(iByIndex + 1);
                 lruNode = null;
                 return false;
             }
-            lruNode = myPagesByIndex[iByIndex].lruNode;
+            lruNode = _pagesByIndex[iByIndex].LruNode;
             return true;
         }
 
@@ -262,9 +263,9 @@ namespace QSharp.Scheme.Utility
         /// <param name="lruNode"></param>
         public void Hit(LinkedListNode<CachePage> lruNode)
         {
-            myPagesLRU.Remove(lruNode);
-            lruNode.Value.lruNode = lruNode;
-            myPagesLRU.AddLast(lruNode);
+            _pagesLru.Remove(lruNode);
+            lruNode.Value.LruNode = lruNode;
+            _pagesLru.AddLast(lruNode);
         }
 
         /// <summary>
@@ -273,7 +274,7 @@ namespace QSharp.Scheme.Utility
         /// <param name="iByIndex">index of the page in the cache manager</param>
         protected void WriteBack(int iByIndex)
         {
-            if (WriteBackRequest != null && myPagesByIndex[iByIndex].Dirty)
+            if (WriteBackRequest != null && _pagesByIndex[iByIndex].Dirty)
             {
                 WriteBackRequest(iByIndex);
             }
@@ -283,33 +284,33 @@ namespace QSharp.Scheme.Utility
         ///  this is called before a page load as the result of
         ///  a cache miss indicated by 'REtrieve'
         /// </summary>
-        /// <param name="iBIIns">index in the cache list where the page is to be inserted</param>
+        /// <param name="iBiIns">index in the cache list where the page is to be inserted</param>
         /// <param name="iPage">the id of the cached page to create and insert</param>
         /// <returns>the index where the page is inserted, normally the same as iBIIns</returns>
-        public int Miss(int iBIIns, int iPage)
+        public int Miss(int iBiIns, int iPage)
         {
             LinkedListNode<CachePage> lruNode;
             CachePage cp = new CachePage(iPage);
-            if (myMaxPageNum > 0 && myPagesLRU.Count >= myMaxPageNum)
+            if (_maxPageNum > 0 && _pagesLru.Count >= _maxPageNum)
             {
                 /* get one slot from LRU */
-                lruNode = myPagesLRU.First;
+                lruNode = _pagesLru.First;
 
                 /* remove from PBI */
-                int iByIndex = myPagesByIndex.BinarySearch(lruNode.Value, myIndexComp);
+                int iByIndex = _pagesByIndex.BinarySearch(lruNode.Value, _indexComp);
 
                 // about to remove the cache page
                 // write it back if necessary
                 WriteBack(iByIndex);
 
-                myPagesByIndex.RemoveAt(iByIndex);
-                if (iByIndex < iBIIns)
+                _pagesByIndex.RemoveAt(iByIndex);
+                if (iByIndex < iBiIns)
                 {
-                    iBIIns--;
+                    iBiIns--;
                 }
 
                 /* remove from LRU */
-                myPagesLRU.Remove(lruNode);
+                _pagesLru.Remove(lruNode);
 
                 lruNode.Value = cp;
             }
@@ -318,11 +319,11 @@ namespace QSharp.Scheme.Utility
                 lruNode = new LinkedListNode<CachePage>(cp);
             }
 
-            cp.lruNode = lruNode;
-            myPagesLRU.AddLast(lruNode);
-            myPagesByIndex.Insert(iBIIns, cp);
+            cp.LruNode = lruNode;
+            _pagesLru.AddLast(lruNode);
+            _pagesByIndex.Insert(iBiIns, cp);
 
-            return iBIIns;
+            return iBiIns;
         }
 
         /// <summary>
@@ -332,11 +333,11 @@ namespace QSharp.Scheme.Utility
         /// <returns>true if successfully modified</returns>
         public bool Modify(int iByIndex)
         {
-            if (iByIndex < 0 || iByIndex >= myPagesByIndex.Count)
+            if (iByIndex < 0 || iByIndex >= _pagesByIndex.Count)
             {
                 return false;
             }
-            myPagesByIndex[iByIndex].Dirty = true;
+            _pagesByIndex[iByIndex].Dirty = true;
             return true;
         }
 
@@ -347,15 +348,15 @@ namespace QSharp.Scheme.Utility
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("PBI List = ");
-            foreach (CachePage cp in myPagesByIndex)
+            foreach (CachePage cp in _pagesByIndex)
             {
-                sb.Append(cp.ToString()).Append("; ");
+                sb.Append(cp).Append("; ");
             }
             sb.Append("\nLRU List = ");
 
-            foreach (CachePage cp in myPagesLRU)
+            foreach (CachePage cp in _pagesLru)
             {
-                sb.Append(cp.ToString()).Append("; ");
+                sb.Append(cp).Append("; ");
             }
             sb.Append("\treesize");
 

@@ -5,10 +5,10 @@
  */
 
 using System;
-#if WINRT
-using ICloneable = QSharp.Shared.ICloneable;
-#else
+#if WindowsDesktop
 using ICloneable = System.ICloneable;
+#else
+using ICloneable = QSharp.Shared.ICloneable;
 #endif
 
 namespace QSharp.String.Stream

@@ -66,13 +66,13 @@
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
       <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
-      <Name>QSharp.Shared</Name>
+      <Name>QSharp.Shared%28D%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj">
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream%28D%29.csproj">
       <Project>{3f9219d6-8f35-4320-94e5-23c383e64bf6}</Project>
-      <Name>QSharp.String.Stream</Name>
+      <Name>QSharp.String.Stream%28D%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

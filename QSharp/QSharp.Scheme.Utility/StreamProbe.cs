@@ -35,7 +35,7 @@ namespace QSharp.Scheme.Utility
 
         #region Fields
 
-        protected EasyLRUCache Cache;
+        protected EasyLruCache Cache;
         protected Stream Stream;   // underlying stream
         protected int PageSize;
 
@@ -46,28 +46,28 @@ namespace QSharp.Scheme.Utility
         public StreamProbe()
         {
             PageSize = 1024;
-            Cache = new EasyLRUCache(4);
+            Cache = new EasyLruCache(4);
             Stream = null;
         }
 
         public StreamProbe(Stream stream)
         {
             PageSize = 1024;
-            Cache = new EasyLRUCache(4);
+            Cache = new EasyLruCache(4);
             Stream = stream;
         }
 
         public StreamProbe(int nPageSize, int nPageNum)
         {
             PageSize = nPageSize;
-            Cache = new EasyLRUCache(nPageNum);
+            Cache = new EasyLruCache(nPageNum);
             Stream = null;
         }
 
         public StreamProbe(Stream stream, int nPageSize, int nPageNum)
         {
             PageSize = nPageSize;
-            Cache = new EasyLRUCache(nPageNum);
+            Cache = new EasyLruCache(nPageNum);
             Stream = stream;
         }
 
@@ -79,7 +79,7 @@ namespace QSharp.Scheme.Utility
         {
             get
             {
-                LinkedListNode<EasyLRUCache.CachePage>  lruNode;
+                LinkedListNode<EasyLruCache.CachePage>  lruNode;
                 int iByIndex;
                 var iPage = nOffset / PageSize;
                 var iPosInPage = nOffset % PageSize;
@@ -92,16 +92,16 @@ namespace QSharp.Scheme.Utility
                 {   // cache miss, loading from stream
                     iByIndex = Cache.Miss(iByIndex, iPage);
                     Stream.Seek(iPage * PageSize, SeekOrigin.Begin);
-                    EasyLRUCache.CachePageBase cpb = Cache[iByIndex];
+                    EasyLruCache.CachePageBase cpb = Cache[iByIndex];
                     if (cpb.Buf == null || cpb.Buf.Length != PageSize)
                     {
                         cpb.Buf = new byte[PageSize];
                     }
-                    Cache[iByIndex].nLen = 
+                    Cache[iByIndex].Len = 
                         Stream.Read(cpb.Buf, 0, PageSize);
                 }
 
-                if (iPosInPage >= Cache[iByIndex].nLen)
+                if (iPosInPage >= Cache[iByIndex].Len)
                 {
                     throw new Exception(Exception.Error.ExceedingStreamLimit);
                 }
@@ -120,8 +120,12 @@ namespace QSharp.Scheme.Utility
 
             for (var nOffset = 0; ; nOffset += PageSize)
             {
-                var nRead = Read(buf, nOffset, PageSize);
-                for (var i = 0; i < nRead; i++)
+                var read = Read(buf, nOffset, PageSize);
+                if (read <= 0)
+                {
+                    yield break;
+                }
+                for (var i = 0; i < read; i++)
                 {
                     var b = buf[i];
                     yield return b;
@@ -162,7 +166,7 @@ namespace QSharp.Scheme.Utility
                     nSizeInPage = nSize;
                 }
 
-                LinkedListNode<EasyLRUCache.CachePage>  lruNode;
+                LinkedListNode<EasyLruCache.CachePage>  lruNode;
                 if (Cache.Retrieve(out iByIndex, out lruNode, iPage))
                 {
                     Cache.Hit(lruNode);
@@ -170,19 +174,19 @@ namespace QSharp.Scheme.Utility
                 else
                 {   // cache miss, loading from stream
                     iByIndex = Cache.Miss(iByIndex, iPage);
-                    EasyLRUCache.CachePageBase cpb = Cache[iByIndex];
+                    EasyLruCache.CachePageBase cpb = Cache[iByIndex];
                     if (cpb.Buf == null || cpb.Buf.Length != PageSize)
                     {
                         cpb.Buf = new byte[PageSize];
                     }
                     Stream.Seek(iPage * PageSize, SeekOrigin.Begin);
-                    cpb.nLen = Stream.Read(cpb.Buf, 0, PageSize);
+                    cpb.Len = Stream.Read(cpb.Buf, 0, PageSize);
                 }
 
-                if (Cache[iByIndex].nLen < nSizeInPage)
+                if (Cache[iByIndex].Len < nSizeInPage)
                 {
                     bExhausted = true;
-                    nSizeInPage = Cache[iByIndex].nLen;
+                    nSizeInPage = Cache[iByIndex].Len;
                 }
 
                 MemCopy(buf, nBufOffset, Cache[iByIndex].Buf, iBeginInPage, nSizeInPage);

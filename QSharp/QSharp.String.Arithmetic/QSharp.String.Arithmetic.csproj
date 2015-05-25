@@ -39,9 +39,9 @@
       <Project>{F9E4A9B9-9712-40CF-860E-BDF96009F861}</Project>
       <Name>QSharp.Scheme.Mathematics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation%28RT%29.csproj">
+    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
       <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
-      <Name>QSharp.String.ExpressionEvaluation%28RT%29</Name>
+      <Name>QSharp.String.ExpressionEvaluation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

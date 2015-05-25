@@ -68,17 +68,17 @@
     <Compile Include="Section.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential%28D%29.csproj">
       <Project>{231bd960-427b-4094-8014-328750d34303}</Project>
-      <Name>QSharp.Scheme.Classical.Sequential</Name>
+      <Name>QSharp.Scheme.Classical.Sequential%28D%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees%28D%29.csproj">
       <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
-      <Name>QSharp.Scheme.Classical.Trees</Name>
+      <Name>QSharp.Scheme.Classical.Trees%28D%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
       <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
-      <Name>QSharp.Shared</Name>
+      <Name>QSharp.Shared%28D%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

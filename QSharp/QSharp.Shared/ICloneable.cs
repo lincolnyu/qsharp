@@ -1,6 +1,6 @@
 ﻿namespace QSharp.Shared
 {
-#if WINRT
+#if !WindowsDesktop
     public interface ICloneable
     {
         object Clone();
