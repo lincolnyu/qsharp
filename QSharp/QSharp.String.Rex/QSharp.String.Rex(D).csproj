@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QSharp.String.Rex</RootNamespace>
-    <AssemblyName>QSharp.String.Rex</AssemblyName>
+    <AssemblyName>QSharp.String.Rex%28D%29</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
