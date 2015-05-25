@@ -219,9 +219,9 @@
       <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
       <Name>QSharp.String.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.RT.csproj">
+    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation%28RT%29.csproj">
       <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
-      <Name>QSharp.String.ExpressionEvaluation.RT</Name>
+      <Name>QSharp.String.ExpressionEvaluation%28RT%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
       <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>

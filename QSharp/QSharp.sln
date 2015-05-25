@@ -37,13 +37,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Visual", "QSh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Hash", "QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj", "{855CFE2A-EB4B-4AE1-9390-7211C4A1739C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shared.RT", "QSharp.Shared\QSharp.Shared.RT.csproj", "{CC875A57-AD64-4AFD-B242-5E868390BD57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Shared(RT)", "QSharp.Shared\QSharp.Shared(RT).csproj", "{CC875A57-AD64-4AFD-B242-5E868390BD57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Trees.RT", "QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.RT.csproj", "{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Trees(RT)", "QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees(RT).csproj", "{7EDD7F4C-578C-447A-9FC5-C2CE292469B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Sequential.RT", "QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.RT.csproj", "{3FB8608B-0AB5-44CC-820A-F2DC23200553}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Classical.Sequential(RT)", "QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential(RT).csproj", "{3FB8608B-0AB5-44CC-820A-F2DC23200553}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation.RT", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.RT.csproj", "{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.ExpressionEvaluation(RT)", "QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation(RT).csproj", "{3F2FAA0E-9C17-4D12-8ECB-28F3B53165CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Arithmetic", "QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj", "{97003447-C035-4D24-BB27-B731635CE146}"
 EndProject
@@ -57,9 +57,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.NeuralNetwork
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Classic", "QSharp.Signal.Classic\QSharp.Signal.Classic.csproj", "{A651C81C-B078-4476-9F79-606971C97814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Stream.RT", "QSharp.String.Stream\QSharp.String.Stream.RT.csproj", "{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.Stream(RT)", "QSharp.String.Stream\QSharp.String.Stream(RT).csproj", "{A4302CA4-A70A-433C-8AB7-EB0E639B60DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String.RT", "QSharp.String\QSharp.String.RT.csproj", "{9FFBFDD7-996D-4511-888C-1722B8ED9272}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.String(RT)", "QSharp.String\QSharp.String(RT).csproj", "{9FFBFDD7-996D-4511-888C-1722B8ED9272}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

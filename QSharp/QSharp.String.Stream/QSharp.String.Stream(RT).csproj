@@ -35,9 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.RT.csproj">
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28RT%29.csproj">
       <Project>{cc875a57-ad64-4afd-b242-5e868390bd57}</Project>
-      <Name>QSharp.Shared.RT</Name>
+      <Name>QSharp.Shared%28RT%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
