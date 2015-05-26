@@ -88,6 +88,7 @@
     <Compile Include="Scheme.Classical.Trees\RbTreeTest.cs" />
     <Compile Include="Shader.Geometry.Triangulation\DaftTestHelper.cs" />
     <Compile Include="Shader.Geometry.Triangulation\DelaunayTest.cs" />
+    <Compile Include="Signal.NeuralNetwork\ClassicTests.cs" />
     <Compile Include="String.Arithmetic\FractionTest.cs" />
     <Compile Include="String.Compiler\MathExpressionTest.cs" />
     <Compile Include="String.Compiler\StringCompilerConsoleTest.cs" />
@@ -206,6 +207,10 @@
     <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
       <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
       <Name>QSharp.Shared%28D%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Signal.NeuralNetwork\QSharp.Signal.NeuralNetwork.csproj">
+      <Project>{1410a802-570d-45e1-a126-51ef5fd19b6e}</Project>
+      <Name>QSharp.Signal.NeuralNetwork</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj">
       <Project>{afcb6760-0fbf-4a80-9310-3c0f7dcef67b}</Project>

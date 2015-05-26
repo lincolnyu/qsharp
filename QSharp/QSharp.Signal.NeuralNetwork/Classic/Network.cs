@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 
 namespace QSharp.Signal.NeuralNetwork.Classic
 {
@@ -56,7 +54,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
             var numLayers = layerSizes.Length;
             _errorToW = new double[numLayers][,];
 
-            Layers = new Layer[numLayers];
+            Layers = new List<Layer>();
             var lastLayerSize = numInputs;
             MaxLayerSize = 0;
             for (var i = 0; i < numLayers; i++)
@@ -66,7 +64,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
                 var perceptron = isHiddenLayer ? hiddenLayerPerceptron : outputLayerPerceptron;
                 var layer = new Layer(perceptron, currLayerSize, lastLayerSize);
                 Layers.Add(layer);
-                _errorToW[i] = new double[currLayerSize, lastLayerSize];
+                _errorToW[i] = new double[currLayerSize, lastLayerSize+1];
 
                 if (currLayerSize > MaxLayerSize)
                 {
@@ -182,6 +180,14 @@ namespace QSharp.Signal.NeuralNetwork.Classic
             writer.WriteEndElement();
         }
 
+        public void RandomizeWeights(Random r)
+        {
+            foreach (var layer in Layers)
+            {
+                layer.RandomizeWeights(r);
+            }
+        }
+
         /// <summary>
         ///  Performs forward propagation
         /// </summary>
@@ -199,7 +205,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
         ///  Performs error back-propagation
         /// </summary>
         /// <param name="data">actual data</param>
-        public void PerformErrorBackpropagation(IList<double> data)
+        public void PerformErrorBackPropagation(IReadOnlyList<double> data)
         {
             if (_buffer == null)
             {
@@ -208,26 +214,30 @@ namespace QSharp.Signal.NeuralNetwork.Classic
             }
 
             var delta = _buffer;
+            var ilayer = Layers.Count - 1;
+            var layer = Layers[ilayer];
+            var etw = _errorToW[ilayer];
+            var nextLayer = ilayer > 0 ? Layers[ilayer - 1].Outputs : Input;
             for (var j = 0; j < Output.Count; j++)
             {
-                var ilayer = Layers.Count - 1;
-                var layer = Layers[ilayer];
-                var d = delta[j] = (data[j] - Output[j])*layer.Perceptron.Derivative(layer.WeightedSums[j]);
+                var d = delta[j] = (Output[j] - data[j])*layer.Perceptron.Derivative(layer.WeightedSums[j]);
 
                 // partial(En)/Partial(wji)
-                var nextLayer = Layers.Count - 2 > 0 ? Layers[Layers.Count - 1].Outputs : Input;
                 for (var i = 0; i < nextLayer.Count; i++)
                 {
-                    _errorToW[ilayer][j, i] = d * nextLayer[i];
+                    etw[j, i] = d * nextLayer[i];
                 }
+                etw[j, nextLayer.Count] = d; // bias
             }
 
             var deltaNext = _buffer2;
-            for (var ilayer = Layers.Count - 2; ilayer >= 0; ilayer--)
+            for (ilayer = Layers.Count - 2; ilayer >= 0; ilayer--)
             {
+                layer = Layers[ilayer];
                 var ilayer1 = ilayer + 1;
-                var layer = Layers[ilayer];
                 var layer1 = Layers[ilayer1];
+                etw = _errorToW[ilayer];
+                nextLayer = ilayer > 0 ? Layers[ilayer - 1].Outputs : Input;
                 for (var j = 0; j < layer.NumPerceptrons; j++)
                 {
                     var d = 0.0;
@@ -235,15 +245,16 @@ namespace QSharp.Signal.NeuralNetwork.Classic
                     {
                         d += delta[k] * layer1.Weights[k, j];
                     }
+
                     d *= layer.Perceptron.Derivative(layer.WeightedSums[j]);
                     deltaNext[j] = d; // dj
 
                     // partial(En)/Partial(wji)
-                    var nextLayer = ilayer > 0 ? Layers[ilayer - 1].Outputs : Input;
                     for (var i = 0; i < nextLayer.Count; i++)
                     {
-                        _errorToW[ilayer][j, i] = d*nextLayer[i];
+                        etw[j, i] = d * nextLayer[i];
                     }
+                    etw[j, nextLayer.Count] = d; // bias
                 }
                 // swaps the buffers
                 var t = delta;
@@ -264,7 +275,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
                 var etw = _errorToW[ilayer];
                 for (var i = 0; i < layer.NumPerceptrons; i++)
                 {
-                    for (var j = 0; j < layer.NumInputs; j++)
+                    for (var j = 0; j <= layer.NumInputs; j++) // including the bias
                     {
                         layer.Weights[i, j] -= eta*etw[i, j];
                     }

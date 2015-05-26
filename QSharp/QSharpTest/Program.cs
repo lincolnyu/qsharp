@@ -1,10 +1,12 @@
 ﻿//#define teston
 //#define rescue
+#define TestNeural
 
 //using System.Collections.Generic;
 //using QSharp.Scheme.Classical.Trees;
 using QSharpTest.Scheme.Classical.Hash;
 using QSharpTest.Scheme.ExactCover;
+using QSharpTest.Signal.NeuralNetwork;
 //using QSharpTest.Scheme.Classical.Trees;
 using QSharpTest.String.Compiler;
 
@@ -31,9 +33,14 @@ namespace QSharpTest
             return;
 #endif
 
-
+#if TestMath
             var met = new MathExpressionTest();
             met.Test();
+#endif
+
+#if TestNeural
+            ClassicTests.TrainingSimpleBowl();
+#endif
 
 #if false
     //QSharp.String.Compiler.IntegratedTest.TestEntry();

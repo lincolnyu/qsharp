@@ -10,6 +10,15 @@ namespace QSharp.Signal.NeuralNetwork.Classic.Perceptrons
     /// </summary>
     public class LogisticSigmoid : Perceptron
     {
+        #region Fields
+
+        /// <summary>
+        ///  The singleton
+        /// </summary>
+        public static readonly LogisticSigmoid Instance = new LogisticSigmoid();
+
+        #endregion
+
         #region Methods
 
         #region Perceptron members
@@ -21,7 +30,12 @@ namespace QSharp.Signal.NeuralNetwork.Classic.Perceptrons
         /// <returns>The output</returns>
         public override double Activation(double input)
         {
-            var y = 1/(1 + Math.Exp(-input));
+            var ei = Math.Exp(-input);
+            if (double.IsPositiveInfinity(ei))
+            {
+                return 0;
+            }
+            var y = 1 / (1 + ei);
             return y;
         }
 
@@ -33,7 +47,11 @@ namespace QSharp.Signal.NeuralNetwork.Classic.Perceptrons
         public override double Derivative(double input)
         {
             var ei = Math.Exp(-input);
-            var y = -ei*Math.Pow(1 + ei, -2);
+            if (double.IsPositiveInfinity(ei))
+            {
+                return 0;
+            }
+            var y = ei*Math.Pow(1 + ei, -2);
             return y;
         }
 

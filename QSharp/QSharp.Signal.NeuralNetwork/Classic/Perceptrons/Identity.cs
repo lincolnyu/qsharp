@@ -6,6 +6,15 @@
     /// </summary>
     public class Identity : Perceptron
     {
+        #region Fields
+
+        /// <summary>
+        ///  The singleton
+        /// </summary>
+        public static readonly Identity Instance = new Identity(); 
+
+        #endregion
+
         #region Methods
 
         #region Perceptron members
@@ -27,7 +36,7 @@
         /// <returns>The output of the derivative</returns>
         public override double Derivative(double input)
         {
-            return 0;
+            return 1;
         }
 
         #endregion
