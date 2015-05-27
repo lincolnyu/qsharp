@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 namespace QSharp.Signal.NeuralNetwork.Classic
@@ -202,6 +203,18 @@ namespace QSharp.Signal.NeuralNetwork.Classic
         }
 
         /// <summary>
+        ///  Returns the mean square error
+        /// </summary>
+        /// <param name="data">The actual data</param>
+        /// <returns>The MSE</returns>
+        public double GetMse(IReadOnlyList<double> data)
+        {
+            var mse = Output.Select((t, j) => t - data[j]).Sum(d => d*d);
+            mse /= Output.Count;
+            return mse;
+        }
+
+        /// <summary>
         ///  Performs error back-propagation
         /// </summary>
         /// <param name="data">actual data</param>
@@ -220,7 +233,8 @@ namespace QSharp.Signal.NeuralNetwork.Classic
             var nextLayer = ilayer > 0 ? Layers[ilayer - 1].Outputs : Input;
             for (var j = 0; j < Output.Count; j++)
             {
-                var d = delta[j] = (Output[j] - data[j])*layer.Perceptron.Derivative(layer.WeightedSums[j]);
+                var derivative = layer.Perceptron.Derivative(layer.WeightedSums[j], layer.Outputs[j]);
+                var d = delta[j] = (Output[j] - data[j])*derivative;
 
                 // partial(En)/Partial(wji)
                 for (var i = 0; i < nextLayer.Count; i++)
@@ -246,7 +260,7 @@ namespace QSharp.Signal.NeuralNetwork.Classic
                         d += delta[k] * layer1.Weights[k, j];
                     }
 
-                    d *= layer.Perceptron.Derivative(layer.WeightedSums[j]);
+                    d *= layer.Perceptron.Derivative(layer.WeightedSums[j], layer.Outputs[j]);
                     deltaNext[j] = d; // dj
 
                     // partial(En)/Partial(wji)

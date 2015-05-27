@@ -32,9 +32,9 @@
         /// <summary>
         ///  Derivative of the activation function
         /// </summary>
-        /// <param name="input">The input to the derivative function</param>
-        /// <returns>The output of the derivative</returns>
-        public override double Derivative(double input)
+        /// <param name="x">The x component of the point at which the derivative is to be computed</param>
+        /// <param name="y">The y component of the point at which the derivative is to be computed</param>
+        public override double Derivative(double x, double y)
         {
             return 1;
         }

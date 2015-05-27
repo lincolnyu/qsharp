@@ -42,17 +42,12 @@ namespace QSharp.Signal.NeuralNetwork.Classic.Perceptrons
         /// <summary>
         ///  Derivative of the activation function
         /// </summary>
-        /// <param name="input">The input to the derivative function</param>
-        /// <returns>The output of the derivative</returns>
-        public override double Derivative(double input)
+        /// <param name="x">The x component of the point at which the derivative is to be computed</param>
+        /// <param name="y">The y component of the point at which the derivative is to be computed</param>
+        public override double Derivative(double x, double y)
         {
-            var ei = Math.Exp(-input);
-            if (double.IsPositiveInfinity(ei))
-            {
-                return 0;
-            }
-            var y = ei*Math.Pow(1 + ei, -2);
-            return y;
+            var d = y*(1 - y);
+            return d;
         }
 
         #endregion

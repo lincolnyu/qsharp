@@ -41,9 +41,10 @@ namespace QSharp.Signal.NeuralNetwork.Classic
         /// <summary>
         ///  Derivative of the activation function
         /// </summary>
-        /// <param name="input">The input to the derivative function</param>
+        /// <param name="x">The x component of the point at which the derivative is to be computed</param>
+        /// <param name="y">The y component of the point at which the derivative is to be computed</param>
         /// <returns>The output of the derivative</returns>
-        public abstract double Derivative(double input);
+        public abstract double Derivative(double x, double y);
 
         #endregion
     }
