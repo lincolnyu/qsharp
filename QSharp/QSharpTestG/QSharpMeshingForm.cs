@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using QSharp.Shader.Geometry.Euclid2D;
 using QSharp.Shader.Geometry.Triangulation.Methods;
@@ -32,6 +33,12 @@ namespace QSharpTestG
             Normal,
             Contained,
         }
+
+        #endregion
+
+        #region Delegates
+
+        private delegate void RenderDelegate();
 
         #endregion
 
@@ -153,14 +160,18 @@ namespace QSharpTestG
 
         private void InvalidateView()
         {
-            var next = _bitmaps[(_currentBimapIndex + 1)%_bitmaps.Length];
+            BeginInvoke(new RenderDelegate(Render));
+        }
+
+        private void Render()
+        {
+            var next = _bitmaps[(_currentBimapIndex + 1) % _bitmaps.Length];
             Redraw(next);
             MeshingPictureBox.Image = next;
         }
-
+        
         private void MeshingPictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-
         }
 
         private void MeshingPictureBox_MouseClick(object sender, MouseEventArgs e)
@@ -297,24 +308,55 @@ namespace QSharpTestG
             InvalidateView();
         }
 
-        private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs e)
+        private void triangulateAllToolStripMenuItem_Click(object sender, EventArgs args)
         {
-            var daft = new Daft {SizeField = GetSize};
+            // NOTE two methods 
+            // 1. MeshInOneGo() displays the mesh after completion
+            // 2. MeshLoop() thread displays the progress
+            
+            MeshInOneGo();
+
+            //var t = new Thread(MeshLoop);
+            //t.Start();
+        }
+
+        private void MeshLoop()
+        {
+            while (MeshStep())
+            {
+                Thread.Sleep(3);
+            }
+        }
+        
+        private void triangulateOneStepToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MeshStep();
+        }
+
+        private void MeshInOneGo()
+        {
+            var daft = new Daft { SizeField = GetSize };
             var meanSize = GetMeanSize();
 
             SetFronts(daft);
 
             daft.SetupQuadtree(meanSize);
-            
+
             daft.LoadFronts();
 
             daft.GenerateMesh();
 
+            _meshEdges.Clear();
+
+            foreach (var e in daft.Qst.SortedEdges.Values)
+            {
+                _meshEdges.Add(e);
+            }
+
             InvalidateView();
         }
 
-
-        private void triangulateOneStepToolStripMenuItem_Click(object sender, EventArgs e)
+        private bool MeshStep()
         {
             if (_oneStepDaft == null)
             {
@@ -330,14 +372,22 @@ namespace QSharpTestG
                 _iterationCounter = 0;
             }
 
-            _oneStepDaft.GenerateMeshOneStep();
-            _oneStepDaft.CheckDaftIntegrity();
+            lock (this)
+            {
+                var b = _oneStepDaft.GenerateMeshOneStep();
+                if (!b)
+                {
+                    return false;
+                }
+                _oneStepDaft.CheckDaftIntegrity();
 
-            _iterationCounter++;
+                _iterationCounter++;
 
-            UpdateMesh();
+                UpdateMesh();
+            }
 
             InvalidateView();
+            return true;
         }
 
         private void UpdateMesh()
@@ -486,6 +536,33 @@ namespace QSharpTestG
             InvalidateView();
         }
 
+
+        private void squareAndFieldToMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            var fv = new Vector2D { X = MeshingPictureBox.Width / 2.0, Y = MeshingPictureBox.Height / 2.0 };
+            _points.Add(fv);
+            _fieldPoints[_points.Count - 1] = 50;
+
+            const int d = 200;
+            var rect = new List<Vector2D>
+            {
+                new Vector2D {X = fv.X - d, Y = fv.Y - d},
+                new Vector2D {X = fv.X + d, Y = fv.Y - d},
+                new Vector2D {X = fv.X + d, Y = fv.Y + d},
+                new Vector2D {X = fv.X - d, Y = fv.Y + d}
+            };
+            _polygons.Add(rect);
+
+            // add a point that defines the field
+            _points.Add(new Vector2D { X = 420, Y = 250 });
+            _fieldPoints[_points.Count - 1] = 5;
+
+            UpdatePolygonStates();
+            InvalidateView();
+        }
+
+
         #endregion
 
         private void SimplifyPolygonsAndPolylines()
@@ -557,7 +634,7 @@ namespace QSharpTestG
             _drawnPolygonPen = new Pen(Color.Cyan, 1);
             _drawnPolylinePen = new Pen(Color.Chartreuse, 1);
             _shinyLinePen = new Pen(Color.Orange, 1);
-            _meshPen = new Pen(Color.DeepPink, 1);
+            _meshPen = new Pen(Color.Gray, 1);
             _hullPen = new Pen(Color.Brown, 2);
             _ccPen = new Pen(Color.GreenYellow, 1);
 
@@ -596,120 +673,123 @@ namespace QSharpTestG
 
         private void Redraw(Image image)
         {
-            using (var g = Graphics.FromImage(image))
+            lock (this)
             {
-                g.Clear(Color.White);
-                for (var i = 0; i < _polygons.Count; i++)
+                using (var g = Graphics.FromImage(image))
                 {
-                    var info = _polygonStates[i];
-                    var polygon = _polygons[i];
-                    var pen = info == PolygonState.Normal ? _polygonPen : _internalPolygonPen;
-                    DrawPolygon(g, pen, polygon);
-                }
-                foreach (var polyline in _polylines)
-                {
-                    DrawPolyline(g, _polylinePen, polyline);
-                }
-                // simplified polylines
-                const float r = 2;
-                foreach (var polyline in _simplifiedPolylines)
-                {
-                    DrawPolyline(g, _simplifiedPolyPen, polyline);
-                    foreach (var point in polyline)
+                    g.Clear(Color.White);
+                    for (var i = 0; i < _polygons.Count; i++)
                     {
-                        var x = (float)point.X;
-                        var y = (float)point.Y;
-                        g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
+                        var info = _polygonStates[i];
+                        var polygon = _polygons[i];
+                        var pen = info == PolygonState.Normal ? _polygonPen : _internalPolygonPen;
+                        DrawPolygon(g, pen, polygon);
                     }
-                }
-                // simplified polygons
-                foreach (var polygon in _simplifiedPolygons)
-                {
-                    DrawPolygon(g, _simplifiedPolyPen, polygon);
-                    foreach (var point in polygon)
+                    foreach (var polyline in _polylines)
                     {
-                        var x = (float)point.X;
-                        var y = (float)point.Y;
-                        g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
+                        DrawPolyline(g, _polylinePen, polyline);
                     }
-                }
-
-                foreach (var point in _points)
-                {
-                    var x = (float)point.X;
-                    var y = (float)point.Y;
-                    g.FillEllipse(_pointBrush, x - r, y - r, 2*r, 2*r);
-                }
-                
-                if (_isDrawing)
-                {
-                    switch (CurrentMode)
+                    // simplified polylines
+                    const float r = 2;
+                    foreach (var polyline in _simplifiedPolylines)
                     {
-                        case Modes.DefiningPolygons:
-                            DrawPolygon(g, _drawnPolygonPen, _drawnPoly);
-                            break;
-                        case Modes.DefiningPolylines:
-                            DrawPolyline(g, _drawnPolylinePen, _drawnPoly);
-                            break;
-                    }
-                }
-                if (_shineV1 != null && _shineV2 != null)
-                {
-                    var point = _points.First();
-                    g.DrawLine(_shinyLinePen, (float)_shineV1.X, (float)_shineV1.Y, (float)point.X, (float)point.Y);
-                    g.DrawLine(_shinyLinePen, (float)_shineV2.X, (float)_shineV2.Y, (float)point.X, (float)point.Y);
-                }
-                if (_meshEdges != null && _meshEdges.Count > 0)
-                {
-                    foreach (var edge in _meshEdges)
-                    {
-                        var v1 = edge.V1;
-                        var v2 = edge.V2;
-                        g.DrawLine(_meshPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
-                    }
-                }
-
-                if (_oneStepDaft != null)
-                {
-                    foreach (var inwards in _oneStepDaft.Inwards)
-                    {
-                        foreach (var e in inwards.Edges)
+                        DrawPolyline(g, _simplifiedPolyPen, polyline);
+                        foreach (var point in polyline)
                         {
-                            var v1 = e.V1;
-                            var v2 = e.V2;
-                            g.DrawLine(_inwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                            var x = (float)point.X;
+                            var y = (float)point.Y;
+                            g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
+                        }
+                    }
+                    // simplified polygons
+                    foreach (var polygon in _simplifiedPolygons)
+                    {
+                        DrawPolygon(g, _simplifiedPolyPen, polygon);
+                        foreach (var point in polygon)
+                        {
+                            var x = (float)point.X;
+                            var y = (float)point.Y;
+                            g.FillEllipse(_simplifiedPolyPointBrush, x - r, y - r, 2 * r, 2 * r);
                         }
                     }
 
-                    foreach (var outwards in _oneStepDaft.Outwards)
+                    foreach (var point in _points)
                     {
-                        foreach (var e in outwards.Edges)
+                        var x = (float)point.X;
+                        var y = (float)point.Y;
+                        g.FillEllipse(_pointBrush, x - r, y - r, 2 * r, 2 * r);
+                    }
+
+                    if (_isDrawing)
+                    {
+                        switch (CurrentMode)
                         {
-                            var v1 = e.V1;
-                            var v2 = e.V2;
-                            g.DrawLine(_outwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                            case Modes.DefiningPolygons:
+                                DrawPolygon(g, _drawnPolygonPen, _drawnPoly);
+                                break;
+                            case Modes.DefiningPolylines:
+                                DrawPolyline(g, _drawnPolylinePen, _drawnPoly);
+                                break;
                         }
                     }
-                }
-
-                if (_hull != null)
-                {
-                    foreach (var edge in _hull)
+                    if (_shineV1 != null && _shineV2 != null)
                     {
-                        var v1 = edge.V1;
-                        var v2 = edge.V2;
-                        g.DrawLine(_hullPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                        var point = _points.First();
+                        g.DrawLine(_shinyLinePen, (float)_shineV1.X, (float)_shineV1.Y, (float)point.X, (float)point.Y);
+                        g.DrawLine(_shinyLinePen, (float)_shineV2.X, (float)_shineV2.Y, (float)point.X, (float)point.Y);
                     }
-                }
-                if (_circumcenters.Any())
-                {
-                    for (var i = 0; i < _circumcenters.Count; i++)
+                    if (_meshEdges != null && _meshEdges.Count > 0)
                     {
-                        var cc = _circumcenters[i];
-                        var cr = _circumradius[i];
-                        var x1 = (float)(cc.X - cr);
-                        var y1 = (float)(cc.Y - cr);
-                        g.DrawEllipse(_ccPen, x1, y1, (float)(cr*2), (float)(cr*2));
+                        foreach (var edge in _meshEdges)
+                        {
+                            var v1 = edge.V1;
+                            var v2 = edge.V2;
+                            g.DrawLine(_meshPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                        }
+                    }
+
+                    if (_oneStepDaft != null)
+                    {
+                        foreach (var inwards in _oneStepDaft.Inwards)
+                        {
+                            foreach (var e in inwards.Edges)
+                            {
+                                var v1 = e.V1;
+                                var v2 = e.V2;
+                                g.DrawLine(_inwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                            }
+                        }
+
+                        foreach (var outwards in _oneStepDaft.Outwards)
+                        {
+                            foreach (var e in outwards.Edges)
+                            {
+                                var v1 = e.V1;
+                                var v2 = e.V2;
+                                g.DrawLine(_outwardsPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                            }
+                        }
+                    }
+
+                    if (_hull != null)
+                    {
+                        foreach (var edge in _hull)
+                        {
+                            var v1 = edge.V1;
+                            var v2 = edge.V2;
+                            g.DrawLine(_hullPen, (float)v1.X, (float)v1.Y, (float)v2.X, (float)v2.Y);
+                        }
+                    }
+                    if (_circumcenters.Any())
+                    {
+                        for (var i = 0; i < _circumcenters.Count; i++)
+                        {
+                            var cc = _circumcenters[i];
+                            var cr = _circumradius[i];
+                            var x1 = (float)(cc.X - cr);
+                            var y1 = (float)(cc.Y - cr);
+                            g.DrawEllipse(_ccPen, x1, y1, (float)(cr * 2), (float)(cr * 2));
+                        }
                     }
                 }
             }

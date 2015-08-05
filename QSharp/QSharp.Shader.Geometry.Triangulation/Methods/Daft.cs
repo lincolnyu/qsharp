@@ -604,7 +604,7 @@ namespace QSharp.Shader.Geometry.Triangulation.Methods
                 foreach (var v in verticesInCircle)
                 {
                     var vv = v - v1;
-                    var opv = v1.OuterProductWith(vv);
+                    var opv = v12.OuterProductWith(vv);
                     var opvpos = opv > 0;
                     if (opvpos == oppos)
                     {

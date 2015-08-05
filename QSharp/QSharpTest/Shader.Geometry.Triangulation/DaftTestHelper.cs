@@ -156,8 +156,14 @@ namespace QSharpTest.Shader.Geometry.Triangulation
 
                 daft.CheckFront(inw);
 
+                var lastEdge = inw.Edges[inw.Edges.Count-1];
                 foreach (var e in inw.Edges)
                 {
+                    if (e.V1 == lastEdge.V1 && e.V2 == lastEdge.V2 || e.V1 == lastEdge.V2 && e.V2 == lastEdge.V1)
+                    {
+                        throw new Exception("Repetitive edge");
+                    }
+
                     var dictResult = inwardsDict[e];
                     if (dictResult != inw)
                     {
@@ -167,6 +173,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                     {
                         throw new Exception("Duplicate inward edges");
                     }
+                    lastEdge = e;
                 }
             }
             if (allEdges.Count > 0)
@@ -194,8 +201,14 @@ namespace QSharpTest.Shader.Geometry.Triangulation
 
                 daft.CheckFront(outw);
 
+                var lastEdge = outw.Edges[outw.Edges.Count - 1];
                 foreach (var e in outw.Edges)
                 {
+                    if (e.V1 == lastEdge.V1 && e.V2 == lastEdge.V2 || e.V1 == lastEdge.V2 && e.V2 == lastEdge.V1)
+                    {
+                        throw new Exception("Repetitive edge");
+                    }
+
                     var dictResult = outwardsDict[e];
                     if (dictResult != outw)
                     {
@@ -205,6 +218,7 @@ namespace QSharpTest.Shader.Geometry.Triangulation
                     {
                         throw new Exception("Duplicate outward edges");
                     }
+                    lastEdge = e;
                 }
             }
             if (allEdges.Count > 0)

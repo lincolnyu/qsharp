@@ -93,13 +93,66 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <returns>the angle formed by swiping from the first radiant line to the second</returns>
         public static double GetAngle(this IVector2D a, IVector2D b, IVector2D c)
         {
-            var ab = new Vector2D();
-            var ac = new Vector2D();
-            b.Subtract(a, ab);
-            c.Subtract(a, ac);
+            var ab = new Vector2D(a, b);
+            var ac = new Vector2D(a, c);
 
             var angle = ab.GetAngle(ac);
             return angle;
+        }
+
+        /// <summary>
+        ///  Returns the area of the triangle, sign indicating the 
+        /// </summary>
+        /// <param name="vA">first vertex</param>
+        /// <param name="vB">second vertex</param>
+        /// <param name="vC">third vertex</param>
+        /// <returns>The directional area</returns>
+        public static double GetTriangleAreaDirectional(IVector2D vA, IVector2D vB, IVector2D vC)
+        {
+            var partA = vA.X * vB.Y + vB.X * vC.Y + vC.X * vA.Y;
+            var partB = vA.X * vC.Y + vB.X * vA.Y + vC.X * vB.Y;
+            var area = partA - partB; // equivalent to ab x ac
+
+            return area;
+        }
+
+        /// <summary>
+        ///  Returns the area of the triangle
+        /// </summary>
+        /// <param name="vA">first vertex</param>
+        /// <param name="vB">second vertex</param>
+        /// <param name="vC">third vertex</param>
+        /// <returns>The area</returns>
+        public static double GetTriangleArea(IVector2D vA, IVector2D vB, IVector2D vC)
+        {
+            var area = GetTriangleAreaDirectional(vA, vB, vC);
+            return Math.Abs(area);
+        }
+
+        /// <summary>
+        ///  Return 1 if triangle ABC is anti-clockwise or -1 or 0 if it doesn't form a triangle based on the |sin A|>epsilon criterion
+        /// </summary>
+        /// <param name="vA">first vertex</param>
+        /// <param name="vB">second vertex</param>
+        /// <param name="vC">third vertex</param>
+        /// <param name="epsilon"></param>
+        /// <returns>The number that indicates the direction</returns>
+        public static int GetTriangleDirection(IVector2D vA, IVector2D vB, IVector2D vC, double epsilon = double.Epsilon)
+        {
+            var ab = new Vector2D(vA, vB);
+            var ac = new Vector2D(vA, vC);
+            var area = ab.OuterProduct(ac); // ab x ac, the directional area
+            var sinA = area / (ab.Length * ac.Length);
+
+            if (sinA > epsilon)
+            {
+                return 1;
+            }
+            if (sinA < -epsilon)
+            {
+                return -1;
+            }
+            return 0;
         }
 
         /// <summary>
@@ -111,15 +164,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="vC">third vertex</param>
         /// <param name="epsilon">minimum sinusoid of an angle in the triangle considered to be able to validate the triangle</param>
         /// <returns>if the three vertices are considered to be able to form a triangle</returns>
-        public static bool IsTriangle(IVector2D vA, IVector2D vB, IVector2D vC, double epsilon)
+        public static bool IsTriangle(IVector2D vA, IVector2D vB, IVector2D vC, double epsilon = double.Epsilon)
         {
-            double partA = vA.X * vC.Y + vB.X * vA.Y + vC.X * vB.Y;
-            double partB = vA.X * vB.Y + vB.X * vC.Y + vC.X * vA.Y;
-            double area = Math.Abs(partA - partB);
-            var vAB = new Vector2D(vA, vB);
-            var vAC = new Vector2D(vA, vC);
-            double sinA = area / (vAB.Length * vAC.Length);
-            return sinA > epsilon;
+            return GetTriangleDirection(vA, vB, vC, epsilon) != 0;
         }
 
         /// <summary>

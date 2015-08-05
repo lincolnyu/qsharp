@@ -43,6 +43,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
             Y = y;
         }
 
+        /// <summary>
+        ///  Returns a vector that points from the first give vector to the second
+        /// </summary>
+        /// <param name="a">The first vector</param>
+        /// <param name="b">The second vector</param>
         public Vector2D(IVector2D a, IVector2D b)
         {
             X = b.X - a.X;
