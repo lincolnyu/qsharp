@@ -98,10 +98,7 @@ namespace QSharp.String.ExpressionEvaluation
         public void Parse(string expression)
         {
             var tokenizer = DefaultTokenizer.Instance;
-            var tokens = tokenizer.Tokenize(expression);
-            var treeBuilder = new TreeBuilder(tokenizer);
-            treeBuilder.Parse(tokens);
-            Root = treeBuilder.Root;
+            Parse(expression, tokenizer);
         }
 
         #endregion
