@@ -107,7 +107,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="vB">second vertex</param>
         /// <param name="vC">third vertex</param>
         /// <returns>The directional area</returns>
-        public static double GetTriangleAreaDirectional(IVector2D vA, IVector2D vB, IVector2D vC)
+        public static double GetSignedTriangleArea(IVector2D vA, IVector2D vB, IVector2D vC)
         {
             var partA = vA.X * vB.Y + vB.X * vC.Y + vC.X * vA.Y;
             var partB = vA.X * vC.Y + vB.X * vA.Y + vC.X * vB.Y;
@@ -125,7 +125,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <returns>The area</returns>
         public static double GetTriangleArea(IVector2D vA, IVector2D vB, IVector2D vC)
         {
-            var area = GetTriangleAreaDirectional(vA, vB, vC);
+            var area = GetSignedTriangleArea(vA, vB, vC);
             return Math.Abs(area);
         }
 
