@@ -30,8 +30,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             if (!asis)
             {
-                return polygon.GetSignedPolgyonAreaCentralised();
+                double rx, ry;
+                polygon.GetPolygonPseudoCenter(out rx, out ry);
+                return polygon.GetSignedPolygonAreaCentralised(rx, ry);
             }
+
             var res = 0.0;
             for (var i = 0; i < polygon.Count; i++)
             {
@@ -50,23 +53,21 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///  The vertices are centralised first to avoid drifting inaccuracy
         /// </summary>
         /// <param name="polygon">An ordered collection of vertices of a polygon</param>
+        /// <param name="rx">X component of a point that's close to the polygon</param>
+        /// <param name="ry">Y component of a point that's close to the polygon</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolgyonAreaCentralised(this IList<IVector2D> polygon)
+        public static double GetSignedPolygonAreaCentralised(this IList<IVector2D> polygon, double rx, double ry)
         {
-            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
-            double cx, cy;
-            vcoll.GetPolygonPseudoCenter(out cx, out cy);
-
             var res = 0.0;
             for (var i = 0; i < polygon.Count; i++)
             {
                 var i1 = (i + 1) % polygon.Count;
                 var v0 = polygon[i];
                 var v1 = polygon[i1];
-                res += (v1.X-cx) * (v0.Y-cy) - (v0.X- cx) * (v1.Y-cy);
+                res += (v1.X-rx) * (v0.Y-ry) - (v0.X- rx) * (v1.Y-ry);
             }
             res /= 2;
             return res;
@@ -85,7 +86,10 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             if (!asis)
             {
-                return polygon.GetSignedPolygonAreaCentralised();
+                var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+                double rx, ry;
+                vcoll.GetPolygonPseudoCenter(out rx, out ry);
+                return polygon.GetSignedPolygonAreaCentralised(rx, ry);
             }
 
             var res = 0.0;
@@ -107,6 +111,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 res += vfirst.X*vlast.Y - vlast.X*vfirst.Y;
             }
+            res /= 2;
             return res;
         }
 
@@ -115,24 +120,23 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///   The vertices are centralised first to avoid drifting inaccuracy
         /// </summary>
         /// <param name="polygon">An ordered collection of vertices of a polygon</param>
+        /// <param name="rx">X component of a point that's close to the polygon</param>
+        /// <param name="ry">Y component of a point that's close to the polygon</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonAreaCentralised(this IEnumerable<IVector2D> polygon)
+        public static double GetSignedPolygonAreaCentralised(this IEnumerable<IVector2D> polygon, 
+            double rx, double ry)
         {
-            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
-            double cx, cy;
-            vcoll.GetPolygonPseudoCenter(out cx, out cy);
-
             var res = 0.0;
             IVector2D vlast = null;
             IVector2D vfirst = null;
-            foreach (var v in vcoll)
+            foreach (var v in polygon)
             {
                 if (vlast != null)
                 {
-                    res += (v.X-cx) * (vlast.Y-cy) - (vlast.X-cx) * (v.Y-cy);
+                    res += (v.X-rx) * (vlast.Y-ry) - (vlast.X-rx) * (v.Y-ry);
                 }
                 else
                 {
@@ -142,8 +146,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
             if (vfirst != null)
             {
-                res += (vfirst.X-cx) * (vlast.Y-cy) - (vlast.X-cx) * (vfirst.Y-cy);
+                res += (vfirst.X-rx) * (vlast.Y-ry) - (vlast.X-rx) * (vfirst.Y-ry);
             }
+            res /= 2;
             return res;
         }
 
@@ -161,7 +166,10 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             if (!asis)
             {
-                return polygon.GetSignedPolygonArea2Centralised();
+                var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+                double rx, ry;
+                vcoll.GetPolygonPseudoCenter2(out rx, out ry);
+                return polygon.GetSignedPolygonArea2Centralised(rx, ry);
             }
             var res = 0.0;
             IVector2D vlast = null;
@@ -173,6 +181,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 }
                 vlast = v;
             }
+            res /= 2;
             return res;
         }
 
@@ -182,30 +191,174 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///   The vertices are centralised first to avoid drifting inaccuracy
         /// </summary>
         /// <param name="polygon">Enumerates through all vertices of the polygon with the first vertex repeated at the end</param>
+        /// <param name="rx">X component of a point that's close to the polygon</param>
+        /// <param name="ry">Y component of a point that's close to the polygon</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonArea2Centralised(this IEnumerable<IVector2D> polygon)
+        public static double GetSignedPolygonArea2Centralised(this IEnumerable<IVector2D> polygon, double rx, double ry)
         {
-            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
-            double cx, cy;
-            vcoll.GetPolygonPseudoCenter(out cx, out cy);
             var res = 0.0;
             IVector2D vlast = null;
-            foreach (var v in vcoll)
+            foreach (var v in polygon)
             {
                 if (vlast != null)
                 {
-                    res += (v.X - cx)*(vlast.Y - cy) - (vlast.X - cx)*(v.Y - cy);
+                    res += (v.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (v.Y - ry);
                 }
                 vlast = v;
             }
+            res /= 2;
             return res;
+        }
+
+        public static void GetPolygonCentroid(this IList<IVector2D> polygon, out double cx, out double cy,
+            bool asis = false)
+        {
+            cx = 0.0;
+            cy = 0.0;
+            double a;
+            if (asis)
+            {
+                double rx, ry;
+                polygon.GetPolygonPseudoCenter(out rx, out ry);
+                a = polygon.GetSignedPolygonAreaCentralised(rx, ry);
+                for (var i = 0; i < polygon.Count; i++)
+                {
+                    var i1 = (i + 1) % polygon.Count;
+                    var v0 = polygon[i];
+                    var v1 = polygon[i1];
+                    var e = (v1.X - rx) * (v0.Y - ry) - (v0.X - rx) * (v1.Y - ry);
+                    cx += e * (v1.X + v0.X - rx - rx);
+                    cy += e * (v1.Y + v0.Y - ry - ry);
+                }
+            }
+            else
+            {
+                a = polygon.GetSignedPolygonArea();
+                for (var i = 0; i < polygon.Count; i++)
+                {
+                    var i1 = (i + 1) % polygon.Count;
+                    var v0 = polygon[i];
+                    var v1 = polygon[i1];
+                    var e = v1.X * v0.Y - v0.X * v1.Y;
+                    cx += e * (v1.X + v0.X);
+                    cy += e * (v1.Y + v0.Y);
+                }
+            }
+            cx /= 6 * a;
+            cy /= 6 * a;
+        }
+
+        public static void GetPolygonCentroid(this IEnumerable<IVector2D> polygon, out double cx, out double cy,
+            bool asis = false)
+        {
+            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+            cx = 0.0;
+            cy = 0.0;
+            IVector2D vlast = null;
+            IVector2D vfirst = null;
+            double a;
+            if (asis)
+            {
+                double rx, ry;
+                vcoll.GetPolygonPseudoCenter(out rx, out ry);
+                a = vcoll.GetSignedPolygonAreaCentralised(rx, ry);
+                foreach (var v in polygon)
+                {
+                    if (vlast != null)
+                    {
+                        var e = (v.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (v.Y - ry);
+                        cx += e * (v.X + vlast.X - rx - rx);
+                        cy += e * (v.Y + vlast.Y - ry - ry);
+                    }
+                    else
+                    {
+                        vfirst = v;
+                    }
+                    vlast = v;
+                }
+                if (vfirst != null)
+                {
+                    var e = (vfirst.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (vfirst.Y - ry);
+                    cx += e * (vfirst.X + vlast.X - rx - rx);
+                    cy += e * (vfirst.Y + vlast.Y - ry - ry);
+                }
+            }
+            else
+            {
+                a = vcoll.GetSignedPolygonArea();
+                foreach (var v in polygon)
+                {
+                    if (vlast != null)
+                    {
+                        var e = v.X * vlast.Y - vlast.X * v.Y;
+                        cx += e * (v.X + vlast.X);
+                        cy += e * (v.Y + vlast.Y);
+                    }
+                    else
+                    {
+                        vfirst = v;
+                    }
+                    vlast = v;
+                }
+                if (vfirst != null)
+                {
+                    var e = vfirst.X * vlast.Y - vlast.X * vfirst.Y;
+                    cx += e * (vfirst.X + vlast.X);
+                    cy += e * (vfirst.Y + vlast.Y);
+                }
+            }
+            cx /= 6 * a;
+            cy /= 6 * a;
+        }
+
+        public static void GetPolygonCentroid2(this IEnumerable<IVector2D> polygon, out double cx, out double cy, 
+            bool asis=false)
+        {
+            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+            cx = 0.0;
+            cy = 0.0;
+            IVector2D vlast = null;
+            double a;
+            if (asis)
+            {
+                double rx, ry;
+                vcoll.GetPolygonPseudoCenter2(out rx, out ry);
+                a = vcoll.GetSignedPolygonArea2Centralised(rx, ry);
+                foreach (var v in vcoll)
+                {
+                    if (vlast != null)
+                    {
+                        var e = ((v.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (v.Y - ry));
+                        cx += (v.X + vlast.X - rx - rx) * e;
+                        cy += (v.Y + vlast.Y - ry - ry) * e;
+                    }
+                    vlast = v;
+                }
+            }
+            else
+            {
+                a = vcoll.GetSignedPolygonArea2();
+                foreach (var v in vcoll)
+                {
+                    if (vlast != null)
+                    {
+                        var e = v.X * vlast.Y - vlast.X * v.Y;
+                        cx += (v.X + vlast.X) * e;
+                        cy += (v.Y + vlast.Y) * e;
+                    }
+                    vlast = v;
+                }
+            }
+            cx /= 6 * a;
+            cy /= 6 * a;
         }
 
         /// <summary>
         ///  Returns a point of which each component is simply the mean of the corresponding components of the vertices
+        ///  first vertex not repeated
         /// </summary>
         /// <param name="polygon">The polygon to return the center for</param>
         /// <param name="cx">The x component of the center</param>
@@ -219,6 +372,35 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 cx += v.X;
                 cy += v.Y;
+            }
+            cx /= c;
+            cy /= c;
+        }
+
+        /// <summary>
+        ///  Returns a point of which each component is simply the mean of the corresponding components of the vertices
+        ///  first vertex repeated
+        /// </summary>
+        /// <param name="polygon">The polygon to return the center for</param>
+        /// <param name="cx">The x component of the center</param>
+        /// <param name="cy">The y component of the center</param>
+        private static void GetPolygonPseudoCenter2(this ICollection<IVector2D> polygon, out double cx, out double cy)
+        {
+            cx = 0.0;
+            cy = 0.0;
+            var c = polygon.Count-1;
+            var first = true;
+            foreach (var v in polygon)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    cx += v.X;
+                    cy += v.Y;
+                }
             }
             cx /= c;
             cy /= c;
