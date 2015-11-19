@@ -13,9 +13,10 @@ namespace QSharp.Shader.Geometry.Euclid2D
 
         /// <summary>
         ///  Returns a value of double type whose magnitude is the area of the polygon with the sign
-        //   indicateing if the vertices are in clockwise order
+        ///  indicateing if the vertices are in clockwise order
         /// </summary>
         /// <param name="polygon">An ordered collection of vertices of a polygon</param>
+        /// <param name="asis">If the calculation is based on the coordinates of vertices as is or the vertices are centralised first to avoid inaccuracy</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
@@ -25,9 +26,13 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///  1. http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
         ///  2. http://lincolnyutech.blogspot.com.au/2012/04/exercises-of-chapter-1-part-1.html
         /// </remarks>
-        public static double GetSignedPolgyonArea(this IList<IVector2D> polygon)
+        public static double GetSignedPolgyonArea(this IList<IVector2D> polygon, bool asis=false)
         {
-            double res = 0;
+            if (!asis)
+            {
+                return polygon.GetSignedPolgyonAreaCentralised();
+            }
+            var res = 0.0;
             for (var i = 0; i < polygon.Count; i++)
             {
                 var i1 = (i + 1)%polygon.Count;
@@ -39,26 +44,58 @@ namespace QSharp.Shader.Geometry.Euclid2D
             return res;
         }
 
-
         /// <summary>
-        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
-        //   indicating if the vertices are in clockwise order
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign
+        ///  indicateing if the vertices are in clockwise order
+        ///  The vertices are centralised first to avoid drifting inaccuracy
         /// </summary>
-        /// <param name="polygon">Enumerates through all vertices of the polygon without the first vertex repeated at the end</param>
+        /// <param name="polygon">An ordered collection of vertices of a polygon</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonArea(this IEnumerable<IVector2D> polygon)
+        public static double GetSignedPolgyonAreaCentralised(this IList<IVector2D> polygon)
         {
-            double res = 0;
+            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+            double cx, cy;
+            vcoll.GetPolygonPseudoCenter(out cx, out cy);
+
+            var res = 0.0;
+            for (var i = 0; i < polygon.Count; i++)
+            {
+                var i1 = (i + 1) % polygon.Count;
+                var v0 = polygon[i];
+                var v1 = polygon[i1];
+                res += (v1.X-cx) * (v0.Y-cy) - (v0.X- cx) * (v1.Y-cy);
+            }
+            res /= 2;
+            return res;
+        }
+
+        /// <summary>
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
+        /// </summary>
+        /// <param name="polygon">Enumerates through all vertices of the polygon without the first vertex repeated at the end</param>
+        /// <param name="asis">If the calculation is based on the coordinates of vertices as is or the vertices are centralised first to avoid inaccuracy</param>
+        /// <returns>
+        ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
+        ///  in clockwise order
+        /// </returns>
+        public static double GetSignedPolygonArea(this IEnumerable<IVector2D> polygon, bool asis=false)
+        {
+            if (!asis)
+            {
+                return polygon.GetSignedPolygonAreaCentralised();
+            }
+
+            var res = 0.0;
             IVector2D vlast = null;
             IVector2D vfirst = null;
             foreach (var v in polygon)
             {
                 if (vlast != null)
                 {
-                    res += v.X * vlast.Y - vlast.X * v.Y;
+                    res += v.X*vlast.Y - vlast.X*v.Y;
                 }
                 else
                 {
@@ -75,16 +112,58 @@ namespace QSharp.Shader.Geometry.Euclid2D
 
         /// <summary>
         ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
-        //   indicateing if the vertices are in clockwise order
+        ///   The vertices are centralised first to avoid drifting inaccuracy
         /// </summary>
-        /// <param name="polygon">Enumerates through all vertices of the polygon with the first vertex repeated at the end</param>
+        /// <param name="polygon">An ordered collection of vertices of a polygon</param>
         /// <returns>
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonArea2(this IEnumerable<IVector2D> polygon)
+        public static double GetSignedPolygonAreaCentralised(this IEnumerable<IVector2D> polygon)
         {
-            double res = 0;
+            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+            double cx, cy;
+            vcoll.GetPolygonPseudoCenter(out cx, out cy);
+
+            var res = 0.0;
+            IVector2D vlast = null;
+            IVector2D vfirst = null;
+            foreach (var v in vcoll)
+            {
+                if (vlast != null)
+                {
+                    res += (v.X-cx) * (vlast.Y-cy) - (vlast.X-cx) * (v.Y-cy);
+                }
+                else
+                {
+                    vfirst = v;
+                }
+                vlast = v;
+            }
+            if (vfirst != null)
+            {
+                res += (vfirst.X-cx) * (vlast.Y-cy) - (vlast.X-cx) * (vfirst.Y-cy);
+            }
+            return res;
+        }
+
+        /// <summary>
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
+        ///  indicateing if the vertices are in clockwise order
+        /// </summary>
+        /// <param name="polygon">Enumerates through all vertices of the polygon with the first vertex repeated at the end</param>
+        /// <param name="asis">If the calculation is based on the coordinates of vertices as is or the vertices are centralised first to avoid inaccuracy</param>
+        /// <returns>
+        ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
+        ///  in clockwise order
+        /// </returns>
+        public static double GetSignedPolygonArea2(this IEnumerable<IVector2D> polygon, bool asis = false)
+        {
+            if (!asis)
+            {
+                return polygon.GetSignedPolygonArea2Centralised();
+            }
+            var res = 0.0;
             IVector2D vlast = null;
             foreach (var v in polygon)
             {
@@ -95,6 +174,54 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 vlast = v;
             }
             return res;
+        }
+
+        /// <summary>
+        ///  Returns a value of double type whose magnitude is the area of the polygon with the sign 
+        ///  indicateing if the vertices are in clockwise order
+        ///   The vertices are centralised first to avoid drifting inaccuracy
+        /// </summary>
+        /// <param name="polygon">Enumerates through all vertices of the polygon with the first vertex repeated at the end</param>
+        /// <returns>
+        ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
+        ///  in clockwise order
+        /// </returns>
+        public static double GetSignedPolygonArea2Centralised(this IEnumerable<IVector2D> polygon)
+        {
+            var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
+            double cx, cy;
+            vcoll.GetPolygonPseudoCenter(out cx, out cy);
+            var res = 0.0;
+            IVector2D vlast = null;
+            foreach (var v in vcoll)
+            {
+                if (vlast != null)
+                {
+                    res += (v.X - cx)*(vlast.Y - cy) - (vlast.X - cx)*(v.Y - cy);
+                }
+                vlast = v;
+            }
+            return res;
+        }
+
+        /// <summary>
+        ///  Returns a point of which each component is simply the mean of the corresponding components of the vertices
+        /// </summary>
+        /// <param name="polygon">The polygon to return the center for</param>
+        /// <param name="cx">The x component of the center</param>
+        /// <param name="cy">The y component of the center</param>
+        private static void GetPolygonPseudoCenter(this ICollection<IVector2D> polygon, out double cx, out double cy)
+        {
+            cx = 0.0;
+            cy = 0.0;
+            var c = polygon.Count;
+            foreach (var v in polygon)
+            {
+                cx += v.X;
+                cy += v.Y;
+            }
+            cx /= c;
+            cy /= c;
         }
 
         /// <summary>
