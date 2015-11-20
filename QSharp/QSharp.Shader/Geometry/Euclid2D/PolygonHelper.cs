@@ -26,7 +26,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///  1. http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
         ///  2. http://lincolnyutech.blogspot.com.au/2012/04/exercises-of-chapter-1-part-1.html
         /// </remarks>
-        public static double GetSignedPolgyonArea(this IList<IVector2D> polygon, bool asis=false)
+        public static double GetSignedPolgyonArea(this IList<IVector2D> polygon, bool asis = false)
         {
             if (!asis)
             {
@@ -38,10 +38,10 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var res = 0.0;
             for (var i = 0; i < polygon.Count; i++)
             {
-                var i1 = (i + 1)%polygon.Count;
+                var i1 = (i + 1) % polygon.Count;
                 var v0 = polygon[i];
                 var v1 = polygon[i1];
-                res += v1.X*v0.Y - v0.X*v1.Y;
+                res += v1.X * v0.Y - v0.X * v1.Y;
             }
             res /= 2;
             return res;
@@ -67,7 +67,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 var i1 = (i + 1) % polygon.Count;
                 var v0 = polygon[i];
                 var v1 = polygon[i1];
-                res += (v1.X-rx) * (v0.Y-ry) - (v0.X- rx) * (v1.Y-ry);
+                res += (v1.X - rx) * (v0.Y - ry) - (v0.X - rx) * (v1.Y - ry);
             }
             res /= 2;
             return res;
@@ -82,14 +82,14 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonArea(this IEnumerable<IVector2D> polygon, bool asis=false)
+        public static double GetSignedPolygonArea(this IEnumerable<IVector2D> polygon, bool asis = false)
         {
             if (!asis)
             {
                 var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
                 double rx, ry;
                 vcoll.GetPolygonPseudoCenter(out rx, out ry);
-                return polygon.GetSignedPolygonAreaCentralised(rx, ry);
+                return vcoll.GetSignedPolygonAreaCentralised(rx, ry);
             }
 
             var res = 0.0;
@@ -99,7 +99,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 if (vlast != null)
                 {
-                    res += v.X*vlast.Y - vlast.X*v.Y;
+                    res += v.X * vlast.Y - vlast.X * v.Y;
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
             if (vfirst != null)
             {
-                res += vfirst.X*vlast.Y - vlast.X*vfirst.Y;
+                res += vfirst.X * vlast.Y - vlast.X * vfirst.Y;
             }
             res /= 2;
             return res;
@@ -126,7 +126,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         ///  A value whose magnitude is the area of the polygon and is positive if the vertices are
         ///  in clockwise order
         /// </returns>
-        public static double GetSignedPolygonAreaCentralised(this IEnumerable<IVector2D> polygon, 
+        public static double GetSignedPolygonAreaCentralised(this IEnumerable<IVector2D> polygon,
             double rx, double ry)
         {
             var res = 0.0;
@@ -136,7 +136,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 if (vlast != null)
                 {
-                    res += (v.X-rx) * (vlast.Y-ry) - (vlast.X-rx) * (v.Y-ry);
+                    res += (v.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (v.Y - ry);
                 }
                 else
                 {
@@ -146,7 +146,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             }
             if (vfirst != null)
             {
-                res += (vfirst.X-rx) * (vlast.Y-ry) - (vlast.X-rx) * (vfirst.Y-ry);
+                res += (vfirst.X - rx) * (vlast.Y - ry) - (vlast.X - rx) * (vfirst.Y - ry);
             }
             res /= 2;
             return res;
@@ -169,7 +169,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
                 double rx, ry;
                 vcoll.GetPolygonPseudoCenter2(out rx, out ry);
-                return polygon.GetSignedPolygonArea2Centralised(rx, ry);
+                return vcoll.GetSignedPolygonArea2Centralised(rx, ry);
             }
             var res = 0.0;
             IVector2D vlast = null;
@@ -177,7 +177,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 if (vlast != null)
                 {
-                    res += v.X*vlast.Y - vlast.X*v.Y;
+                    res += v.X * vlast.Y - vlast.X * v.Y;
                 }
                 vlast = v;
             }
@@ -265,7 +265,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 double rx, ry;
                 vcoll.GetPolygonPseudoCenter(out rx, out ry);
                 a = vcoll.GetSignedPolygonAreaCentralised(rx, ry);
-                foreach (var v in polygon)
+                foreach (var v in vcoll)
                 {
                     if (vlast != null)
                     {
@@ -289,7 +289,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             else
             {
                 a = vcoll.GetSignedPolygonArea();
-                foreach (var v in polygon)
+                foreach (var v in vcoll)
                 {
                     if (vlast != null)
                     {
@@ -314,8 +314,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
             cy /= 6 * a;
         }
 
-        public static void GetPolygonCentroid2(this IEnumerable<IVector2D> polygon, out double cx, out double cy, 
-            bool asis=false)
+        public static void GetPolygonCentroid2(this IEnumerable<IVector2D> polygon, out double cx, out double cy,
+            bool asis = false)
         {
             var vcoll = polygon as ICollection<IVector2D> ?? polygon.ToList();
             cx = 0.0;
@@ -388,7 +388,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         {
             cx = 0.0;
             cy = 0.0;
-            var c = polygon.Count-1;
+            var c = polygon.Count - 1;
             var first = true;
             foreach (var v in polygon)
             {
@@ -417,7 +417,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             out int end) where TVector2D : IVector2D
         {
             var i = 0;
-            var j = (i + 1)%hull.Count;
+            var j = (i + 1) % hull.Count;
             var v1 = hull[i];
             var v2 = hull[j];
             var r = v.VertexRelativeToEdge(v1, v2);
@@ -425,9 +425,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
             if (r >= 0)
             {
                 // dark
-                for (i = j;; i = j)
+                for (i = j; ; i = j)
                 {
-                    j = (i + 1)%hull.Count;
+                    j = (i + 1) % hull.Count;
                     v1 = hull[i];
                     v2 = hull[j];
                     r = v.VertexRelativeToEdge(v1, v2);
@@ -438,9 +438,9 @@ namespace QSharp.Shader.Geometry.Euclid2D
                         break;
                     }
                 }
-                for (;; i = j)
+                for (; ; i = j)
                 {
-                    j = (i + 1)%hull.Count;
+                    j = (i + 1) % hull.Count;
                     v1 = hull[i];
                     v2 = hull[j];
                     r = v.VertexRelativeToEdge(v1, v2);
@@ -467,7 +467,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                     }
                 }
 
-                for (i = 1;; i = j)
+                for (i = 1; ; i = j)
                 {
                     j = (i + 1) % hull.Count;
                     v1 = hull[i];
@@ -488,7 +488,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="polygon">The edge loop</param>
         /// <param name="edgeIndex">The index of the edge</param>
         /// <returns>The first vertex</returns>
-        public static IVector2D GetFirstVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
+        public static IVector2D GetFirstVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex)
             where TEdge2D : IEdge2D
         {
             var esd = polygon.IsEdgeSameDirection(edgeIndex);
@@ -502,7 +502,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="polygon">The edge loop</param>
         /// <param name="edgeIndex">The index of the edge</param>
         /// <returns>The second vertex</returns>
-        public static IVector2D GetSecondVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex) 
+        public static IVector2D GetSecondVertex<TEdge2D>(this IList<TEdge2D> polygon, int edgeIndex)
             where TEdge2D : IEdge2D
         {
             var esd = polygon.IsEdgeSameDirection(edgeIndex);
@@ -570,7 +570,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             {
                 // bright
                 int j;
-                for (i = hull.Count-1; ; i = j)
+                for (i = hull.Count - 1; ; i = j)
                 {
                     r = hull.VertexRelativeToEdge(i, v);
                     if (r >= 0)
@@ -592,7 +592,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 }
             }
         }
-        
+
         /// <summary>
         ///  Returns if the vertex is inside the specified polygon
         ///  Note the input polygon must not have duplicate vertices
@@ -601,7 +601,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
         /// <param name="polygon">The polygon to test</param>
         /// <param name="vertex">The vertex to see if inside the polygon</param>
         /// <returns>True if it's inside</returns>
-        public static bool VertexIsInside<TVector2D>(this IEnumerable<TVector2D> polygon, 
+        public static bool VertexIsInside<TVector2D>(this IEnumerable<TVector2D> polygon,
             IVector2D vertex) where TVector2D : IVector2D
         {
             var vv = new Vector2D();
@@ -612,7 +612,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var vlist = polygon.ToList();
             // replicate the ending vertex to close the sweeping, that's why the input polygon shouldn't have
             // duplicate vertices which will make the calculation unstable
-            vlist.Add(vlist[0]); 
+            vlist.Add(vlist[0]);
             foreach (var v in vlist)
             {
                 v.Subtract(vertex, vv);
@@ -625,11 +625,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
                         // counterclockwise
                         if (a < lasta)
                         {
-                            a += Math.PI*2;
+                            a += Math.PI * 2;
                         }
-                        else if (a - lasta > Math.PI*2)
+                        else if (a - lasta > Math.PI * 2)
                         {
-                            a -= Math.PI*2;
+                            a -= Math.PI * 2;
                         }
                     }
                     else
@@ -637,11 +637,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
                         // clockwise
                         if (a > lasta)
                         {
-                            a -= Math.PI*2;
+                            a -= Math.PI * 2;
                         }
-                        else if (lasta - a > Math.PI*2)
+                        else if (lasta - a > Math.PI * 2)
                         {
-                            a += Math.PI*2;
+                            a += Math.PI * 2;
                         }
                     }
                 }
@@ -749,7 +749,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
             where TEdge2D : IEdge2D
         {
             var edge = edges[edgeIndex];
-            var next = edges[(edgeIndex + 1) % edges.Count];
+            var next = edges[(edgeIndex + 1)%edges.Count];
             if (next.Equals(edge))
             {
                 if (edges.Count == 2)
@@ -758,9 +758,11 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 }
 
                 var last = edges[(edgeIndex - 1)%edges.Count];
-                return edge.Vertex1 == last.Vertex1 || edge.Vertex2 == last.Vertex2;
+                return ReferenceEquals(edge.Vertex1, last.Vertex1)
+                       || ReferenceEquals(edge.Vertex2, last.Vertex2);
             }
-            return edge.Vertex2 == next.Vertex1 || edge.Vertex2 == next.Vertex2;
+            return ReferenceEquals(edge.Vertex2, next.Vertex1)
+                   || ReferenceEquals(edge.Vertex2, next.Vertex2);
         }
 
         public static IEnumerable<TVector2D> GetVertices<TVector2D, TEdge2D>(IList<TEdge2D> edges, int startEdgeIndex,
@@ -770,23 +772,24 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var secondIndex = IncIndex(startEdgeIndex, edges.Count);
             var second = edges[secondIndex];
             TVector2D vlast;
-            if (first.Vertex2 == second.Vertex1 || first.Vertex2 == second.Vertex2)
+            if (ReferenceEquals(first.Vertex2, second.Vertex1) ||
+                ReferenceEquals(first.Vertex2, second.Vertex2))
             {
-                yield return (TVector2D)first.Vertex1;
-                yield return (TVector2D)first.Vertex2;
-                vlast = (TVector2D)first.Vertex2;
+                yield return (TVector2D) first.Vertex1;
+                yield return (TVector2D) first.Vertex2;
+                vlast = (TVector2D) first.Vertex2;
             }
             else
             {
-                yield return (TVector2D)first.Vertex2;
-                yield return (TVector2D)first.Vertex1;
-                vlast = (TVector2D)first.Vertex1;
+                yield return (TVector2D) first.Vertex2;
+                yield return (TVector2D) first.Vertex1;
+                vlast = (TVector2D) first.Vertex1;
             }
             for (var i = secondIndex; i != endEdgeIndexPlus1; i = IncIndex(i, edges.Count))
             {
                 var v1 = edges[i].Vertex1;
                 var v2 = edges[i].Vertex2;
-                vlast = (TVector2D) (v1.Equals(vlast) ? v2 : v1);
+                vlast = (TVector2D)(v1.Equals(vlast) ? v2 : v1);
                 yield return vlast;
             }
         }
@@ -799,17 +802,18 @@ namespace QSharp.Shader.Geometry.Euclid2D
             var secondIndex = DecIndex(startEdgeIndex, edges.Count);
             var second = edges[secondIndex];
             TVector2D vlast;
-            if (first.Vertex2 == second.Vertex1 || first.Vertex2 == second.Vertex2)
+            if (ReferenceEquals(first.Vertex2, second.Vertex1) ||
+                ReferenceEquals(first.Vertex2, second.Vertex2))
             {
-                yield return (TVector2D)first.Vertex1;
-                yield return (TVector2D)first.Vertex2;
-                vlast = (TVector2D)first.Vertex2;
+                yield return (TVector2D) first.Vertex1;
+                yield return (TVector2D) first.Vertex2;
+                vlast = (TVector2D) first.Vertex2;
             }
             else
             {
-                yield return (TVector2D)first.Vertex2;
-                yield return (TVector2D)first.Vertex1;
-                vlast = (TVector2D)first.Vertex1;
+                yield return (TVector2D) first.Vertex2;
+                yield return (TVector2D) first.Vertex1;
+                vlast = (TVector2D) first.Vertex1;
             }
             for (var i = secondIndex; i != endEdgeIndexMinus1; i = DecIndex(i, edges.Count))
             {
@@ -864,7 +868,7 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 {
                     loop.RemoveAt(i);
                 }
-                for (var i = r-1; i >= 0; i--)
+                for (var i = r - 1; i >= 0; i--)
                 {
                     loop.RemoveAt(i);
                 }
@@ -924,7 +928,8 @@ namespace QSharp.Shader.Geometry.Euclid2D
                 yield return last;
             }
         }
-        
+
         #endregion
     }
 }
+
