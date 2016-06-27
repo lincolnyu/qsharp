@@ -107,7 +107,25 @@ namespace QSharp.Scheme.Classical.Sequential
                 if (BackPos >= BufferLength) BackPos -= BufferLength;
             }
         }
-        
+
+        public void PopFirst(int n)
+        {
+            if (!ShrinkIfNeeded(n, true))
+            {
+                FrontPos += n;
+                if (FrontPos >= BufferLength) FrontPos -= BufferLength;
+            }
+        }
+
+        public void PopLast(int n)
+        {
+            if (!ShrinkIfNeeded(n, false))
+            {
+                BackPos -= n;
+                if (BackPos < 0) BackPos += BufferLength;
+            }
+        }
+
         private bool ExpandIfNeeded(int inc, bool front)
         {
             var oldSize = Count;
@@ -124,11 +142,34 @@ namespace QSharp.Scheme.Classical.Sequential
             for (var i = start; i < start + oldSize; i++)
             {
                 newBuffer[i] = _circularBuffer[j];
-                j++;
-                if (j == BufferLength) j = 0;
+                if (++j == BufferLength) j = 0;
             }
             FrontPos = newFrontPos;
             BackPos = newFrontPos + newSize;
+            _circularBuffer = newBuffer;
+            return true;
+        }
+
+        private bool ShrinkIfNeeded(int dec, bool front)
+        {
+            var oldSize = Count;
+            var newSize = Count - dec;
+            var diff = Capacity - newSize;
+            if (diff < GrowthStep) return false;
+            var nsteps = diff / GrowthStep;
+            var reduce = nsteps * GrowthStep;
+            var newBufferLength = BufferLength - reduce;
+            var newBuffer = new T[newBufferLength];
+            var newFrontPos = (newBufferLength - newSize) / 2;
+            var newBackPos = newFrontPos + newSize;
+            var j = front ? (FrontPos + dec) % BufferLength : FrontPos;
+            for (var i = newFrontPos; i < newBackPos; i++)
+            {
+                newBuffer[i] = _circularBuffer[j];
+                if (++j == BufferLength) j = 0;
+            }
+            FrontPos = newFrontPos;
+            BackPos = newBackPos;
             _circularBuffer = newBuffer;
             return true;
         }

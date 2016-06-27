@@ -76,5 +76,26 @@ namespace QSharpTest.Scheme.Classical.Sequential
                 Assert.AreEqual(i + 1, dq[i+1]);
             }
         }
+
+        [TestMethod]
+        public void DqTest005()
+        {
+            var dq = new Deque<int>(16, 16);
+
+            dq.AddRangeLast(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17});
+
+            dq.PopFirst(1);
+
+            Assert.AreEqual(17, dq.BufferLength);
+            Assert.AreEqual(16, dq.Capacity);
+            Assert.AreEqual(16, dq.Count);
+            Assert.AreEqual(0, dq.FrontPos);
+            Assert.AreEqual(16, dq.BackPos);
+
+            for (var i = 0; i < 16; i++)
+            {
+                Assert.AreEqual(i + 2, dq[i]);
+            }
+        }
     }
 }
