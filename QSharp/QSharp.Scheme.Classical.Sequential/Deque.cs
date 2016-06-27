@@ -1,125 +1,136 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QSharp.Scheme.Classical.Sequential
 {
     public class Deque<T>
     {
-        public const int DefaultInitialLength = 1024;
+        public const int DefaultInitialCapacity = 1024;
         public const int DefaultGrowthStep = 1024;
 
-        private T[] _data;
+        private T[] _circularBuffer;
 
-        public Deque(int initalLength = DefaultInitialLength, int growthStep = DefaultGrowthStep)
+        public Deque(int initiaCapacity = DefaultInitialCapacity, int growthStep = DefaultGrowthStep)
         {
-            InitialLength = initalLength;
+            InitialCapacity = initiaCapacity;
             GrowthStep = growthStep;
-            _data = new T[initalLength];
-            BasePos = InitialLength / 2;
+            _circularBuffer = new T[initiaCapacity + 1];
         }
 
-        public int InitialLength { get; }
+        public int InitialCapacity { get; }
 
         public int GrowthStep { get; }
 
-        /// <summary>
-        ///  Index of the first item
-        /// </summary>
-        public int Front { get; private set; }
+        public int FrontPos { get; private set; }
 
-        /// <summary>
-        ///  Index of the last item plus 1
-        /// </summary>
-        public int Back { get; private set; }
+        public int BackPos { get; private set; }
 
-        public int Count => Back - Front;
+        public int Count => (BackPos - FrontPos + BufferLength) % BufferLength;
 
-        public int Capacity => _data.Length;
+        public int Capacity => _circularBuffer.Length-1;
 
-        public int BasePos { get; private set; }
+        public int BufferLength => _circularBuffer.Length;
 
         public T this[int index]
         {
-            get { return _data[BasePos + index]; }
-            set { _data[BasePos + index] = value; }
+            get { return _circularBuffer[GetPos(index)]; }
+            set { _circularBuffer[GetPos(index)] = value; }
         }
 
-        public void AddToFront(T t, int n = 1)
+        private int GetPos(int index)
         {
-            GrowFront(n);
-            for (var i = BasePos + Front; i < BasePos + Front + n; i++)
-            {
-                _data[i] = t;
-            }
+            return (FrontPos + index + Capacity) % Capacity;
         }
 
-        public void AddToBack(T t, int n = 1)
+        public void AddFirst(T t, int n = 1)
         {
-            GrowBack(n);
-            for (var i = BasePos + Back - n; i < BasePos + Back; i++)
-            {
-                _data[i] = t;
-            }
+            AllocateMultipleFirst(n);
+
+            PlaceMultipleAt(Enumerable.Repeat(t, n), FrontPos);
         }
 
-        public void GrowFront(int n)
+        public void AddLast(T t, int n = 1)
         {
-            var frontPos = BasePos + Front;
-            var newFrontPos = frontPos - n;
-            var newFront = Front - n;
-            if (newFrontPos < 0)
-            {
-                var newCount = Count + n;
-                var growth = CalculateGrowth(newCount);
-                var newCapacity = Capacity + growth;
-                var newBasePos = (newCapacity - newCount) / 2 - newFront;
-                Grow(newBasePos, newCapacity);
-            }
-            Front = newFront;
+            AllocateMutipleFirst(n);
+
+            var start = BackPos - n;
+            if (start < 0) start += BufferLength;
+            PlaceMultipleAt(Enumerable.Repeat(t, n), start);
         }
 
-        public void GrowBack(int n)
+        public void AddRangeFirst(IEnumerable<T> range)
         {
-            var backPos = BasePos + Back;
-            var newBackPos = backPos + n;
-            var newBack = Back + n;
-            if (newBackPos > Capacity)
-            {
-                var newCount = Count + n;
-                var growth = CalculateGrowth(newCount);
-                var newCapacity = Capacity + growth;
-                var newBasePos = (newCapacity + newCount) / 2 - newBack;
-                Grow(newBasePos, newCapacity);
-            }
-            Back = newBack;
-        }
-       
-        private int CalculateGrowth(int newCount)
-        {
-            var shortage = newCount - Capacity;
-            int growth;
-            if (shortage <= 0)
-            {
-                growth = GrowthStep;
-            }
-            else
-            {
-                var growthn = (shortage + GrowthStep - 1) / GrowthStep;
-                growth = growthn * GrowthStep;
-            }
-            return growth;
+            var coll = range as ICollection<T> ?? range.ToList();
+            var n = coll.Count;
+            AllocateMultipleFirst(n);
+
+            PlaceMultipleAt(coll, FrontPos);
         }
 
-        private void Grow(int newBasePos, int newCapacity)
+        public void AddRangeLast(IEnumerable<T> range)
         {
-            var newBuffer = new T[newCapacity];
-            for (var i = Front; i < Back; i++)
+            var coll = range as ICollection<T> ?? range.ToList();
+            var n = coll.Count;
+            AllocateMutipleFirst(n);
+
+            var start = BackPos - n;
+            if (start < 0) start += BufferLength;
+            PlaceMultipleAt(coll, start);
+        }
+
+        private void PlaceMultipleAt(IEnumerable<T> items, int start)
+        {
+            var target = start;
+            foreach (var item in items)
             {
-                var currPos = i + BasePos;
-                var newPos = i + newBasePos;
-                var currItem = _data[currPos];
-                newBuffer[newPos] = currItem;
+                _circularBuffer[target] = item;
+                target++;
+                if (target == BufferLength) target = 0;
             }
-            _data = newBuffer;
+        }
+            
+        public void AllocateMultipleFirst(int n)
+        {
+            if (!ExpandIfNeeded(n, true))
+            {
+                FrontPos -= n;
+                if (FrontPos < 0) FrontPos += BufferLength;
+            }
+        }
+        
+        public void AllocateMutipleFirst(int n)
+        {
+            if (!ExpandIfNeeded(n, false))
+            {
+                BackPos += n;
+                if (BackPos >= BufferLength) BackPos -= BufferLength;
+            }
+        }
+        
+        private bool ExpandIfNeeded(int inc, bool front)
+        {
+            var oldSize = Count;
+            var newSize = oldSize + inc;
+            var diff = newSize - Capacity;
+            if (diff <= 0) return false;
+            var nsteps = (diff + GrowthStep - 1) / GrowthStep;
+            var growth = nsteps * GrowthStep;
+            var newBufferLength = BufferLength + growth;
+            var newBuffer = new T[newBufferLength];
+            var newFrontPos = (newBufferLength - newSize) / 2;
+            var start = front ? newFrontPos + inc : newFrontPos;
+            var j = FrontPos;
+            for (var i = start; i < start + oldSize; i++)
+            {
+                newBuffer[i] = _circularBuffer[j];
+                j++;
+                if (j == BufferLength) j = 0;
+            }
+            FrontPos = newFrontPos;
+            BackPos = newFrontPos + newSize;
+            _circularBuffer = newBuffer;
+            return true;
         }
     }
 }
