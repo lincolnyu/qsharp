@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
     <Compile Include="Scheme.ExactCover\AlgorithmXTests.cs" />
     <Compile Include="Scheme.Mathematics\UnlimitedIntegerTest.cs" />

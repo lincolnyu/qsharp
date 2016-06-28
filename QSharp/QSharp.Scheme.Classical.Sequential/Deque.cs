@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using QSharp.Scheme.Classical.Sequential.Helpers;
 
 namespace QSharp.Scheme.Classical.Sequential
 {
@@ -47,49 +47,66 @@ namespace QSharp.Scheme.Classical.Sequential
         {
             AllocateMultipleFirst(n);
 
-            PlaceMultipleAt(Enumerable.Repeat(t, n), FrontPos);
+            _circularBuffer.PlaceMultipleAt(FrontPos, Enumerable.Repeat(t, n));
         }
 
         public void AddLast(T t, int n = 1)
         {
-            AllocateMutipleFirst(n);
+            AllocateMultipleLast(n);
 
             var start = BackPos - n;
             if (start < 0) start += BufferLength;
-            PlaceMultipleAt(Enumerable.Repeat(t, n), start);
+            _circularBuffer.PlaceMultipleAt(start, Enumerable.Repeat(t, n));
         }
 
-        public void AddRangeFirst(IEnumerable<T> range)
+        public void AddRangeFirst(IEnumerable<T> items)
         {
-            var coll = range as ICollection<T> ?? range.ToList();
+            var coll = items as ICollection<T> ?? items.ToList();
             var n = coll.Count;
             AllocateMultipleFirst(n);
 
-            PlaceMultipleAt(coll, FrontPos);
+            _circularBuffer.PlaceMultipleAt(FrontPos, coll);
         }
 
-        public void AddRangeLast(IEnumerable<T> range)
+        public void AddRangeLast(IEnumerable<T> items)
         {
-            var coll = range as ICollection<T> ?? range.ToList();
+            var coll = items as ICollection<T> ?? items.ToList();
             var n = coll.Count;
-            AllocateMutipleFirst(n);
+            AllocateMultipleLast(n);
 
             var start = BackPos - n;
             if (start < 0) start += BufferLength;
-            PlaceMultipleAt(coll, start);
+            _circularBuffer.PlaceMultipleAt(start, coll);
         }
 
-        private void PlaceMultipleAt(IEnumerable<T> items, int start)
+        public void InsertRange(int index, IEnumerable<T> items)
         {
-            var target = start;
-            foreach (var item in items)
+            var coll = items as ICollection<T> ?? items.ToList();
+            var n = coll.Count;
+            var oldCount = Count;
+            int oldPos, newPos, moveCount;
+            if (index * 2 < n)
             {
-                _circularBuffer[target] = item;
-                target++;
-                if (target == BufferLength) target = 0;
+                AllocateMultipleFirst(n);
+                moveCount = n;
+                newPos = FrontPos;
+                oldPos = newPos + n;
+                if (oldPos >= BufferLength) oldPos -= BufferLength;
             }
+            else
+            {
+                AllocateMultipleLast(n);
+                moveCount = oldCount - n;
+                newPos = BackPos - moveCount;
+                oldPos = newPos - n;
+                if (oldPos < 0) oldPos += BufferLength;
+            }
+            _circularBuffer.UncheckedCopy(oldPos, newPos, oldCount);
+
+            var posIndex = GetPos(index);
+            _circularBuffer.PlaceMultipleAt(index, items);
         }
-            
+        
         public void AllocateMultipleFirst(int n)
         {
             if (!ExpandIfNeeded(n, true))
@@ -99,7 +116,7 @@ namespace QSharp.Scheme.Classical.Sequential
             }
         }
         
-        public void AllocateMutipleFirst(int n)
+        public void AllocateMultipleLast(int n)
         {
             if (!ExpandIfNeeded(n, false))
             {
