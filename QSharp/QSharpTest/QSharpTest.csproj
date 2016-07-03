@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QSharpTest</RootNamespace>
     <AssemblyName>QSharpTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -78,6 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
+    <Compile Include="Scheme.CSharpRocks\MultiOutTest.cs" />
     <Compile Include="Scheme.ExactCover\AlgorithmXTests.cs" />
     <Compile Include="Scheme.Mathematics\UnlimitedIntegerTest.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashDyn.cs" />
@@ -177,6 +178,10 @@
     <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees%28D%29.csproj">
       <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
       <Name>QSharp.Scheme.Classical.Trees%28D%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.CSharpRocks\QSharp.Scheme.CSharpRocks.csproj">
+      <Project>{63430ECB-590A-4049-841F-12190D75993F}</Project>
+      <Name>QSharp.Scheme.CSharpRocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.ExactCover\QSharp.Scheme.ExactCover.csproj">
       <Project>{b0c01ea7-99a0-454c-8836-ea4be34ff3cb}</Project>
