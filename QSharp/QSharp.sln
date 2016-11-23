@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharpTest", "QSharpTest\QSharpTest.csproj", "{9D366B80-049D-4734-BA87-78FBA06B4876}"
 EndProject
@@ -78,6 +78,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{029AC28E-DE73-4FEC-BDB3-C4A0BA1A1F18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.CSharpRocks", "QSharp.Scheme.CSharpRocks\QSharp.Scheme.CSharpRocks.csproj", "{63430ECB-590A-4049-841F-12190D75993F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "System", "System", "{2F9344CE-C6DD-4320-B8A4-C61A777C1E17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.System.Buffering", "QSharp.System.Buffering\QSharp.System.Buffering.csproj", "{08BB66D5-F6A6-4698-90A8-9649EF54AAA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -213,6 +217,10 @@ Global
 		{63430ECB-590A-4049-841F-12190D75993F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63430ECB-590A-4049-841F-12190D75993F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63430ECB-590A-4049-841F-12190D75993F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08BB66D5-F6A6-4698-90A8-9649EF54AAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08BB66D5-F6A6-4698-90A8-9649EF54AAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08BB66D5-F6A6-4698-90A8-9649EF54AAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08BB66D5-F6A6-4698-90A8-9649EF54AAA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -250,5 +258,6 @@ Global
 		{5B886FE7-7D13-4F99-8BA8-AE99C6B945EE} = {6AE3E9DC-548F-412B-91B2-C3897700B5A2}
 		{01588FBD-F4E8-4DB7-86C6-14D701104A94} = {3F2AB5CE-34B1-41AA-A5A6-DAAD604530E5}
 		{63430ECB-590A-4049-841F-12190D75993F} = {6AE3E9DC-548F-412B-91B2-C3897700B5A2}
+		{08BB66D5-F6A6-4698-90A8-9649EF54AAA5} = {2F9344CE-C6DD-4320-B8A4-C61A777C1E17}
 	EndGlobalSection
 EndGlobal
