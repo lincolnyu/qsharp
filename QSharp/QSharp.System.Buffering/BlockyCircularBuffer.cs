@@ -24,7 +24,7 @@ namespace QSharp.System.Buffering
         }
 
         public int BlockSize { get; }
-        public int BlockCount => _locks.LocksCount;
+        public int BlockCount => _locks.SectionsCount;
 
         public event BlockHitEventHandler BlockHit;
 
@@ -92,6 +92,7 @@ namespace QSharp.System.Buffering
             var startTime = DateTime.UtcNow;
             TimeSpan remainingTime = timeout;
             int i;
+            upgraded = false;
             for (i = offset; i < offset + len;)
             {
                 if (timeout != Timeout.InfiniteTimeSpan)
@@ -124,7 +125,7 @@ namespace QSharp.System.Buffering
                     blockBound += BlockSize;
                     k++;
                 }
-                _locks.FinishWritingSection(upgradeTimeout, oldK, k, i == offset + len, bb);
+                _locks.FinishReadingSection(upgradeTimeout, oldK, k, i == offset + len, bb);
                 upgraded = _locks.Locks[k].Lock.IsWriterLockHeld && upgradeTimeout != null;
             }
             read = i - offset;

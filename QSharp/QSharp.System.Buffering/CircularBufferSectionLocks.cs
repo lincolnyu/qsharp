@@ -5,23 +5,29 @@ namespace QSharp.System.Buffering
 {
     public class CircularBufferSectionLocks
     {
+        public delegate LockInfo LockInfoCreationDelegate();
+
         public class LockInfo
         {
             public ReaderWriterLock Lock = new ReaderWriterLock();
             public LockCookie Cookie;
         }
-        public LockInfo[] Locks;
 
-        public CircularBufferSectionLocks(int numSections)
+        public CircularBufferSectionLocks(int numSections) : this(numSections, ()=> new LockInfo())
+        {
+        }
+
+        public CircularBufferSectionLocks(int numSections, LockInfoCreationDelegate create)
         {
             Locks = new LockInfo[numSections];
             for (var i = 0; i < numSections; i++)
             {
-                Locks[i] = new LockInfo();
+                Locks[i] = create();
             }
         }
 
-        public int LocksCount => Locks.Length;
+        public LockInfo[] Locks { get; }
+        public int SectionsCount => Locks.Length;
 
         public bool TryWriterLock(int section, TimeSpan timeout)
         {
@@ -78,7 +84,7 @@ namespace QSharp.System.Buffering
             }
         }
 
-        public bool FinishWritingSection(TimeSpan? upgrade, int oldSection, int currSection, bool isEnd, bool isNew)
+        public bool FinishReadingSection(TimeSpan? upgrade, int oldSection, int currSection, bool isEnd, bool isNew)
         {
             try
             {

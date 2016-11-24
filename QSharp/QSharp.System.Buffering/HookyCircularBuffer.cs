@@ -5,10 +5,9 @@ namespace QSharp.System.Buffering
 {
     public class HookyCircularBuffer
     {
-        private class BufferHook
+        private class BufferHook : CircularBufferSectionLocks.LockInfo
         {
             public byte[] Buffer;
-            public ReaderWriterLock Lock = new ReaderWriterLock();
         }
 
         public class ReaderPointer
@@ -17,19 +16,15 @@ namespace QSharp.System.Buffering
             public int Offset;
         }
 
-        private BufferHook[] _bufferHooks;
+        private CircularBufferSectionLocks _hooks;
         private int _wrHook;
 
         public HookyCircularBuffer(int hookCount)
         {
-            _bufferHooks = new BufferHook[hookCount];
-            for (var i = 0; i<hookCount; i++)
-            {
-                _bufferHooks[i] = new BufferHook();
-            }
+            _hooks = new CircularBufferSectionLocks(hookCount);
         }
 
-        public int HookCount => _bufferHooks.Length;
+        public int HookCount => _hooks.SectionsCount;
 
         public void Hook(byte[] buffer)
         {
@@ -38,16 +33,9 @@ namespace QSharp.System.Buffering
 
         public bool Hook(byte[] buffer, TimeSpan timeout)
         {
-            try
-            {
-                _bufferHooks[_wrHook].Lock.AcquireWriterLock(timeout);
-            }
-            catch (ApplicationException)
-            {
-                return false;
-            }
-            _bufferHooks[_wrHook].Buffer = buffer;
-            _bufferHooks[_wrHook].Lock.ReleaseWriterLock();
+            if (!_hooks.TryWriterLock(_wrHook, timeout)) return false;
+            ((BufferHook)_hooks.Locks[_wrHook]).Buffer = buffer;
+            _hooks.ReleaseWriterLock(_wrHook);
             _wrHook++;
             return true;
         }
