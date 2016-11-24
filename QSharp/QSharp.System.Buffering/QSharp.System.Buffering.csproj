@@ -41,7 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockyCircularBuffer.cs" />
-    <Compile Include="InputMoverCircularBuffer.cs" />
+    <Compile Include="CircularBufferSectionLocks.cs" />
+    <Compile Include="HookyCircularBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

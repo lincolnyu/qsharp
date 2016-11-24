@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace QSharp.System.Buffering
 {
-    public class InputMoverCircularBuffer
+    public class HookyCircularBuffer
     {
         private class BufferHook
         {
@@ -20,7 +20,7 @@ namespace QSharp.System.Buffering
         private BufferHook[] _bufferHooks;
         private int _wrHook;
 
-        public InputMoverCircularBuffer(int hookCount)
+        public HookyCircularBuffer(int hookCount)
         {
             _bufferHooks = new BufferHook[hookCount];
             for (var i = 0; i<hookCount; i++)
