@@ -14,7 +14,7 @@ namespace QSharpTest.Scheme.Utility.HbSpaceMgmt
     {
         #region Nested types
 
-        public class Stream : IStream
+        public class MyStream : IStream
         {
             #region Nested types
 
@@ -40,7 +40,7 @@ namespace QSharpTest.Scheme.Utility.HbSpaceMgmt
 
             #region Constructors
 
-            public Stream(uint pageCount, uint pageSize)
+            public MyStream(uint pageCount, uint pageSize)
             {
                 var size = ((long)pageCount) * pageSize;
                 MemPool = new byte[size];
@@ -55,7 +55,7 @@ namespace QSharpTest.Scheme.Utility.HbSpaceMgmt
 
             #region Methods
 
-            public void WriteToSystemStream(System.IO.Stream stream)
+            public void WriteToSystemStream(Stream stream)
             {
                 stream.Write(MemPool, 0, MemPool.Length);
             }
@@ -321,7 +321,7 @@ namespace QSharpTest.Scheme.Utility.HbSpaceMgmt
         {
             const int pageSize = 1024;
             const uint pageCount = 1024;
-            var stream = new Stream(pageCount, pageSize);
+            var stream = new MyStream(pageCount, pageSize);
 
             var mgr = HbSpaceManager.CreateNew(stream, stream.PageCount, stream.PageSize, 5, 10);
 
@@ -380,7 +380,7 @@ namespace QSharpTest.Scheme.Utility.HbSpaceMgmt
         {
             const uint pageSize = 1024;
             const uint pageCount = 1024;
-            var stream = new Stream(pageCount, pageSize);
+            var stream = new MyStream(pageCount, pageSize);
 
             var mgr = HbSpaceManager.CreateNew(stream, stream.PageCount, stream.PageSize, 5, 10);
 

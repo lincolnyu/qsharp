@@ -123,7 +123,6 @@
     <Compile Include="Scheme.Classical.Graphs\ShortestPathFloydWarshallTest.cs" />
     <Compile Include="Scheme.Classical.Graphs\ShortestPathFordFulkersonTest.cs" />
     <Compile Include="Scheme.Classical.Graphs\ShortestPathTest.cs" />
-    <Compile Include="System.Buffering\BlockyCircularBufferTests.cs" />
     <Compile Include="TestUtility\RandomSelector.cs" />
     <Compile Include="TestUtility\RandomSequenceGenerator.cs" />
     <Compile Include="Scheme.Classical.Sequential\SortingTest.cs" />

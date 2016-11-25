@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QSharpTest.TestUtility;
 using QSharp.Scheme.Classical.Trees;
@@ -38,10 +39,10 @@ namespace QSharpTest.Scheme.Classical.Trees
         }
 
         public int RunOneTest(int mintreesize, int maxtreesize,
-            out int treesize, out System.Collections.Generic.List<int> track)
+            out int treesize, out List<int> track)
         {
             var stage = 0;
-            track = new System.Collections.Generic.List<int>();
+            track = new List<int>();
 
             var rs = new RandomSelector(_random);
             var rsg = new RandomSequenceGenerator(_random);
@@ -96,7 +97,7 @@ namespace QSharpTest.Scheme.Classical.Trees
             return stage;
         }
 
-        public int TestEntry_Rescue(int n, System.Collections.Generic.List<int> track)
+        public int TestEntry_Rescue(int n, List<int> track)
         {
             var stage = 0;
 
@@ -164,7 +165,7 @@ namespace QSharpTest.Scheme.Classical.Trees
             for (var i = 0; i < testcount; i++)
             {
                 int treesize;
-                System.Collections.Generic.List<int> track;
+                List<int> track;
                 var stage = RunOneTest(mintreesize, maxtreesize, out treesize, out track);
 
                 if (stage < 2)

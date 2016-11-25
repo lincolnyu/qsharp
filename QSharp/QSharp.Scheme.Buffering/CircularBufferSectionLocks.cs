@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace QSharp.System.Buffering
+namespace QSharp.Scheme.Buffering
 {
     public class CircularBufferSectionLocks
     {
@@ -10,7 +10,6 @@ namespace QSharp.System.Buffering
         public class LockInfo
         {
             public ReaderWriterLock Lock = new ReaderWriterLock();
-            public LockCookie Cookie;
         }
 
         public CircularBufferSectionLocks(int numSections) : this(numSections, ()=> new LockInfo())
@@ -34,13 +33,13 @@ namespace QSharp.System.Buffering
             try
             {
                 var li = Locks[section];
+                if (li.Lock.IsReaderLockHeld)
+                {
+                    return false;
+                }
                 if (!li.Lock.IsWriterLockHeld)
                 {
                     li.Lock.AcquireWriterLock(timeout);
-                }
-                else if (li.Lock.IsReaderLockHeld)
-                {
-                    li.Cookie = li.Lock.UpgradeToWriterLock(timeout);
                 }
                 return true;
             }
@@ -50,14 +49,10 @@ namespace QSharp.System.Buffering
             }
         }
 
-        public void ReleaseWriterLock(int section, bool downgrade = false)
+        public void ReleaseWriterLock(int section)
         {
             var li = Locks[section];
-            if (downgrade)
-            {
-                li.Lock.DowngradeFromWriterLock(ref li.Cookie);
-            }
-            else
+            if (li.Lock.IsWriterLockHeld)
             {
                 li.Lock.ReleaseWriterLock();
             }
@@ -65,16 +60,22 @@ namespace QSharp.System.Buffering
 
         public bool TryReaderLock(int section, TimeSpan timeout)
         {
+            return ContinuousRead(-1, section, timeout);
+        }
+
+        public bool ContinuousRead(int oldSection, int newSection, TimeSpan timeout)
+        {
             try
             {
-                var li = Locks[section];
-                if (li.Lock.IsWriterLockHeld)
+                if (oldSection == newSection) return true;
+                var linew = Locks[newSection];
+                if (!linew.Lock.IsWriterLockHeld && !linew.Lock.IsReaderLockHeld)
                 {
-                    li.Lock.DowngradeFromWriterLock(ref li.Cookie);
+                    linew.Lock.AcquireReaderLock(timeout);
                 }
-                else if (!li.Lock.IsReaderLockHeld)
+                if (oldSection >= 0)
                 {
-                    li.Lock.AcquireReaderLock(timeout);
+                    Locks[oldSection].Lock.ReleaseReaderLock();
                 }
                 return true;
             }
@@ -84,32 +85,12 @@ namespace QSharp.System.Buffering
             }
         }
 
-        public bool FinishReadingSection(TimeSpan? upgrade, int oldSection, int currSection, bool isEnd, bool isNew)
+        public void ReleaseReaderLock(int section)
         {
-            try
+            var li = Locks[section];
+            if (li.Lock.IsReaderLockHeld)
             {
-                var li = Locks[oldSection];
-                if (upgrade != null && isEnd)
-                {
-                    if (isNew)
-                    {
-                        li.Lock.ReleaseReaderLock();
-                        Locks[currSection].Lock.AcquireWriterLock(upgrade.Value);
-                    }
-                    else
-                    {
-                        li.Cookie = li.Lock.UpgradeToWriterLock(upgrade.Value);
-                    }
-                }
-                else
-                {
-                    li.Lock.ReleaseReaderLock();
-                }
-                return true;
-            }
-            catch (ApplicationException)
-            {
-                return false;
+                li.Lock.ReleaseReaderLock();
             }
         }
     }

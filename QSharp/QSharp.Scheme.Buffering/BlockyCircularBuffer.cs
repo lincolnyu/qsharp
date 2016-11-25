@@ -1,7 +1,8 @@
-﻿using System;
+﻿using QSharp.Scheme.Threading;
+using System;
 using System.Threading;
 
-namespace QSharp.System.Buffering
+namespace QSharp.Scheme.Buffering
 {
     public class BlockyCircularBuffer
     {
@@ -78,56 +79,54 @@ namespace QSharp.System.Buffering
             written = i - offset;
         }
 
-        public void Read(ref int rdPt, byte[] data, int offset, int len, TimeSpan? updateTimeout = null)
+        public void Read(ref int rdPt, byte[] data, int offset, int len, bool preserve = false)
         {
             int read;
-            bool upgraded;
-            Read(ref rdPt, data, offset, len, Timeout.InfiniteTimeSpan, updateTimeout, out read, out upgraded);
+            Read(ref rdPt, data, offset, len, Timeout.InfiniteTimeSpan, preserve, out read);
         }
 
-        public void Read(ref int rdPt, byte[] data, int offset, int len, TimeSpan timeout, TimeSpan? upgradeTimeout, out int read, out bool upgraded)
+        public void Read(ref int rdPt, byte[] data, int offset, int len, TimeSpan timeout, bool preserve, out int read)
         {
+            var timeoutUpdator = new TimeoutUpdater(timeout);
             var k = rdPt / BlockSize;
             var blockBound = (k + 1) * BlockSize;
-            var startTime = DateTime.UtcNow;
-            TimeSpan remainingTime = timeout;
-            int i;
-            upgraded = false;
-            for (i = offset; i < offset + len;)
+            var i = offset;
+            int lastk = -1;
+
+            if (i < offset + len)
             {
-                if (timeout != Timeout.InfiniteTimeSpan)
+                _locks.ContinuousRead(lastk, k, timeoutUpdator.GetRemaining());
+                while (i < offset + len)
                 {
-                    var timeElapsed = DateTime.UtcNow - startTime;
-                    remainingTime = timeout - timeElapsed;
-                    if (remainingTime < TimeSpan.Zero)
+                    for (; rdPt < blockBound && i < offset + len; i++, rdPt++)
                     {
-                        remainingTime = TimeSpan.Zero;
+                        data[i] = _buffer[rdPt];
+                    }
+                    lastk = k;
+                    if (rdPt >= _buffer.Length)
+                    {
+                        rdPt = 0;
+                        blockBound = BlockSize;
+                        k = 0;
+                    }
+                    else if (rdPt == blockBound)
+                    {
+                        blockBound += BlockSize;
+                        k++;
+                    }
+                    if (i < offset + len || preserve)
+                    {
+                        if (!_locks.ContinuousRead(lastk, k, timeoutUpdator.GetRemaining())) break;
+                        lastk = k;
+                    }
+                    else
+                    {
+                        _locks.ReleaseReaderLock(k);
+                        lastk = -1;
                     }
                 }
-                if (!_locks.TryReaderLock(k, remainingTime))
-                {
-                    break;
-                }
-                for (; rdPt < blockBound && i < offset + len; i++, _wrPt++)
-                {
-                    data[i] = _buffer[rdPt];
-                }
-                var oldK = k;
-                var bb = rdPt == blockBound;
-                if (rdPt >= _buffer.Length)
-                {
-                    rdPt = 0;
-                    blockBound = BlockSize;
-                    k = 0;
-                }
-                else if (bb)
-                {
-                    blockBound += BlockSize;
-                    k++;
-                }
-                _locks.FinishReadingSection(upgradeTimeout, oldK, k, i == offset + len, bb);
-                upgraded = _locks.Locks[k].Lock.IsWriterLockHeld && upgradeTimeout != null;
             }
+
             read = i - offset;
         }
 
