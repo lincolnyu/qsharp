@@ -59,7 +59,7 @@ namespace QSharp.Scheme.Buffering
                     break;
                 }
                 BlockHit?.Invoke(k);
-                for (; _wrPt < blockBound; i++, _wrPt++)
+                for (; _wrPt < blockBound && i < offset + len; i++, _wrPt++)
                 {
                     _buffer[_wrPt] = data[i];
                 }
@@ -70,7 +70,7 @@ namespace QSharp.Scheme.Buffering
                     blockBound = BlockSize;
                     k = 0;
                 }
-                else
+                else if (_wrPt >= blockBound)
                 {
                     blockBound += BlockSize;
                     k++;

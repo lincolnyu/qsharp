@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheme.Buffering\BlockyBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
     <Compile Include="Scheme.CSharpRocks\MultiOutTest.cs" />
@@ -163,6 +164,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QSharp.Scheme.Buffering\QSharp.Scheme.Buffering.csproj">
+      <Project>{08bb66d5-f6a6-4698-90a8-9649ef54aaa5}</Project>
+      <Name>QSharp.Scheme.Buffering</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs%28D%29.csproj">
       <Project>{52a5c8be-ef54-48e7-a170-f3e6c5561e71}</Project>
       <Name>QSharp.Scheme.Classical.Graphs%28D%29</Name>
