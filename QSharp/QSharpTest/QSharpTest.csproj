@@ -196,6 +196,10 @@
       <Project>{f9e4a9b9-9712-40cf-860e-bdf96009f861}</Project>
       <Name>QSharp.Scheme.Mathematics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QSharp.Scheme.Threading\QSharp.Scheme.Threading.csproj">
+      <Project>{86C94EB4-AFA0-41E8-9771-93B615DCD28E}</Project>
+      <Name>QSharp.Scheme.Threading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj">
       <Project>{bb89281c-c9c9-42e7-8d68-73e393763e3a}</Project>
       <Name>QSharp.Scheme.Utility.HbSpaceMgmt</Name>

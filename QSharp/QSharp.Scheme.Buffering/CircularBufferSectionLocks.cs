@@ -63,6 +63,16 @@ namespace QSharp.Scheme.Buffering
             return ContinuousRead(-1, section, timeout);
         }
 
+        /// <summary>
+        ///  It locks the reader lock of the new section unlocks reader 
+        ///  lock of the old section. The new section should be neither read nor
+        ///  write locked by the current thread, otherwise no action is taken.
+        ///  If old section and new section are the same, no action is taken on either.
+        /// </summary>
+        /// <param name="oldSection">The old section if non-negative</param>
+        /// <param name="newSection">The new section </param>
+        /// <param name="timeout"></param>
+        /// <returns>True if successful or false if for instance lock acquisition fails</returns>
         public bool ContinuousRead(int oldSection, int newSection, TimeSpan timeout)
         {
             try
@@ -73,7 +83,7 @@ namespace QSharp.Scheme.Buffering
                 {
                     linew.Lock.AcquireReaderLock(timeout);
                 }
-                if (oldSection >= 0)
+                if (oldSection >= 0 && Locks[oldSection].Lock.IsReaderLockHeld)
                 {
                     Locks[oldSection].Lock.ReleaseReaderLock();
                 }

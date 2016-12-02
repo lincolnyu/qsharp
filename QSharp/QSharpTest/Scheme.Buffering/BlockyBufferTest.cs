@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QSharp.Scheme.Buffering;
-using System;
+using System.Linq;
 using System.Threading;
 
 namespace QSharpTest.Scheme.Buffering
@@ -8,7 +8,25 @@ namespace QSharpTest.Scheme.Buffering
     [TestClass]
     public class BlockyBufferTest
     {
-        const int prime = 11;
+        static void SetToBuffer(byte[] buf, int start, uint val)
+        {
+            buf[start] = (byte)((val >> 24) & 0xff);
+            buf[start + 1] = (byte)((val >> 16) & 0xff);
+            buf[start + 2] = (byte)((val >> 8) & 0xff);
+            buf[start + 3] = (byte)(val & 0xff);
+        }
+        static uint ReadFromBuffer(byte[] buf, int start)
+        {
+            return (uint)((buf[start] << 24) | (buf[start + 1] << 16) | (buf[start + 2] << 8) | (buf[start + 3]));
+        }
+        static bool EqualToBuffer(byte[] buf, int start, uint val)
+        {
+            if (buf[start] != (byte)((val >> 24) & 0xff)) return false;
+            if (buf[start + 1] != (byte)((val >> 16) & 0xff)) return false;
+            if (buf[start + 2] != (byte)((val >> 8) & 0xff)) return false;
+            if (buf[start + 3] != (byte)(val & 0xff)) return false;
+            return true;
+        }
         abstract class BufferUser
         {
             protected BlockyCircularBuffer _buffer;
@@ -38,16 +56,15 @@ namespace QSharpTest.Scheme.Buffering
 
             protected override void ThreadMethod()
             {
-                const int bufLen = 1177;
+                const int bufLen = 1000;
                 var buf = new byte[bufLen];
-                var v = 0;
+                uint v = 0;
                 while (_running)
                 {
-                    for (var i = 0; i < bufLen; i++)
+                    for (var i = 0; i < bufLen; i+=4)
                     {
-                        v += prime;
-                        if (v >= 256) v -= 256;
-                        buf[i] = (byte)v;
+                        SetToBuffer(buf, i, v);
+                        v++;
                     }
                     _buffer.Write(buf, 0, bufLen);
                 }
@@ -56,39 +73,81 @@ namespace QSharpTest.Scheme.Buffering
 
         class Reader : BufferUser
         {
-            public bool Error;
-            public bool Run;
+            public delegate int LengthMethod(BlockyCircularBuffer buffer, int rd);
+            private LengthMethod _getLength;
+
+            public int ErrorCount;
+            public int TotalCount;
+            public int SleepMs = 0;
+            public bool Registered = false;
+            public Reader(BlockyCircularBuffer buffer, LengthMethod getLength) : base(buffer)
+            {
+                _getLength = getLength;
+            }
             public Reader(BlockyCircularBuffer buffer) : base(buffer)
             {
+                _getLength = (b, rd) => b.RecommendReadLength(rd);
             }
+
             protected override void ThreadMethod()
             {
-               var rd = _buffer.RecommendReadPointer();
-                int last = -1;
+                var rd = _buffer.RecommendReadPointer();
+                BlockyCircularBuffer.Reader rrd = null;
+                if (Registered)
+                {
+                    rrd = _buffer.RegisterReader(rd);
+                }
+                uint v = 0;
+                var first = true;
                 while (_running)
                 {
-                    var len = _buffer.RecommendReadLength(rd);
-                    var data = new byte[len];
-                    var offset = rd;
-                    _buffer.Read(ref rd, data, 0, len);
-                    for (var i = 0; i < len; i++)
+                    if (rrd != null)
                     {
-                        if (last >= 0 && data[i] != (last + prime) % 256)
+                        rd = rrd.Value;
+                    }
+                    var len = _getLength(_buffer, rd);
+                    var end = rd + len;
+                    end = (end / 4) * 4;
+                    len = end - rd;
+                    if (len < 0)
+                    {
+                        Thread.Sleep(10);
+                    }
+                    var start = end - (len / 4) * 4 - rd;
+                    var data = new byte[len];
+
+                    if (rrd != null)
+                    {
+                        rrd.Read(data, 0, len);
+                    }
+                    else
+                    {
+                        _buffer.Read(ref rd, data, 0, len);
+                    }
+                    for (var i = start; i < len; i+=4)
+                    {
+                        if (first)
                         {
-                            Error = true;
+                            v = ReadFromBuffer(data, i);
+                            first = false;
                         }
                         else
                         {
-                            Run = true;
+                            v++;
+                            if (!EqualToBuffer(data, i, v))
+                            {
+                                ErrorCount++;
+                            }
+                            TotalCount++;
                         }
-                        last = data[i];
                     }
+                    Thread.Sleep(SleepMs);
                 }
             }
         }
 
         [TestMethod]
-        public void OneReaderTest()
+        public void OneReaderUseRecommendedLenTest()
         {
             var blocky = new BlockyCircularBuffer(1024, 8);
             var writer = new Writer(blocky);
@@ -102,8 +161,31 @@ namespace QSharpTest.Scheme.Buffering
             writer.Stop();
             reader.Stop();
 
-            Assert.IsTrue(reader.Run);
-            Assert.IsFalse(reader.Error);
+            Assert.IsTrue(reader.TotalCount > 0);
+            Assert.IsTrue(reader.ErrorCount == 0);
+        }
+        
+        [TestMethod]
+        public void OneSlowReaderTest()
+        {
+            var blocky = new BlockyCircularBuffer(1024, 8);
+            var writer = new Writer(blocky);
+            var reader = new Reader(blocky, (b, rd) => 148)
+            {
+                Registered = true,
+                SleepMs = 1000
+            };
+            writer.Start();
+            Thread.Sleep(1000); // let writer run for a while
+            reader.Start();
+
+            Thread.Sleep(20 * 1000);
+
+            writer.Stop();
+            reader.Stop();
+
+            Assert.IsTrue(reader.TotalCount > 0);
+            Assert.IsTrue(reader.ErrorCount == 0);
         }
     }
 }
