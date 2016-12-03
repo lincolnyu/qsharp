@@ -1,13 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QSharp.Scheme.Buffering;
-using System.Linq;
 using System.Threading;
-using System;
 
 namespace QSharpTest.Scheme.Buffering
 {
     [TestClass]
-    public class BlockyBufferTest
+    public class HookyCircularBufferTest
     {
         static void SetToBuffer(byte[] buf, int start, uint val)
         {
@@ -30,10 +28,10 @@ namespace QSharpTest.Scheme.Buffering
         }
         abstract class BufferUser
         {
-            protected BlockyCircularBuffer _buffer;
+            protected HookyCircularBuffer _buffer;
             protected bool _running;
             protected Thread _workerThread;
-            public BufferUser(BlockyCircularBuffer buffer)
+            public BufferUser(HookyCircularBuffer buffer)
             {
                 _buffer = buffer;
             }
@@ -53,7 +51,7 @@ namespace QSharpTest.Scheme.Buffering
 
         class Writer : BufferUser
         {
-            public Writer(BlockyCircularBuffer buffer, int sleepMs = 500) : base(buffer)
+            public Writer(HookyCircularBuffer buffer, int sleepMs = 500) : base(buffer)
             {
                 SleepMs = sleepMs;
             }
@@ -64,16 +62,17 @@ namespace QSharpTest.Scheme.Buffering
             {
                 BytesWritten = 0;
                 const int bufLen = 1000;
-                var buf = new byte[bufLen];
                 uint v = 0;
                 while (_running)
                 {
+                    var buf = new byte[bufLen];
                     for (var i = 0; i < bufLen; i += 4)
                     {
                         SetToBuffer(buf, i, v);
                         v++;
                     }
-                    BytesWritten += _buffer.Write(buf, 0, bufLen);
+                    _buffer.Hook(buf);
+                    BytesWritten += buf.Length;
                     if (_curbSpeed) Thread.Sleep(SleepMs);
                 }
             }
@@ -86,7 +85,7 @@ namespace QSharpTest.Scheme.Buffering
 
         class Reader : BufferUser
         {
-            public delegate int LengthMethod(BlockyCircularBuffer buffer, int rd);
+            public delegate int LengthMethod(HookyCircularBuffer buffer, HookyCircularBuffer.Reader rd);
             private LengthMethod _getLength;
 
             public int ErrorCount;
@@ -94,48 +93,48 @@ namespace QSharpTest.Scheme.Buffering
             public int TotalRead;
             public int SleepMs = 0;
             public bool Registered = false;
-            public Reader(BlockyCircularBuffer buffer, LengthMethod getLength) : base(buffer)
+            public Reader(HookyCircularBuffer buffer, LengthMethod getLength) : base(buffer)
             {
                 _getLength = getLength;
             }
-            public Reader(BlockyCircularBuffer buffer) : base(buffer)
+            public Reader(HookyCircularBuffer buffer) : base(buffer)
             {
-                _getLength = (b, rd) => b.RecommendReadLength(rd);
+                _getLength = (b, rd) => b.RecommendReadLen(rd);
             }
 
             protected override void ThreadMethod()
             {
-                BlockyCircularBuffer.Reader rrd = null;
+                HookyCircularBuffer.Reader rd = null;
                 if (Registered)
                 {
-                    rrd = new BlockyCircularBuffer.RegisteredReader(_buffer);
+                    rd = new HookyCircularBuffer.RegisteredReader(_buffer);
                 }
                 else
                 {
-                    rrd = new BlockyCircularBuffer.Reader(_buffer);
+                    rd = new HookyCircularBuffer.Reader(_buffer);
                 }
-                _buffer.RecommendReadPointer(rrd);
+                _buffer.RecommendReader(rd);
                 if (Registered)
                 {
-                    ((BlockyCircularBuffer.RegisteredReader)rrd).Register();
+                    ((HookyCircularBuffer.RegisteredReader)rd).Register();
                 }
                 uint v = 0;
                 var first = true;
                 while (_running)
                 {
-                    var len = _getLength(_buffer, rrd.Position);
-                    var end = rrd.Position + len;
+                    var len = _getLength(_buffer, rd);
+                    var end = rd.Position + len;
                     end = (end / 4) * 4;
-                    len = end - rrd.Position;
+                    len = end - rd.Position;
                     if (len < 0)
                     {
                         Thread.Sleep(10);
                     }
-                    var start = end - (len / 4) * 4 - rrd.Position;
+                    var start = end - (len / 4) * 4 - rd.Position;
                     var data = new byte[len];
 
-                    TotalRead += rrd.Read(data, 0, len);
-                    for (var i = start; i < len; i+=4)
+                    TotalRead += rd.Read(data, 0, len);
+                    for (var i = start; i < len; i += 4)
                     {
                         if (first)
                         {
@@ -158,11 +157,11 @@ namespace QSharpTest.Scheme.Buffering
         }
 
         [TestMethod]
-        public void OneReaderUseRecommendedLenTest()
+        public void HookyOneReaderUseRecommendedLenTest()
         {
-            var blocky = new BlockyCircularBuffer(1024, 8);
-            var writer = new Writer(blocky);
-            var reader = new Reader(blocky);
+            var hooky = new HookyCircularBuffer(8);
+            var writer = new Writer(hooky);
+            var reader = new Reader(hooky);
             writer.Start();
             Thread.Sleep(1000); // let writer run for a while
             writer.CurbSpeed();
@@ -170,19 +169,20 @@ namespace QSharpTest.Scheme.Buffering
 
             Thread.Sleep(20 * 1000);
 
-            writer.Stop();
             reader.Stop();
+            Thread.Sleep(1000);
+            writer.Stop();
 
             Assert.IsTrue(reader.TotalCount > 0);
             Assert.IsTrue(reader.ErrorCount == 0);
         }
 
         [TestMethod]
-        public void OneSlowReaderTest()
+        public void HookyOneSlowReaderTest()
         {
-            var blocky = new BlockyCircularBuffer(1024, 8);
-            var writer = new Writer(blocky) { SleepMs = 0 };
-            var reader = new Reader(blocky, (b, rd) => 148)
+            var hooky = new HookyCircularBuffer(8);
+            var writer = new Writer(hooky) { SleepMs = 0 };
+            var reader = new Reader(hooky, (b, rd) => 148)
             {
                 Registered = true,
                 SleepMs = 1000
@@ -194,8 +194,9 @@ namespace QSharpTest.Scheme.Buffering
 
             Thread.Sleep(20 * 1000);
 
-            writer.Stop();
             reader.Stop();
+            Thread.Sleep(1000);
+            writer.Stop();
 
             Assert.IsTrue(reader.TotalCount > 0);
             Assert.IsTrue(reader.ErrorCount == 0);

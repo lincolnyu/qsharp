@@ -65,8 +65,8 @@ namespace QSharp.Scheme.Buffering
 
         /// <summary>
         ///  It locks the reader lock of the new section unlocks reader 
-        ///  lock of the old section. The new section should be neither read nor
-        ///  write locked by the current thread, otherwise no action is taken.
+        ///  lock of the old section. It always acquires a new reader lock even if
+        ///  the current thread already has locks in the section.
         ///  If old section and new section are the same, no action is taken on either.
         /// </summary>
         /// <param name="oldSection">The old section if non-negative</param>
@@ -79,10 +79,7 @@ namespace QSharp.Scheme.Buffering
             {
                 if (oldSection == newSection) return true;
                 var linew = Locks[newSection];
-                if (!linew.Lock.IsWriterLockHeld && !linew.Lock.IsReaderLockHeld)
-                {
-                    linew.Lock.AcquireReaderLock(timeout);
-                }
+                linew.Lock.AcquireReaderLock(timeout);
                 if (oldSection >= 0 && Locks[oldSection].Lock.IsReaderLockHeld)
                 {
                     Locks[oldSection].Lock.ReleaseReaderLock();

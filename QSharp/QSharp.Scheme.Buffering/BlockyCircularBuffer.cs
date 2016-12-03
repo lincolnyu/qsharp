@@ -8,30 +8,24 @@ namespace QSharp.Scheme.Buffering
 {
     public class BlockyCircularBuffer
     {
-        public class Block
+        private class Block
         {
-            public readonly List<Reader> ReaderPointers = new List<Reader>();
-            public BlockyCircularBuffer Owner;
-            public int Index;
+            public readonly List<RegisteredReader> ReaderPointers = new List<RegisteredReader>();
             public AutoResetEvent ChangedEvent = new AutoResetEvent(false);
-            public Block(BlockyCircularBuffer owner, int index)
+            public Block()
             {
-                Owner = owner;
-                Index = index;
             }
-            public void RemoveReaderUnsafe(Reader reader)
+            internal void RemoveReaderUnsafe(RegisteredReader reader)
             {
                 ReaderPointers.Remove(reader);
                 ChangedEvent.Set();
             }
-            public void AddReaderUnsafe(Reader reader)
+            internal void AddReaderUnsafe(RegisteredReader reader)
             {
-                var index = ReaderPointers.BinarySearch(reader);
-                if (index < 0) index = -index - 1;
-                ReaderPointers.Insert(index, reader);
+                ReaderPointers.Add(reader);
                 ChangedEvent.Set();
             }
-            public void AddReader(Reader reader)
+            public void AddReader(RegisteredReader reader)
             {
                 lock (this)
                 {
@@ -134,17 +128,14 @@ namespace QSharp.Scheme.Buffering
             public Reader(BlockyCircularBuffer owner) : base(owner)
             {
             }
-            public int Read(byte[] data, int offset, int len)
-            {
-                return Read(data, offset, len, Timeout.InfiniteTimeSpan);
-            }
+            public int Read(byte[] data, int offset, int len) => Read(data, offset, len, Timeout.InfiniteTimeSpan);
             public int Read(byte[] data, int offset, int len, TimeSpan timeout)
             {
                 var tou = new TimeoutUpdater(timeout);
                 var i = offset;
                 for (; i < offset + len; i++, Inc())
                 {
-                    if (Owner._wrPt.WaitUntil(w => Compare((Pointer)w, this) != CompareResult.Equal, tou.GetRemaining()))
+                    if (Owner._wrPt.WaitUntil<Pointer>(w => Compare(w, this) != CompareResult.Equal, tou.GetRemaining()))
                     {
                         data[i] = Owner._buffer[Position];
                     }
@@ -190,7 +181,7 @@ namespace QSharp.Scheme.Buffering
 
         private byte[] _buffer;
 
-        public Block[] _blocks;
+        private Block[] _blocks;
 
         public readonly List<Pointer> RegisteredReaders = new List<Pointer>();
 
@@ -208,11 +199,10 @@ namespace QSharp.Scheme.Buffering
             _blocks = new Block[blockCount];
             for (var i = 0; i < blockCount; i++)
             {
-                _blocks[i] = new Block(this, i);
+                _blocks[i] = new Block();
             }
         }
 
-        public Block[] Blocks => _blocks;
         public int BlockSize { get; }
         public int BlockCount => _blocks.Length;
 
@@ -257,7 +247,7 @@ namespace QSharp.Scheme.Buffering
             {
                 rdPt = Adjust(rdPt, rdPt >= _wrPt);
             }
-            reader.SetTo(rdPt, !_wrPt.Parity);
+            reader.SetTo(rdPt, rdPt < _wrPt ? _wrPt.Parity : !_wrPt.Parity);
         }
 
         public int RecommendReadLength(int rdPt, float fullness = 0.5f, bool excludeWrBlock = false)
@@ -280,6 +270,13 @@ namespace QSharp.Scheme.Buffering
             return len;
         }
 
+        /// <summary>
+        ///  If <paramref name="pt"></paramref> is in the same block as the writer
+        ///  This method moves it away from the block
+        /// </summary>
+        /// <param name="pt">The (reader) pointer</param>
+        /// <param name="goUp">If it should move up or down</param>
+        /// <returns>The resultant pointer</returns>
         private int Adjust(int pt, bool goUp)
         {
             var k = pt / BlockSize;

@@ -5,7 +5,7 @@ namespace QSharp.Scheme.Threading
 {
     public class Condition
     {
-        public delegate bool ConditionMetPredicate(Condition self);
+        public delegate bool ConditionMetPredicate<T>(T self) where T : Condition;
 
         private AutoResetEvent _event = new AutoResetEvent(false);
 
@@ -14,10 +14,12 @@ namespace QSharp.Scheme.Threading
             _event.Set();
         }
 
-        public bool WaitUntil(ConditionMetPredicate conditionMet, TimeSpan timeout)
+        public bool WaitUntil<T>(ConditionMetPredicate<T> conditionMet) where T : Condition => WaitUntil<T>(conditionMet, Timeout.InfiniteTimeSpan);
+
+        public bool WaitUntil<T>(ConditionMetPredicate<T> conditionMet, TimeSpan timeout) where T : Condition
         {
             var tou = new TimeoutUpdater(timeout);
-            while (!conditionMet(this))
+            while (!conditionMet((T)this))
             {
                 var touRemaining = tou.GetRemaining();
                 if (touRemaining == TimeSpan.Zero)

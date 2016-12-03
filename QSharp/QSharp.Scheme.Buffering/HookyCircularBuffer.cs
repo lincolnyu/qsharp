@@ -1,31 +1,168 @@
 ﻿using QSharp.Scheme.Threading;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace QSharp.Scheme.Buffering
 {
     public class HookyCircularBuffer
     {
-        private class BufferHook : CircularBufferSectionLocks.LockInfo
+        private class BlockHook
         {
             public byte[] Buffer;
+            public readonly List<RegisteredReader> ReaderPointers = new List<RegisteredReader>();
+            public AutoResetEvent ChangedEvent = new AutoResetEvent(false);
+            internal void RemoveReaderUnsafe(RegisteredReader reader)
+            {
+                ReaderPointers.Remove(reader);
+                ChangedEvent.Set();
+            }
+
+            internal void AddReaderUnsafe(RegisteredReader reader)
+            {
+                ReaderPointers.Add(reader);
+                ChangedEvent.Set();
+            }
+
+            public void AddReader(RegisteredReader reader)
+            {
+                lock (this)
+                {
+                    AddReaderUnsafe(reader);
+                }
+            }
+
+            public bool WaitUntilNotHit(Writer writer, TimeSpan timeout)
+            {
+                var tou = new TimeoutUpdater(timeout);
+                while (true)
+                {
+                    lock (this)
+                    {
+                        if (!ReaderPointers.Any(r =>
+                        {
+                            if (r.HookIndex != writer.HookIndex) return false;
+                            if (r.Position == 0 && r.Parity == writer.Parity) return false;
+                            return true;
+                        }
+                        )) return true;
+                    }
+                    var remaining = tou.GetRemaining();
+                    if (remaining == TimeSpan.Zero) return false;
+                    ChangedEvent.WaitOne(remaining);
+                }
+            }
         }
 
-        public class ReaderPointer
+        public class Pointer : Condition
         {
-            public int HookIndex;
-            public int Offset;
+            public Pointer(HookyCircularBuffer owner)
+            {
+                Owner = owner;
+            }
+            public HookyCircularBuffer Owner { get; }
+            public int HookIndex { get; protected set; }
+            public bool Parity { get; protected set; }
+            public int Position { get; protected set; }
+            public virtual void Inc()
+            {
+                HookIndex++;
+                if (HookIndex >= Owner.HookCount)
+                {
+                    HookIndex = 0;
+                    Parity = !Parity;
+                }
+                Bump();
+            }
+            public static implicit operator int(Pointer p)
+            {
+                return p.HookIndex;
+            }
         }
 
-        private CircularBufferSectionLocks _hooks;
-        private int _wrHook;
+        private class Writer : Pointer
+        {
+            public Writer(HookyCircularBuffer owner) : base(owner)
+            {
+            }
+        }
+
+        public class Reader : Pointer
+        {
+            public Reader(HookyCircularBuffer owner) : base(owner)
+            {
+            }
+
+            public int Read(byte[] data, int offset, int len) => Read(data, offset, len, Timeout.InfiniteTimeSpan);
+
+            public int Read(byte[] data, int offset, int len, TimeSpan timeout)
+            {
+                var tou = new TimeoutUpdater(timeout);
+                var i = offset;
+                while (i < offset + len)
+                {
+                    if (!Owner._wrPt.WaitUntil<Pointer>(w =>
+                    {
+                        if (w.HookIndex != HookIndex) return true;
+                        if (w.Parity != Parity) return true;
+                        return false;
+                    }, tou.GetRemaining())) break;
+                    for (; Position < Owner._hooks[HookIndex].Buffer.Length && i < offset + len; i++, Position++)
+                    {
+                        data[i] = Owner._hooks[HookIndex].Buffer[Position];
+                    }
+                    Position = 0;
+                    Inc();
+                }
+                return i - offset;
+            }
+
+            internal void SetTo(int index, bool parity)
+            {
+                HookIndex = index;
+                Parity = parity;
+            }
+        }
+
+        public class RegisteredReader : Reader
+        {
+            public RegisteredReader(HookyCircularBuffer owner) : base(owner)
+            {
+            }
+            public override void Inc()
+            {
+                var oldk = HookIndex % Owner.HookCount;
+                var k = (HookIndex + 1) % Owner.HookCount;
+
+                lock (Owner._hooks[oldk])
+                    lock (Owner._hooks[k])
+                    {
+                        Owner._hooks[oldk].RemoveReaderUnsafe(this);
+                        base.Inc();
+                        Owner._hooks[k].AddReaderUnsafe(this);
+                    }
+            }
+            public void Register()
+            {
+                Owner._hooks[HookIndex].AddReader(this);
+            }
+        }
+
+        private BlockHook[] _hooks;
+        private Writer _wrPt;
 
         public HookyCircularBuffer(int hookCount)
         {
-            _hooks = new CircularBufferSectionLocks(hookCount);
+            _wrPt = new Writer(this);
+            _hooks = new BlockHook[hookCount];
+            for(var i = 0;i < HookCount; i++)
+            {
+                _hooks[i] = new BlockHook();
+            }
         }
 
-        public int HookCount => _hooks.SectionsCount;
+        public int HookCount => _hooks.Length;
 
         public void Hook(byte[] buffer)
         {
@@ -34,50 +171,22 @@ namespace QSharp.Scheme.Buffering
 
         public bool Hook(byte[] buffer, TimeSpan timeout)
         {
-            if (!_hooks.TryWriterLock(_wrHook, timeout)) return false;
-            At(_wrHook).Buffer = buffer;
-            _hooks.ReleaseWriterLock(_wrHook);
-            _wrHook++;
-            return true;
-        }
-
-        public void Read(ReaderPointer pt, byte[] data, int offset, int len, TimeSpan timeout, bool preserve, out int read, ref int lastk)
-        {
-            var timeoutUpdator = new TimeoutUpdater(timeout);
-            var i = offset;
-            var k = pt.HookIndex;
-            var rdpt = pt.Offset;
-            if (i < offset + len)
+            var hook = _hooks[_wrPt];
+            if (hook.WaitUntilNotHit(_wrPt, timeout))
             {
-                _hooks.ContinuousRead(lastk, k, timeoutUpdator.GetRemaining());
-                while (i < offset + len)
-                {
-                    for (; rdpt < At(k).Buffer.Length && i < offset + len; i++, rdpt++)
-                    {
-                        data[i] = At(k).Buffer[rdpt];
-                    }
-                    lastk = k;
-                    k++;
-                    if (k >= HookCount) k = 0;
-                    rdpt = 0;
-                    if (i < offset + len || preserve)
-                    {
-                        if (!_hooks.ContinuousRead(lastk, k, timeoutUpdator.GetRemaining())) break;
-                        lastk = k;
-                    }
-                    else
-                    {
-                        _hooks.ReleaseReaderLock(k);
-                        lastk = -1;
-                    }
-                }
+                hook.Buffer = buffer;
+                _wrPt.Inc();
+                return true;
             }
-            read = i - offset;
+            return false;
         }
 
-        private BufferHook At(int k)
+        public void RecommendReader(Reader reader, float rate = 0.5f)
         {
-            return (BufferHook)_hooks.Locks[k];
+            var index = ((int)Math.Round(_wrPt + HookCount * rate)) % HookCount;
+            reader.SetTo(index, index < _wrPt ? _wrPt.Parity : !_wrPt.Parity);
         }
+
+        public int RecommendReadLen(Reader reader)=> _hooks[reader.HookIndex].Buffer.Length;
     }
 }
