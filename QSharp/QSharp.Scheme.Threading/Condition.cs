@@ -3,34 +3,21 @@ using System.Threading;
 
 namespace QSharp.Scheme.Threading
 {
-    public class Condition<T>
+    public class Condition
     {
-        public delegate bool ConditionMetPredicate(T value);
-
-        private T _value;
+        public delegate bool ConditionMetPredicate(Condition self);
 
         private AutoResetEvent _event = new AutoResetEvent(false);
 
-        public virtual T Value
+        protected void Bump()
         {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                if (!Equals(_value, value))
-                {
-                    _value = value;
-                    _event.Set();
-                }
-            }
+            _event.Set();
         }
 
-        public bool Wait(ConditionMetPredicate conditionMet, TimeSpan timeout)
+        public bool WaitUntil(ConditionMetPredicate conditionMet, TimeSpan timeout)
         {
             var tou = new TimeoutUpdater(timeout);
-            while (!conditionMet(_value))
+            while (!conditionMet(this))
             {
                 var touRemaining = tou.GetRemaining();
                 if (touRemaining == TimeSpan.Zero)

@@ -33,134 +33,158 @@ namespace QSharp.Scheme.Buffering
             }
             public void AddReader(Reader reader)
             {
-                lock(this)
+                lock (this)
                 {
                     AddReaderUnsafe(reader);
                 }
             }
-            public bool NeedCheck(Pointer writer)
-            {
-                if (writer % Owner.BlockSize != Index) return false;
-                lock (this)
-                {
-                    return ReaderPointers.Any(x => x >= writer);
-                }
-            }
             public bool WaitUntilNotHit(Pointer writer, TimeSpan timeout)
             {
-                var tou = new TimeoutUpdater(timeout);
-                while(ReaderPointers.Any(x => x == writer))
+                lock (this)
                 {
+                    if (!ReaderPointers.Any(r => Pointer.Compare(r, writer) == Pointer.CompareResult.OneCycleApart)) return true;
+                }
+                var tou = new TimeoutUpdater(timeout);
+                while (true)
+                {
+                    lock (this)
+                    {
+                        if (!ReaderPointers.Any(r => Pointer.Compare(r, writer) == Pointer.CompareResult.OneCycleApart)) return true;
+                    }
                     var remaining = tou.GetRemaining();
                     if (remaining == TimeSpan.Zero) return false;
                     ChangedEvent.WaitOne(remaining);
                 }
-                return true;
             }
         }
-
-        public interface IIntWrapper
+        
+        public class Pointer : Condition
         {
-            void Inc();
-            int Value { get; set; }
-        }
-
-        public class Pointer : Condition<int>, IIntWrapper
-        {
+            public enum CompareResult
+            {
+                Different,
+                OneCycleApart,
+                Equal
+            }
+            public delegate void SomethingHitEventHandler();
+            public Pointer(BlockyCircularBuffer owner)
+            {
+                Owner = owner;
+            }
+            public BlockyCircularBuffer Owner { get; }
+            public virtual int Position
+            {
+                get; protected set;
+            }
+            public bool Parity
+            {
+                get; protected set;
+            }
+            public event SomethingHitEventHandler EndOfBlockHit;
+            public event SomethingHitEventHandler EndOfBufferHit;
             public static implicit operator int(Pointer p)
             {
-                return p.Value;
+                return p.Position;
             }
             public static Pointer operator++(Pointer p)
             {
-                p.Value++;
-                return p;
-            }
-            public static Pointer operator--(Pointer p)
-            {
-                p.Value--;
+                p.Inc();
                 return p;
             }
             public override bool Equals(object obj)
             {
                 var p = obj as Pointer;
                 if (p == null) return false;
-                return Value == p.Value;
+                return Position == p.Position;
             }
             public override int GetHashCode()
             {
-                return Value.GetHashCode();
+                return Position.GetHashCode();
             }
-
-            public void Inc()
+            public void SetTo(int pos, bool parity = false)
             {
-                Value++;
+                Position = pos;
+                Parity = parity;
             }
-
-            public static bool operator ==(Pointer a, Pointer b)
+            public virtual void Inc()
             {
-                if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return ReferenceEquals(a, b);
-                return a.Value == b.Value;
+                Position++;
+                if (EndOfBlockHit != null && Position % Owner.BlockSize == 0)
+                {
+                    EndOfBlockHit();
+                }
+                if (Position >= Owner._buffer.Length)
+                {
+                    Parity = !Parity;
+                    Position = 0;
+                    EndOfBufferHit?.Invoke();
+                }
+                Bump();
             }
-            public static bool operator !=(Pointer a, Pointer b)
+            public static CompareResult Compare(Pointer a, Pointer b)
             {
-                return !(a == b);
-            }
-        }
-
-        public class IntWrapper : IIntWrapper
-        {
-            public int Value { get; set; }
-            public void Inc()
-            {
-                Value++;
+                if (a.Position != b.Position) return CompareResult.Different;
+                if (a.Parity != b.Parity) return CompareResult.OneCycleApart;
+                return CompareResult.Equal;
             }
         }
 
         public class Reader : Pointer
         {
-            private BlockyCircularBuffer _owner;
-            public Reader(BlockyCircularBuffer owner)
+            public Reader(BlockyCircularBuffer owner) : base(owner)
             {
-                _owner = owner;
-                var k = Value % _owner.BlockSize;
-                _owner._blocks[k].AddReader(this);
             }
             public int Read(byte[] data, int offset, int len)
             {
-                return _owner.Read(this, data, offset, len, Timeout.InfiniteTimeSpan);
+                return Read(data, offset, len, Timeout.InfiniteTimeSpan);
             }
             public int Read(byte[] data, int offset, int len, TimeSpan timeout)
             {
-                return _owner.Read(this, data, offset, len, timeout);
-            }
-            public override int Value
-            {
-                get
+                var tou = new TimeoutUpdater(timeout);
+                var i = offset;
+                for (; i < offset + len; i++, Inc())
                 {
-                    return base.Value;
+                    if (Owner._wrPt.WaitUntil(w => Compare((Pointer)w, this) != CompareResult.Equal, tou.GetRemaining()))
+                    {
+                        data[i] = Owner._buffer[Position];
+                    }
                 }
-                set
+                return i - offset;
+            }
+        }
+
+        public class RegisteredReader : Reader
+        {
+            public RegisteredReader(BlockyCircularBuffer owner) : base(owner)
+            {
+            }
+            public void Register()
+            {
+                var k = Position / Owner.BlockSize;
+                Owner._blocks[k].AddReader(this);
+            }
+            public override void Inc()
+            {
+                var oldk = Position / Owner.BlockSize;
+                var k = ((Position + 1) / Owner.BlockSize) % Owner.BlockCount;
+
+                if (k != oldk)
                 {
-                    var oldk = Value / _owner.BlockSize;
-                    var k = value / _owner.BlockSize;
-                    if (k != oldk)
-                    {
-                        lock (_owner._blocks[oldk])
-                            lock (_owner._blocks[k])
-                            {
-                                _owner._blocks[oldk].RemoveReaderUnsafe(this);
-                                base.Value = value;
-                                _owner._blocks[k].AddReaderUnsafe(this);
-                            }
-                    }
-                    else
-                    {
-                        base.Value = value;
-                    }
+                    lock (Owner._blocks[oldk])
+                        lock (Owner._blocks[k])
+                        {
+                            Owner._blocks[oldk].RemoveReaderUnsafe(this);
+                            base.Inc();
+                            Owner._blocks[k].AddReaderUnsafe(this);
+                        }
+                }
+                else
+                {
+                    base.Inc();
                 }
             }
         }
+
 
         public delegate void BlockHitEventHandler(int block);
 
@@ -174,10 +198,11 @@ namespace QSharp.Scheme.Buffering
         ///  writing pointer
         ///  valid region [0, _buffer.Length)
         /// </summary>
-        private Pointer _wrPt = new Pointer();
+        private Pointer _wrPt;
 
         public BlockyCircularBuffer(int blockSize, int blockCount)
         {
+            _wrPt = new Pointer(this);
             _buffer = new byte[blockSize * blockCount];
             BlockSize = blockSize;
             _blocks = new Block[blockCount];
@@ -191,11 +216,6 @@ namespace QSharp.Scheme.Buffering
         public int BlockSize { get; }
         public int BlockCount => _blocks.Length;
 
-        public Reader RegisterReader(int position)
-        {
-            return new Reader(this);
-        }
-
         public int Write(byte[] data, int offset, int len)
         {
             int written;
@@ -205,97 +225,23 @@ namespace QSharp.Scheme.Buffering
 
         public void Write(byte[] data, int offset, int len, TimeSpan timeout, out int written)
         {
-            var k = _wrPt / BlockSize;
-            var blockBound = (k + 1) * BlockSize;
             var startTime = DateTime.UtcNow;
             var tou = new TimeoutUpdater(timeout);
             int i;
-            for (i = offset; i < offset + len;)
+            for (i = offset; i < offset + len; i++, _wrPt++)
             {
-                var rp = _blocks[k].NeedCheck(_wrPt);
-                if (rp)
+                // TODO optimize it?
+                var k = _wrPt / BlockSize;
+                if (_blocks[k].WaitUntilNotHit(_wrPt, tou.GetRemaining()))
                 {
-                    for (; _wrPt < blockBound && i < offset + len; i++, _wrPt++)
-                    {
-                        if (_blocks[k].WaitUntilNotHit(_wrPt, tou.GetRemaining()))
-                        {
-                            _buffer[_wrPt] = data[i];
-                        }
-                    }
+                    _buffer[_wrPt] = data[i];
                 }
                 else
                 {
-                    for (; _wrPt < blockBound && i < offset + len; i++, _wrPt++)
-                    {
-                        _buffer[_wrPt] = data[i];
-                    }
-                }
-
-                if (_wrPt >= _buffer.Length)
-                {
-                    _wrPt.Value = 0;
-                    blockBound = BlockSize;
-                    k = 0;
-                }
-                else if (_wrPt >= blockBound)
-                {
-                    blockBound += BlockSize;
-                    k++;
+                    break;
                 }
             }
             written = i - offset;
-        }
-
-        public int Read(ref int rpt, byte[] data, int offset, int len)
-        {
-            return Read(ref rpt, data, offset, len, Timeout.InfiniteTimeSpan);
-        }
-
-        public int Read(ref int rpt, byte[] data, int offset, int len, TimeSpan timeout)
-        {
-            var iiw = new IntWrapper { Value = rpt };
-            var read = Read(iiw, data, offset, len, timeout);
-            rpt = iiw.Value;
-            return read;
-        }
-
-        public int Read(IIntWrapper rdPt, byte[] data, int offset, int len)
-        {
-            return Read(rdPt, data, offset, len, Timeout.InfiniteTimeSpan);
-        }
-
-        public int Read(IIntWrapper rdPt, byte[] data, int offset, int len, TimeSpan timeout)
-        {
-            var tou = new TimeoutUpdater(timeout);
-            var k = rdPt.Value / BlockSize;
-            var blockBound = (k + 1) * BlockSize;
-            var i = offset;
-            int lastk = rdPt.Value % BlockSize == 0 ? (k > 0 ? k - 1 : BlockCount - 1) : -1;
-            if (i < offset + len)
-            {
-                while (i < offset + len)
-                {
-                    for (; rdPt.Value < blockBound && i < offset + len; i++, rdPt.Inc())
-                    {
-                        if (_wrPt.Wait(w => w != rdPt.Value, tou.GetRemaining()))
-                        {
-                            data[i] = _buffer[rdPt.Value];
-                        }
-                    }
-                    if (rdPt.Value >= _buffer.Length)
-                    {
-                        rdPt.Value = 0;
-                        blockBound = BlockSize;
-                        k = 0;
-                    }
-                    else if (rdPt.Value == blockBound)
-                    {
-                        blockBound += BlockSize;
-                        k++;
-                    }
-                }
-            }
-            return i - offset;
         }
 
         public int TotalBytesToRead(int rdPt)
@@ -304,14 +250,14 @@ namespace QSharp.Scheme.Buffering
             return total;
         }
 
-        public int RecommendReadPointer(float aheadRate = 0.25f, bool excludeWrBlock = false)
+        public void RecommendReadPointer(Reader reader, float aheadRate = 0.25f, bool excludeWrBlock = false)
         {
             var rdPt = ((int)(_wrPt + _buffer.Length * aheadRate)) % _buffer.Length;
             if (excludeWrBlock)
             {
                 rdPt = Adjust(rdPt, rdPt >= _wrPt);
             }
-            return rdPt;
+            reader.SetTo(rdPt, !_wrPt.Parity);
         }
 
         public int RecommendReadLength(int rdPt, float fullness = 0.5f, bool excludeWrBlock = false)
