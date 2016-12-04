@@ -15,14 +15,14 @@ namespace QSharp.Scheme.Buffering
             public Block()
             {
             }
-            internal void RemoveReaderUnsafe(RegisteredReader reader)
-            {
-                ReaderPointers.Remove(reader);
-                ChangedEvent.Set();
-            }
             internal void AddReaderUnsafe(RegisteredReader reader)
             {
                 ReaderPointers.Add(reader);
+                ChangedEvent.Set();
+            }
+            internal void RemoveReaderUnsafe(RegisteredReader reader)
+            {
+                ReaderPointers.Remove(reader);
                 ChangedEvent.Set();
             }
             public void AddReader(RegisteredReader reader)
@@ -30,6 +30,13 @@ namespace QSharp.Scheme.Buffering
                 lock (this)
                 {
                     AddReaderUnsafe(reader);
+                }
+            }
+            public void RemoveReader(RegisteredReader reader)
+            {
+                lock (this)
+                {
+                    RemoveReaderUnsafe(reader);
                 }
             }
             public bool WaitUntilNotHit(Pointer writer, TimeSpan timeout)
@@ -153,6 +160,11 @@ namespace QSharp.Scheme.Buffering
             {
                 var k = Position / Owner.BlockSize;
                 Owner._blocks[k].AddReader(this);
+            }
+            public void Unregister()
+            {
+                var k = Position / Owner.BlockSize;
+                Owner._blocks[k].RemoveReader(this);
             }
             public override void Inc()
             {

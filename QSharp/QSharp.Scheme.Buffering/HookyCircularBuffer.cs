@@ -13,15 +13,16 @@ namespace QSharp.Scheme.Buffering
             public byte[] Buffer;
             public readonly List<RegisteredReader> ReaderPointers = new List<RegisteredReader>();
             public AutoResetEvent ChangedEvent = new AutoResetEvent(false);
-            internal void RemoveReaderUnsafe(RegisteredReader reader)
-            {
-                ReaderPointers.Remove(reader);
-                ChangedEvent.Set();
-            }
-
+          
             internal void AddReaderUnsafe(RegisteredReader reader)
             {
                 ReaderPointers.Add(reader);
+                ChangedEvent.Set();
+            }
+
+            internal void RemoveReaderUnsafe(RegisteredReader reader)
+            {
+                ReaderPointers.Remove(reader);
                 ChangedEvent.Set();
             }
 
@@ -33,7 +34,15 @@ namespace QSharp.Scheme.Buffering
                 }
             }
 
-            public bool WaitUntilNotHit(Writer writer, TimeSpan timeout)
+            public void RemoveReader(RegisteredReader reader)
+            {
+                lock (this)
+                {
+                    RemoveReaderUnsafe(reader);
+                }
+            }
+
+            public bool HookerWaitUntilReadersClear(Writer writer, TimeSpan timeout)
             {
                 var tou = new TimeoutUpdater(timeout);
                 while (true)
@@ -41,15 +50,16 @@ namespace QSharp.Scheme.Buffering
                     lock (this)
                     {
                         if (!ReaderPointers.Any(r =>
+                        r.HookIndex == writer.HookIndex && r.Parity != writer.Parity))
                         {
-                            if (r.HookIndex != writer.HookIndex) return false;
-                            if (r.Position == 0 && r.Parity == writer.Parity) return false;
                             return true;
                         }
-                        )) return true;
                     }
                     var remaining = tou.GetRemaining();
-                    if (remaining == TimeSpan.Zero) return false;
+                    if (remaining == TimeSpan.Zero)
+                    {
+                        return false;
+                    }
                     ChangedEvent.WaitOne(remaining);
                 }
             }
@@ -102,18 +112,17 @@ namespace QSharp.Scheme.Buffering
                 var i = offset;
                 while (i < offset + len)
                 {
-                    if (!Owner._wrPt.WaitUntil<Pointer>(w =>
-                    {
-                        if (w.HookIndex != HookIndex) return true;
-                        if (w.Parity != Parity) return true;
-                        return false;
-                    }, tou.GetRemaining())) break;
+                    if (!Owner._wrPt.WaitUntil<Pointer>(w => w.HookIndex != HookIndex || w.Parity != Parity, tou.GetRemaining())) break;
                     for (; Position < Owner._hooks[HookIndex].Buffer.Length && i < offset + len; i++, Position++)
                     {
                         data[i] = Owner._hooks[HookIndex].Buffer[Position];
                     }
-                    Position = 0;
-                    Inc();
+
+                    if (Position == Owner._hooks[HookIndex].Buffer.Length)
+                    {
+                        Position = 0;
+                        Inc();
+                    }
                 }
                 return i - offset;
             }
@@ -147,6 +156,10 @@ namespace QSharp.Scheme.Buffering
             {
                 Owner._hooks[HookIndex].AddReader(this);
             }
+            public void Unregister()
+            {
+                Owner._hooks[HookIndex].RemoveReader(this);
+            }
         }
 
         private BlockHook[] _hooks;
@@ -172,7 +185,7 @@ namespace QSharp.Scheme.Buffering
         public bool Hook(byte[] buffer, TimeSpan timeout)
         {
             var hook = _hooks[_wrPt];
-            if (hook.WaitUntilNotHit(_wrPt, timeout))
+            if (hook.HookerWaitUntilReadersClear(_wrPt, timeout))
             {
                 hook.Buffer = buffer;
                 _wrPt.Inc();

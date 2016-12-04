@@ -66,6 +66,7 @@ namespace QSharpTest.Scheme.Buffering
                 while (_running)
                 {
                     var buf = new byte[bufLen];
+                    System.Diagnostics.Debug.WriteLine("first v: {0}", v); 
                     for (var i = 0; i < bufLen; i += 4)
                     {
                         SetToBuffer(buf, i, v);
@@ -152,6 +153,10 @@ namespace QSharpTest.Scheme.Buffering
                         }
                     }
                     Thread.Sleep(SleepMs);
+                }
+                if (Registered)
+                {
+                    ((HookyCircularBuffer.RegisteredReader)rd).Unregister();
                 }
             }
         }

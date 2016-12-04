@@ -152,6 +152,10 @@ namespace QSharpTest.Scheme.Buffering
                     }
                     Thread.Sleep(SleepMs);
                 }
+                if (Registered)
+                {
+                    ((BlockyCircularBuffer.RegisteredReader)rd).Unregister();
+                }
             }
         }
 
@@ -168,8 +172,9 @@ namespace QSharpTest.Scheme.Buffering
 
             Thread.Sleep(20 * 1000);
 
-            writer.Stop();
             reader.Stop();
+            Thread.Sleep(1000);
+            writer.Stop();
 
             Assert.IsTrue(reader.TotalCount > 0);
             Assert.IsTrue(reader.ErrorCount == 0);
@@ -192,8 +197,9 @@ namespace QSharpTest.Scheme.Buffering
 
             Thread.Sleep(20 * 1000);
 
-            writer.Stop();
             reader.Stop();
+            Thread.Sleep(1000);
+            writer.Stop();
 
             Assert.IsTrue(reader.TotalCount > 0);
             Assert.IsTrue(reader.ErrorCount == 0);
