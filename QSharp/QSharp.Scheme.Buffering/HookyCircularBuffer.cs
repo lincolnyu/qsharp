@@ -197,9 +197,49 @@ namespace QSharp.Scheme.Buffering
         public void RecommendReader(Reader reader, float rate = 0.5f)
         {
             var index = ((int)Math.Round(_wrPt + HookCount * rate)) % HookCount;
+            if (_hooks[index].Buffer == null)
+            {
+                index = _wrPt;
+                do
+                {
+                    index--;
+                    if (index < 0) index += HookCount;
+                } while (_hooks[index].Buffer == null && index != _wrPt);
+            }
             reader.SetTo(index, index < _wrPt ? _wrPt.Parity : !_wrPt.Parity);
         }
 
-        public int RecommendReadLen(Reader reader)=> _hooks[reader.HookIndex].Buffer.Length;
+        public int RecommendReadLen(Reader reader) => HookBufferLen(reader.HookIndex) - reader.Position;
+
+        public int RecommendReadLen2(Reader reader)
+        {
+            int at;
+            if (_wrPt > reader + 1)
+            {
+                at = (_wrPt + reader) / 2;
+            }
+            else if (_wrPt < reader)
+            {
+                at = ((_wrPt + reader + HookCount) / 2) % HookCount;
+            }
+            else
+            {
+                return 0;
+            }
+
+          //  Console.WriteLine($"RW: {reader.HookIndex}, {_wrPt.HookIndex}");
+
+            var len = HookBufferLen(reader.HookIndex) - reader.Position;
+            var c = 0;
+            for (var i = (reader.HookIndex + 1)%HookCount; i != at; i = (i+1)%HookCount)
+            {
+                len += HookBufferLen(i);
+                c++;
+            }
+            Console.WriteLine($"c{c},{len}");
+            return len;
+        }
+
+        private int HookBufferLen(int index) => _hooks[index].Buffer?.Length ?? 0;
     }
 }
