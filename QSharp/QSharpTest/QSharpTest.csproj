@@ -81,6 +81,7 @@
     <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
     <Compile Include="Scheme.CSharpRocks\MultiOutTest.cs" />
+    <Compile Include="Scheme.CSharpRocks\PointerTests.cs" />
     <Compile Include="Scheme.ExactCover\AlgorithmXTests.cs" />
     <Compile Include="Scheme.Mathematics\UnlimitedIntegerTest.cs" />
     <Compile Include="Scheme.Classical.Hash\AccessibleSoHashDyn.cs" />

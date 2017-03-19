@@ -37,6 +37,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pointers\SharedPtr.cs" />
+    <Compile Include="Pointers\WeakPtr.cs" />
     <Compile Include="Threading\Future.cs" />
     <Compile Include="MultiOut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
