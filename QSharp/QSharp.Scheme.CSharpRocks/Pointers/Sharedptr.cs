@@ -5,7 +5,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 {
     public interface IWeakLock : IDisposable { }
 
-    internal interface ISharedPtrCore<out T> : IDisposable
+    public interface ISharedPtrCore<out T> : IDisposable
     {
         uint RefCount { get; }
 
@@ -83,7 +83,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
             public void AddRef()
             {
-                lock(this)
+                lock (this)
                 {
                     RefCount++;
                 }
@@ -91,7 +91,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
             public void Release()
             {
-                lock(this)
+                lock (this)
                 {
                     Debug.Assert(RefCount > 0);
                     if (--RefCount == 0 && WeakLockCount == 0)
@@ -103,7 +103,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
             public IWeakLock WeakLock()
             {
-                lock(this)
+                lock (this)
                 {
                     WeakLockCount++;
                     return new WeakLock(this);
@@ -113,7 +113,17 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
             #endregion
         }
 
-        private ISharedPtrCore<T> _ptr;
+        protected ISharedPtrCore<T> _ptr;
+
+        public SharedPtr(T val)
+        {
+            Reset(val);
+        }
+
+        public SharedPtr(SharedPtr<T> other)
+        {
+            Assign(other);
+        }
 
         #region IDisposable members
 
@@ -132,8 +142,10 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
         public T Data => _ptr.GetData();
 
-        public void CreateNew<T2>(T2 val) where T2 : T
+        public void Reset<T2>(T2 val) where T2 : T
         {
+            Release();
+
             _ptr = new SharedPtrCore<T2>()
             {
                 Data = val,
@@ -165,10 +177,42 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
         #region For debug only
 
-        public uint TargetRefCount() => _ptr.RefCount;
+        public uint TargetRefCount => _ptr.RefCount;
 
-        internal ISharedPtrCore<T> GetPtr() => _ptr;
+        internal ISharedPtrCore<T> Ptr => _ptr;
 
         #endregion
+    }
+
+    public class Wrapper<T>
+    {
+        public T Data;
+    }
+
+    public class SharedAtomicPtr<T> : SharedPtr<Wrapper<T>>
+    {
+        public SharedAtomicPtr(T t = default(T)) : base(new Wrapper<T> { Data = t })
+        {
+        }
+
+        public SharedAtomicPtr(SharedPtr<Wrapper<T>> p) : base(p)
+        {
+        }
+
+        public T Value => Data.Data;
+
+        public void Reset(T t = default(T)) => Reset(new Wrapper<T> { Data = t });
+
+        public void ChangeValue(T t)
+        {
+            if (_ptr != null)
+            {
+                _ptr.GetData().Data = t;
+            } 
+            else
+            {
+                Reset(t);
+            }
+        }
     }
 }
