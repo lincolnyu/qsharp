@@ -48,7 +48,11 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
                 {
                     lock (_ptr)
                     {
-                        _ptr.WeakLockCount--;
+                        Debug.Assert(_ptr.WeakLockCount > 0);
+                        if (--_ptr.WeakLockCount == 0 && _ptr.RefCount == 0)
+                        {
+                            _ptr.Dispose();
+                        }
                     }
                     _ptr = null;
                 }
@@ -113,7 +117,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
             #endregion
         }
 
-        protected ISharedPtrCore<T> _ptr;
+        private ISharedPtrCore<T> _ptr;
 
         public SharedPtr(T val)
         {
@@ -140,7 +144,11 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
             Release();
         }
 
+        internal protected ISharedPtrCore<T> Ptr => _ptr;
+
         public T Data => _ptr.GetData();
+
+        public bool IsNull => _ptr == null;
 
         public void Reset<T2>(T2 val) where T2 : T
         {
@@ -177,9 +185,9 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
         #region For debug only
 
-        public uint TargetRefCount => _ptr.RefCount;
+        public uint TargetRefCount => _ptr?.RefCount?? 0;
 
-        internal ISharedPtrCore<T> Ptr => _ptr;
+        public uint WeakLockCount => _ptr?.WeakLockCount ?? 0;
 
         #endregion
     }
@@ -205,9 +213,9 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
         public void ChangeValue(T t)
         {
-            if (_ptr != null)
+            if (Ptr != null)
             {
-                _ptr.GetData().Data = t;
+                Ptr.GetData().Data = t;
             } 
             else
             {
