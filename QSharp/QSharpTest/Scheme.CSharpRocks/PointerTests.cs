@@ -51,7 +51,7 @@ namespace QSharpTest.Scheme.CSharpRocks
             using (var l = ib.Lock())
             {
                 Assert.AreNotEqual(null, l);
-                Assert.AreEqual(1, ib.Value);
+                Assert.AreEqual(1, l.Data.Value);
                 ia.Release();
                 Assert.AreEqual(1u, ib.WeakLockCount);
                 Assert.AreEqual(0u, ib.TargetRefCount);

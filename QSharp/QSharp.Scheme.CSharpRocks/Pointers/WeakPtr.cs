@@ -14,11 +14,9 @@
             _ptr = other.Ptr;
         }
 
-        public IWeakLock Lock() => _ptr?.RefCount > 0 ? _ptr.WeakLock() : null;
+        public IWeakLock<T> Lock() => _ptr?.RefCount > 0 ? _ptr.WeakLock() : null;
 
         internal ISharedPtrCore<T> Ptr => _ptr;
-
-        public T Data => _ptr.GetData();
 
         #region For debug only
 
@@ -34,7 +32,5 @@
         public WeakAtomicPtr(SharedPtr<Wrapper<T>> other) : base(other)
         {
         }
-
-        public T Value => Data.Data;
     }
 }

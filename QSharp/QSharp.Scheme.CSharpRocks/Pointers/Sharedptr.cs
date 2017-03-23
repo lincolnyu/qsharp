@@ -3,7 +3,10 @@ using System.Diagnostics;
 
 namespace QSharp.Scheme.CSharpRocks.Pointers
 {
-    public interface IWeakLock : IDisposable { }
+    public interface IWeakLock<out T> : IDisposable
+    {
+        T Data { get; }
+    }
 
     public interface ISharedPtrCore<out T> : IDisposable
     {
@@ -17,12 +20,12 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
         void Release();
 
-        IWeakLock WeakLock();
+        IWeakLock<T> WeakLock();
     }
 
     public class SharedPtr<T> : IDisposable where T : class
     {
-        private class WeakLock : IWeakLock
+        private class WeakLock : IWeakLock<T>
         {
             private ISharedPtrCore<T> _ptr;
 
@@ -35,6 +38,8 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
             {
                 Unlock();
             }
+
+            public T Data => _ptr.GetData();
 
             public void Dispose()
             {
@@ -105,7 +110,7 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
                 }
             }
 
-            public IWeakLock WeakLock()
+            public IWeakLock<T> WeakLock()
             {
                 lock (this)
                 {
@@ -194,12 +199,12 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
 
     public class Wrapper<T>
     {
-        public T Data;
+        public T Value;
     }
 
     public class SharedAtomicPtr<T> : SharedPtr<Wrapper<T>>
     {
-        public SharedAtomicPtr(T t = default(T)) : base(new Wrapper<T> { Data = t })
+        public SharedAtomicPtr(T t = default(T)) : base(new Wrapper<T> { Value = t })
         {
         }
 
@@ -207,15 +212,15 @@ namespace QSharp.Scheme.CSharpRocks.Pointers
         {
         }
 
-        public T Value => Data.Data;
+        public T Value => Data.Value;
 
-        public void Reset(T t = default(T)) => Reset(new Wrapper<T> { Data = t });
+        public void Reset(T t = default(T)) => Reset(new Wrapper<T> { Value = t });
 
         public void ChangeValue(T t)
         {
             if (Ptr != null)
             {
-                Ptr.GetData().Data = t;
+                Ptr.GetData().Value = t;
             } 
             else
             {
