@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{57A8521F-B6AD-4A99-97C5-606D93202AEA}</ProjectGuid>
+    <ProjectGuid>{A4A38FB6-F593-446B-9440-5CAF0666DFA1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QSharp.Shader</RootNamespace>
     <AssemblyName>QSharp.Shader</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,40 +34,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Geometry\Euclid2D\EdgeComputer.cs" />
     <Compile Include="Geometry\Euclid2D\IEdge2D.cs" />
-    <Compile Include="Geometry\Euclid2D\IVector2D.cs" />
-    <Compile Include="Geometry\Euclid2D\ITriangle2D.cs" />
     <Compile Include="Geometry\Euclid2D\IMutableVector2D.cs" />
+    <Compile Include="Geometry\Euclid2D\ITriangle2D.cs" />
+    <Compile Include="Geometry\Euclid2D\IVector2D.cs" />
     <Compile Include="Geometry\Euclid2D\PolygonHelper.cs" />
     <Compile Include="Geometry\Euclid2D\TriangleHelper.cs" />
     <Compile Include="Geometry\Euclid2D\Vector2D.cs" />
     <Compile Include="Geometry\Euclid2D\VectorHelper.cs" />
     <Compile Include="Geometry\Euclid2D\VertexHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2D.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\FixedBucketSet2d.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IBucket.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedEdge.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedTriangle.cs" />
     <Compile Include="SpatialIndexing\BucketMethod\IndexedVertex.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\SpatialArray2D.cs" />
-    <Compile Include="SpatialIndexing\BucketMethod\SpatialObject2D.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\SpatialArray2d.cs" />
+    <Compile Include="SpatialIndexing\BucketMethod\SpatialObject2d.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

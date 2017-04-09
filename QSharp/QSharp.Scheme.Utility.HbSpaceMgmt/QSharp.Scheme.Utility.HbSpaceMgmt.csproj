@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,12 +9,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QSharp.Scheme.Utility.HbSpaceMgmt</RootNamespace>
     <AssemblyName>QSharp.Scheme.Utility.HbSpaceMgmt</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,17 +69,21 @@
     <Compile Include="Section.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential%28D%29.csproj">
-      <Project>{231bd960-427b-4094-8014-328750d34303}</Project>
-      <Name>QSharp.Scheme.Classical.Sequential%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
+      <Project>{3fb8608b-0ab5-44cc-820a-f2dc23200553}</Project>
+      <Name>QSharp.Scheme.Classical.Sequential</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees%28D%29.csproj">
-      <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
-      <Name>QSharp.Scheme.Classical.Trees%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
+      <Project>{a297c131-4fab-4f8f-b9b8-b5048fc12236}</Project>
+      <Name>QSharp.Scheme.Classical.Trees</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
-      <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
-      <Name>QSharp.Shared%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj">
+      <Project>{675ad4fb-c3d9-4a41-84c9-8ebe047742ae}</Project>
+      <Name>QSharp.Scheme.Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+      <Project>{0c8dfed7-19c5-4280-84dc-e6ae5573695f}</Project>
+      <Name>QSharp.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -35,6 +35,7 @@ namespace QSharp.Shader.Graphics.Base.Exceptions
         {
         }
 
+#if WindowsDesktop
         /// <summary>
         ///  instantiates an exception with serialisation information and context
         /// </summary>
@@ -43,6 +44,7 @@ namespace QSharp.Shader.Graphics.Base.Exceptions
         protected GraphicsException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
 
         #endregion
     }

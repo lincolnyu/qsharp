@@ -132,15 +132,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj">
-      <Project>{55BCF997-5267-41AE-AC02-FE193FE9401F}</Project>
+      <Project>{fe824085-880b-4bef-a7e3-cf1826e43c93}</Project>
       <Name>QSharp.Shader.Geometry.Triangulation</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj">
-      <Project>{078fac3d-6372-4045-bea5-9d6388446f87}</Project>
+      <Project>{f3d1cd7f-9639-424d-b391-360f9b720aaa}</Project>
       <Name>QSharp.Shader.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj">
-      <Project>{57A8521F-B6AD-4A99-97C5-606D93202AEA}</Project>
+      <Project>{a4a38fb6-f593-446b-9440-5caf0666dfa1}</Project>
       <Name>QSharp.Shader</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharpTest\QSharpTest.csproj">
