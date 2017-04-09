@@ -6,4 +6,9 @@
         object Clone();
     }
 #endif
+
+    public interface ICloneable<out T>
+    {
+        T Clone();
+    }
 }

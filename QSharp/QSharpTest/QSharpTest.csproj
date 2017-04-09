@@ -169,21 +169,21 @@
       <Project>{08bb66d5-f6a6-4698-90a8-9649ef54aaa5}</Project>
       <Name>QSharp.Scheme.Buffering</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs%28D%29.csproj">
-      <Project>{52a5c8be-ef54-48e7-a170-f3e6c5561e71}</Project>
-      <Name>QSharp.Scheme.Classical.Graphs%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs.csproj">
+      <Project>{5b886fe7-7d13-4f99-8ba8-ae99c6b945ee}</Project>
+      <Name>QSharp.Scheme.Classical.Graphs</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj">
       <Project>{855cfe2a-eb4b-4ae1-9390-7211c4a1739c}</Project>
       <Name>QSharp.Scheme.Classical.Hash</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential%28D%29.csproj">
-      <Project>{231bd960-427b-4094-8014-328750d34303}</Project>
-      <Name>QSharp.Scheme.Classical.Sequential%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
+      <Project>{3fb8608b-0ab5-44cc-820a-f2dc23200553}</Project>
+      <Name>QSharp.Scheme.Classical.Sequential</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees%28D%29.csproj">
-      <Project>{7b54ba8f-402b-4f12-abbe-03a1a831b1b3}</Project>
-      <Name>QSharp.Scheme.Classical.Trees%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
+      <Project>{a297c131-4fab-4f8f-b9b8-b5048fc12236}</Project>
+      <Name>QSharp.Scheme.Classical.Trees</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.CSharpRocks\QSharp.Scheme.CSharpRocks.csproj">
       <Project>{63430ECB-590A-4049-841F-12190D75993F}</Project>
@@ -206,56 +206,48 @@
       <Name>QSharp.Scheme.Utility.HbSpaceMgmt</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj">
-      <Project>{18ec37a0-27e0-4b8a-9841-ce4893d8de4b}</Project>
+      <Project>{675ad4fb-c3d9-4a41-84c9-8ebe047742ae}</Project>
       <Name>QSharp.Scheme.Utility</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj">
-      <Project>{55bcf997-5267-41ae-ac02-fe193fe9401f}</Project>
+      <Project>{fe824085-880b-4bef-a7e3-cf1826e43c93}</Project>
       <Name>QSharp.Shader.Geometry.Triangulation</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj">
-      <Project>{078fac3d-6372-4045-bea5-9d6388446f87}</Project>
+      <Project>{f3d1cd7f-9639-424d-b391-360f9b720aaa}</Project>
       <Name>QSharp.Shader.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj">
-      <Project>{57a8521f-b6ad-4a99-97c5-606d93202aea}</Project>
+      <Project>{a4a38fb6-f593-446b-9440-5caf0666dfa1}</Project>
       <Name>QSharp.Shader</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared%28D%29.csproj">
-      <Project>{5d077a1c-0b5d-4582-bda5-0768e50d0fc6}</Project>
-      <Name>QSharp.Shared%28D%29</Name>
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
+      <Project>{0c8dfed7-19c5-4280-84dc-e6ae5573695f}</Project>
+      <Name>QSharp.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.Signal.NeuralNetwork\QSharp.Signal.NeuralNetwork.csproj">
       <Project>{1410a802-570d-45e1-a126-51ef5fd19b6e}</Project>
       <Name>QSharp.Signal.NeuralNetwork</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj">
-      <Project>{afcb6760-0fbf-4a80-9310-3c0f7dcef67b}</Project>
-      <Name>QSharp.Signal.Visual</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj">
       <Project>{97003447-C035-4D24-BB27-B731635CE146}</Project>
       <Name>QSharp.String.Arithmetic</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.Compiler\QSharp.String.Compiler.csproj">
-      <Project>{c5e4da93-892e-4d9f-b7df-40478bc21081}</Project>
+      <Project>{8985e290-c7a0-4fbe-b9db-0df44f4020f2}</Project>
       <Name>QSharp.String.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj">
       <Project>{3f2faa0e-9c17-4d12-8ecb-28f3b53165ce}</Project>
       <Name>QSharp.String.ExpressionEvaluation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex%28D%29.csproj">
-      <Project>{23e1397a-e451-46f2-9368-2a99a6b160d3}</Project>
-      <Name>QSharp.String.Rex%28D%29</Name>
+    <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj">
+      <Project>{01588fbd-f4e8-4db7-86c6-14d701104a94}</Project>
+      <Name>QSharp.String.Rex</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream%28D%29.csproj">
-      <Project>{3f9219d6-8f35-4320-94e5-23c383e64bf6}</Project>
-      <Name>QSharp.String.Stream%28D%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QSharp.String\QSharp.String%28D%29.csproj">
-      <Project>{8cd77005-0e95-4ba7-b21c-4499e37c9baf}</Project>
-      <Name>QSharp.String%28D%29</Name>
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj">
+      <Project>{a4302ca4-a70a-433c-8ab7-eb0e639b60db}</Project>
+      <Name>QSharp.String.Stream</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

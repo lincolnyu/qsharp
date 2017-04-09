@@ -58,7 +58,7 @@ namespace QSharp.Shader.Graphics.Base.Geometry
         /// </remarks>
         public Matrix4f(float[] data, bool deepCopy = false)
         {
-            System.Diagnostics.Trace.Assert(data.Length == 16);
+            System.Diagnostics.Debug.Assert(data.Length == 16);
 			if (deepCopy)
 			{
 				Data = new float[16];

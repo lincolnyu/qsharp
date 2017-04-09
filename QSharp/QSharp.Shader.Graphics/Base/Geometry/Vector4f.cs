@@ -185,7 +185,7 @@ namespace QSharp.Shader.Graphics.Base.Geometry
         /// </param>
         public Vector4f(float[] data, bool deepCopy = false)
         {
-            System.Diagnostics.Trace.Assert(data.Length == 4);
+            System.Diagnostics.Debug.Assert(data.Length == 4);
             if (deepCopy)
             {
                 Data = new float[4];

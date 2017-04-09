@@ -124,8 +124,8 @@ namespace QSharp.Shader.Graphics.Raster.Plot
         public static void DrawInclineX(int x, int y, int xf, int adx, int ady, 
             ref int a, VisitDelegate visit)
         {
-            System.Diagnostics.Trace.Assert(ady >= 0);
-            System.Diagnostics.Trace.Assert(adx >= ady);
+            System.Diagnostics.Debug.Assert(ady >= 0);
+            System.Diagnostics.Debug.Assert(adx >= ady);
 
             xf++;   // the last dot is included
             for (; x != xf; x++)
@@ -146,8 +146,8 @@ namespace QSharp.Shader.Graphics.Raster.Plot
         public static void DrawDeclineX(int x, int y, int xf, int adx, int ady,
             ref int a, VisitDelegate visit)
         {
-            System.Diagnostics.Trace.Assert(ady >= 0);
-            System.Diagnostics.Trace.Assert(adx >= ady);
+            System.Diagnostics.Debug.Assert(ady >= 0);
+            System.Diagnostics.Debug.Assert(adx >= ady);
 
             xf++;   // the last dot is included
             for (; x != xf; x++)
@@ -168,8 +168,8 @@ namespace QSharp.Shader.Graphics.Raster.Plot
         public static void DrawInclineY(int x, int y, int yf, int adx, int ady,
             ref int a, VisitDelegate visit)
         {
-            System.Diagnostics.Trace.Assert(adx >= 0);
-            System.Diagnostics.Trace.Assert(ady >= adx);
+            System.Diagnostics.Debug.Assert(adx >= 0);
+            System.Diagnostics.Debug.Assert(ady >= adx);
 
             yf++;   // the last dot is included
             for (; y != yf; y++)
@@ -190,8 +190,8 @@ namespace QSharp.Shader.Graphics.Raster.Plot
         public static void DrawDeclineY(int x, int y, int yf, int adx, int ady,
             ref int a, VisitDelegate visit)
         {
-            System.Diagnostics.Trace.Assert(adx >= 0);
-            System.Diagnostics.Trace.Assert(ady >= adx);
+            System.Diagnostics.Debug.Assert(adx >= 0);
+            System.Diagnostics.Debug.Assert(ady >= adx);
 
             yf++;   // the last dot is included
             for (; y != yf; y++)

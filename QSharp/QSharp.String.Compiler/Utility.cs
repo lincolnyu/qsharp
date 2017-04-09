@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+#if !WindowsDesktop
+using QSharp.Shared;
+#endif
 
 namespace QSharp.String.Compiler
 {

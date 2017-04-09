@@ -128,7 +128,7 @@ namespace QSharp.Shader.Graphics.RayTracing
         {
             light = new Light(0f, 0f, 0f);
 
-            System.Diagnostics.Trace.Assert(intersection.Normal.IsNormalized);
+            System.Diagnostics.Debug.Assert(intersection.Normal.IsNormalized);
 
             Ray rayToLight = new Ray(intersection.Position, null);
 
@@ -256,7 +256,7 @@ namespace QSharp.Shader.Graphics.RayTracing
                         /* local specular reflection */
                         CalculateRelection(intersection, dirIn_u, out dirTemp);
 
-                        System.Diagnostics.Trace.Assert(dirTemp.IsNormalized);
+                        System.Diagnostics.Debug.Assert(dirTemp.IsNormalized);
 
                         /*
                          * the angle between the vector from the intersection to the light
