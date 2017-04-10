@@ -227,7 +227,7 @@ namespace QSharp.Scheme.Buffering
                 return 0;
             }
 
-          //  Console.WriteLine($"RW: {reader.HookIndex}, {_wrPt.HookIndex}");
+            System.Diagnostics.Debug.WriteLine($"RW: {reader.HookIndex}, {_wrPt.HookIndex}");
 
             var len = HookBufferLen(reader.HookIndex) - reader.Position;
             var c = 0;
@@ -236,7 +236,9 @@ namespace QSharp.Scheme.Buffering
                 len += HookBufferLen(i);
                 c++;
             }
-            Console.WriteLine($"c{c},{len}");
+
+            System.Diagnostics.Debug.WriteLine($"c = {c}, len = {len}");
+
             return len;
         }
 

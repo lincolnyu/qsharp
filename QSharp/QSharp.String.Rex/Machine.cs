@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using QSharp.String.Stream;
-#if WindowsDesktop
+#if OldDotNet
 using ICloneable = System.ICloneable;
 #else
 using ICloneable = QSharp.Shared.ICloneable;

@@ -1,5 +1,5 @@
 ﻿using System;
-#if WindowsDesktop
+#if OldDotNet
 using System.Runtime.Serialization;
 #endif
 
@@ -41,7 +41,7 @@ namespace QSharp.Shared
         {
         }
 
-#if WindowsDesktop
+#if OldDotNet
 
         /// <summary>
         ///  instantiates an exception with serialisation information and context

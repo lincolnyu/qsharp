@@ -9,8 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-#if !WindowsDesktop
-using QSharp.Shared;
+#if !OldDotNet
+using ICloneable = QSharp.Shared.ICloneable;
 #endif
 
 namespace QSharp.String.Compiler

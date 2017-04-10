@@ -35,7 +35,7 @@ namespace QSharp.Shader.Graphics.Base.Exceptions
         {
         }
 
-#if WindowsDesktop
+#if OldDotNet
         /// <summary>
         ///  instantiates an exception with serialisation information and context
         /// </summary>

@@ -1,6 +1,6 @@
 ﻿namespace QSharp.Shared
 {
-#if !WindowsDesktop
+#if !OldDotNet
     public interface ICloneable
     {
         object Clone();
