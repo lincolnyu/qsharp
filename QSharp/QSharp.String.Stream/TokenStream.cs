@@ -5,7 +5,7 @@
  */
 
 using System;
-#if WindowsDesktop
+#if OldDotNet
 using ICloneable = System.ICloneable;
 #else
 using ICloneable = QSharp.Shared.ICloneable;

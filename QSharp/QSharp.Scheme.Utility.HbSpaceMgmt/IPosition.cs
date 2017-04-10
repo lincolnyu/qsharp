@@ -1,4 +1,7 @@
 ﻿using System;
+#if !OldDotNet
+using ICloneable = QSharp.Shared.ICloneable;
+#endif
 
 namespace QSharp.Scheme.Utility.HbSpaceMgmt
 {

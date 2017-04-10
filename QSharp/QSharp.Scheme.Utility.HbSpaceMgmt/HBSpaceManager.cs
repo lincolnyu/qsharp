@@ -75,7 +75,7 @@ namespace QSharp.Scheme.Utility.HbSpaceMgmt
             var nodeEncoder = new Embodiment.NodeEncoder(btreeOrder);
             var clientEncoder = new Embodiment.NodeEncoder(btreeOrder);
 
-            System.Diagnostics.Trace.Assert(clientEncoder.EncodedSize.CompareTo(nodeEncoder.EncodedSize) == 0);
+            System.Diagnostics.Debug.Assert(clientEncoder.EncodedSize.CompareTo(nodeEncoder.EncodedSize) == 0);
 
             config.BTreeSections = new List<MgmtConfig.BTreeSectionConfig>(btreeCount);
 

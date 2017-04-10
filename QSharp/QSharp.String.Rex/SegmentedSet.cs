@@ -229,10 +229,8 @@ namespace QSharp.String.Rex
         /// <param name="high"></param>
         protected void TryOverlay(int plow, int phigh, T low, T high)
         {
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(phigh>1);
-            System.Diagnostics.Trace.Assert(plow<Data.Count);
-#endif
+            System.Diagnostics.Debug.Assert(phigh>1);
+            System.Diagnostics.Debug.Assert(plow<Data.Count);
             
             var lowIsSucceedingInsertLessOne = plow > 0 && low.IsSucceeding(Data[plow - 1].High);
             var highIsPrecedingInsert = phigh < Data.Count && high.IsPreceding(Data[phigh].Low);

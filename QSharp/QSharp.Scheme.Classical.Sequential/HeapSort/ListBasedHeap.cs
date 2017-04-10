@@ -173,9 +173,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         {
             var aa = a as HeapNode;
             var bb = b as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(aa != null && bb != null);
-#endif
+            System.Diagnostics.Debug.Assert(aa != null && bb != null);
             var t = List[aa.Index];
             List[aa.Index] = List[bb.Index];
             List[bb.Index] = t;
@@ -192,9 +190,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         {
             var aa = a as HeapNode;
             var bb = b as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(aa != null && bb != null);
-#endif
+            System.Diagnostics.Debug.Assert(aa != null && bb != null);
             var t = List[aa.Index];
             List[aa.Index] = List[bb.Index];
             List[bb.Index] = t;
@@ -219,9 +215,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         public IHeapNode GetPrevNodeLinearly(IHeapNode n)
         {
             var nn = n as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(nn != null);
-#endif
+            System.Diagnostics.Debug.Assert(nn != null);
             return nn.Index > Start ? new HeapNode(nn.Index - 1) : null;
         }
 
@@ -234,9 +228,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         public IHeapNode FinishRemoval(IHeapNode p)
         {
             var pp = p as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(pp != null);
-#endif
+            System.Diagnostics.Debug.Assert(pp != null);
             var t = List[pp.Index];
             for (var i = pp.Index; i < Head - 1; i++)
             {
@@ -254,9 +246,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         public IHeapNode GetParent(IHeapNode n)
         {
             var nn = n as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(nn != null);
-#endif
+            System.Diagnostics.Debug.Assert(nn != null);
             return nn.Index <= 0 ? null : new HeapNode((nn.Index + Start - 1) / 2);
         }
 
@@ -268,9 +258,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         public IHeapNode GetLeft(IHeapNode n)
         {
             var nn = n as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(nn != null);
-#endif
+            System.Diagnostics.Debug.Assert(nn != null);
             var i = nn.Index * 2 + 1 - Start;
             return i >= Head ? null : new HeapNode(i);
         }
@@ -283,9 +271,7 @@ namespace QSharp.Scheme.Classical.Sequential.HeapSort
         public IHeapNode GetRight(IHeapNode n)
         {
             var nn = n as HeapNode;
-#if WindowsDesktop
-            System.Diagnostics.Trace.Assert(nn != null);
-#endif
+            System.Diagnostics.Debug.Assert(nn != null);
             var i = nn.Index * 2 + 2 - Start;
             return i >= Head ? null : new HeapNode(i);
         }

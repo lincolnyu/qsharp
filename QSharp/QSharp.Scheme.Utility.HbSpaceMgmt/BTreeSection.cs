@@ -123,7 +123,7 @@ namespace QSharp.Scheme.Utility.HbSpaceMgmt
             }
 
             var superior = Superior as Section;
-            System.Diagnostics.Trace.Assert(superior != null);
+            System.Diagnostics.Debug.Assert(superior != null);
 
             var sectionStart = Superior.TargetStart;
             var sectionSize = Superior.TargetSize;
@@ -238,7 +238,7 @@ namespace QSharp.Scheme.Utility.HbSpaceMgmt
                     BTreeWorker.Remove(node, index, BTreeOrder, _comparison, ref root);
                     AllocatePages(hole, hole.Size, out newHole);
 
-                    System.Diagnostics.Trace.Assert(newHole == null);
+                    System.Diagnostics.Debug.Assert(newHole == null);
 
                     size = TargetPaginator.Subtract(size, hole.Size);    // update remaining size
                 }

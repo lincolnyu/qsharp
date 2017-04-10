@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using QSharp.Scheme.Utility;
 
-
 namespace QSharp.Signal.Visual.Video.Utility
 {
     public class FrameSeparator
@@ -111,85 +110,82 @@ namespace QSharp.Signal.Visual.Video.Utility
             return abits == bbits;
         }
 
-        public void DoSeparation()
+        public void DoSeparation(StreamWriter log)
         {
             try
             {
-                Stream input = File.OpenRead(myInputFn);
-                StreamWriter ol = File.CreateText(myOLFn);
-
-                Stream oAligned = null;
-
-                if (mySc == null)
+                using (var input = File.OpenRead(myInputFn))
+                using (var ol = File.CreateText(myOLFn))
                 {
-                    bool bTypeSet = GuessTypeFromExt();
-                    if (!bTypeSet)
+                    Stream oAligned = null;
+
+                    if (mySc == null)
                     {
-                        Console.WriteLine("! Unable to infer the stream type from the file extension, taking it as MPEG-4.");
-                        SetSC_Mpeg4();
-                    }
-                }
-
-                int nWrOAligned = 0;
-                byte[] zeros = new byte[4]{0, 0, 0, 0};
-                if (myOAlignedFn != null && myOAlignedFn != "")
-                {
-                    oAligned = File.OpenWrite(myOAlignedFn);
-                }
-
-                FileInfo fiInput = new FileInfo(myInputFn);
-                int nLenInput = (int)fiInput.Length;
-
-                StreamProbe sp = new StreamProbe(input);
-                int nCompBytes = (myNScBits + 7) / 8;
-                byte[] buf = new byte[nCompBytes];
-
-                int i;
-                for (i = 0; i <= nLenInput - nCompBytes; )
-                {
-                    sp.Read(buf, i, nCompBytes);
-                    if (BitwiseEqual(buf, mySc, myNScBits))
-                    {
-                        ol.WriteLine(i.ToString() + ", ");
-                        i += nCompBytes;
-                        if (oAligned != null)
+                        bool bTypeSet = GuessTypeFromExt();
+                        if (!bTypeSet)
                         {
-                            int nUnaligned = nWrOAligned % 4;
-                            if (nUnaligned != 0)
+                            log.WriteLine("! Unable to infer the stream type from the file extension, taking it as MPEG-4.");
+                            SetSC_Mpeg4();
+                        }
+                    }
+
+                    int nWrOAligned = 0;
+                    byte[] zeros = new byte[4] { 0, 0, 0, 0 };
+                    if (myOAlignedFn != null && myOAlignedFn != "")
+                    {
+                        oAligned = File.OpenWrite(myOAlignedFn);
+                    }
+
+                    FileInfo fiInput = new FileInfo(myInputFn);
+                    int nLenInput = (int)fiInput.Length;
+
+                    StreamProbe sp = new StreamProbe(input);
+                    int nCompBytes = (myNScBits + 7) / 8;
+                    byte[] buf = new byte[nCompBytes];
+
+                    int i;
+                    for (i = 0; i <= nLenInput - nCompBytes;)
+                    {
+                        sp.Read(buf, i, nCompBytes);
+                        if (BitwiseEqual(buf, mySc, myNScBits))
+                        {
+                            ol.WriteLine(i.ToString() + ", ");
+                            i += nCompBytes;
+                            if (oAligned != null)
                             {
-                                oAligned.Write(zeros, 0, 4-nUnaligned);
-                                nWrOAligned += 4-nUnaligned;
+                                int nUnaligned = nWrOAligned % 4;
+                                if (nUnaligned != 0)
+                                {
+                                    oAligned.Write(zeros, 0, 4 - nUnaligned);
+                                    nWrOAligned += 4 - nUnaligned;
+                                }
+                                oAligned.Write(buf, 0, nCompBytes);
+                                nWrOAligned += nCompBytes;
                             }
-                            oAligned.Write(buf, 0, nCompBytes);
-                            nWrOAligned += nCompBytes;
                         }
-                    }
-                    else
-                    {
-                        i++;    // TODO: optimization needed, consider KMP?
-                        if (oAligned != null)
+                        else
                         {
-                            oAligned.Write(buf, 0, 1);
-                            nWrOAligned++;
+                            i++;    // TODO: optimization needed, consider KMP?
+                            if (oAligned != null)
+                            {
+                                oAligned.Write(buf, 0, 1);
+                                nWrOAligned++;
+                            }
                         }
                     }
+
+                    ol.WriteLine(nLenInput.ToString());
+
+                    if (oAligned != null)
+                    {
+                        sp.Read(buf, i, nLenInput - i);
+                        oAligned.Write(buf, 0, nLenInput - i);
+                    }
                 }
-
-                ol.WriteLine(nLenInput.ToString());
-
-                if (oAligned != null)
-                {
-                    sp.Read(buf, i, nLenInput - i);
-                    oAligned.Write(buf, 0, nLenInput - i);
-                }
-
-
-                input.Close();
-                ol.Close();
             }
             catch(Exception)
             {
-                Console.WriteLine("! Error occurred during separation.");
+                log.WriteLine("! Error occurred during separation.");
             }
             finally
             {
@@ -208,7 +204,7 @@ namespace QSharp.Signal.Visual.Video.Utility
          *   H.263           
          * </summary>
          */
-        public static void SampleMain(string[] args)
+        public static void SampleMain(string[] args, StreamWriter log)
         {
             string fnIn = "in.dat";     // default input file
             string fnOL = "ol.txt";     // default offset list file
@@ -247,24 +243,24 @@ namespace QSharp.Signal.Visual.Video.Utility
                     }
                     else
                     {
-                        Console.WriteLine("! Customized startcode currently not supported.");
+                        log.WriteLine("! Customized startcode currently not supported.");
                         return;
                     }
                 }
                 else if (args[i] == "--help")
                 {   // print help frame
-                    Console.WriteLine("Frame Separator -- Video Toolkit");
-                    Console.WriteLine("framesep [options]");
-                    Console.WriteLine("   -i <file>     Specifies input file ('in.dat' by default)");
-                    Console.WriteLine("   -ol <file>    Specifies output offset list file ('segs.txt' by default)");
-                    Console.WriteLine("   -t <type>     Specifies video stream type: any one of 'mpeg4', 'h264', 'h263'"
+                    log.WriteLine("Frame Separator -- Video Toolkit");
+                    log.WriteLine("framesep [options]");
+                    log.WriteLine("   -i <file>     Specifies input file ('in.dat' by default)");
+                    log.WriteLine("   -ol <file>    Specifies output offset list file ('segs.txt' by default)");
+                    log.WriteLine("   -t <type>     Specifies video stream type: any one of 'mpeg4', 'h264', 'h263'"
                                     + "                 ('mpeg4' by default)");
-                    Console.WriteLine("   --help        Show this help");
+                    log.WriteLine("   --help        Show this help");
                     return;
                 }
                 else
                 {
-                    Console.WriteLine("! Bad arguments.");
+                    log.WriteLine("! Bad arguments.");
                     return;
                 }
             }
@@ -272,7 +268,7 @@ namespace QSharp.Signal.Visual.Video.Utility
             vs.OLFileName = fnOL;
             vs.OAlignedFileName = fnOAligned;
 
-            vs.DoSeparation();
+            vs.DoSeparation(log);
         }
 
     /* private data members */

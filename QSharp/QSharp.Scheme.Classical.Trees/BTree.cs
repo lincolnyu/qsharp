@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-#if !WindowsDesktop
+#if !OldRt
 using System.Reflection;
 #endif
 
@@ -24,10 +24,10 @@ namespace QSharp.Scheme.Classical.Trees
             var tt = typeof(T);
 
             // TODO the two below might be different
-#if WindowsDesktop
-            var interfaces = tt.GetInterfaces();
-#else
+#if OldRt
             var interfaces = tt.GetTypeInfo().ImplementedInterfaces;
+#else
+            var interfaces = tt.GetInterfaces();
 #endif
 
             var isDisposable = interfaces.Any(intf => intf == typeof(IDisposable));
@@ -44,6 +44,6 @@ namespace QSharp.Scheme.Classical.Trees
             Order = order;
         }
 
-        #endregion
+#endregion
     }
 }
