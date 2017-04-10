@@ -2,7 +2,7 @@
 
 namespace QSharp.Scheme.Utility
 {
-    public abstract class Cache<TKey, TValue>
+    public class Cache<TKey, TValue>
     {
         public delegate TValue GetValueCb(TKey key);
         public delegate void UpdateCacheCb(IDictionary<TKey, TValue> dict, TKey key, TValue val);

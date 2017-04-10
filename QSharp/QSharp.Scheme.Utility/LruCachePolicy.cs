@@ -17,7 +17,7 @@ namespace QSharp.Scheme.Utility
 
         public ulong _nextCount = 0;
 
-        LruCachePolicy(uint cacheSize)
+        public LruCachePolicy(uint cacheSize)
         {
             CacheSize = cacheSize;
         }
