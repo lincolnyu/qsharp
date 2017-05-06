@@ -476,7 +476,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
             var rand = new Random(123);
             var print = false;
 
-            for (var t = 0; t < 9; t++)
+            for (var t = 0; t < 10; t++)
             {
                 var rows = rand.Next(2, 8);
                 var cols = rand.Next(2, 8);
@@ -485,7 +485,6 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 Debug.WriteLine($"Test iteration {t}: {rows}x{cols}@{steps}");
 
                 var test = GenerateRandomTest(rand, reset, steps, 16);
-                if (t != 8) continue;
                 var quest = test.Item1;
                 var solver = test.Item2;
                 var questSave = quest.Clone();
