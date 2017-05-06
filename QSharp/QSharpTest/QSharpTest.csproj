@@ -78,6 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheme.Buffering\BlockyCircularBufferTest.cs" />
     <Compile Include="Scheme.Buffering\HookyCircularBufferTest.cs" />
+    <Compile Include="Scheme.Classical.Algorithms\DepthFirstTests.cs" />
     <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
     <Compile Include="Scheme.CSharpRocks\MultiOutTest.cs" />
@@ -166,6 +167,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QSharp.Classical.Abstract\QSharp.Classical.Algorithms.csproj">
+      <Project>{CEA2451F-4E90-4FBD-84F9-BDFE71F5C3B3}</Project>
+      <Name>QSharp.Classical.Algorithms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QSharp.Scheme.Buffering\QSharp.Scheme.Buffering.csproj">
       <Project>{08bb66d5-f6a6-4698-90a8-9649ef54aaa5}</Project>
       <Name>QSharp.Scheme.Buffering</Name>
