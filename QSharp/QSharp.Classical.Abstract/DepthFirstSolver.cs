@@ -7,10 +7,9 @@ namespace QSharp.Classical.Algorithms
     {
         public interface IState
         {
-            bool Done { get; }
+            bool Solved { get; }
 
-            IState Redo(IOperation op);
-            IState Undo(IOperation op);
+            IState Operate(IOperation op);
         }
 
         public interface IOperation
@@ -41,36 +40,84 @@ namespace QSharp.Classical.Algorithms
             GetStartOperation = getStart;
         }
 
-        public IState InitialState { get; }
         public int MaxDepth { get; }
         public Stack<IOperation> OperationStack { get; } = new Stack<IOperation>();
         public Stack<IState> StateStack { get; } = new Stack<IState>();
         public HashSet<IState> Stacked { get; } = new HashSet<IState>();
-        public GetStartOperationDelegate GetStartOperation { get; }
-        public IOperation LastOperation { get; private set; }
+
+        public IState InitialState { get; }
         public IState CurrentState { get; private set; }
+        public IOperation LastOperation { get; private set; }
+
+        public GetStartOperationDelegate GetStartOperation { get; }
 
         public event SolveStepEventHandler SolveStep;
 
-        public IEnumerable<IOperation> SolveOne()
+        public void Reset()
         {
-            CurrentState = InitialState;
-            if (CurrentState.Done)
+            OperationStack.Clear();
+            StateStack.Clear();
+            Stacked.Clear();
+            CurrentState = null;
+            LastOperation = null;
+        }
+
+        public IList<IOperation> SolveShortest(int numToCheck = int.MaxValue)
+        {
+            var min = int.MaxValue;
+            IList<IOperation> minsl = null;
+            for (var c = 0; c < numToCheck; c++)
             {
+                var sol = c == 0? SolveFirst() : SolveNext();
+                if (sol == null)
+                {
+                    break;
+                }
+                var sl = sol.ToList();
+                if (sl.Count <= 1)
+                {
+                    return sl;
+                }
+                if (sl.Count < min)
+                {
+                    min = sl.Count;
+                    minsl = sl;
+                }
+            }
+            return minsl;
+        }
+
+        public IList<IOperation> SolveFirst()
+        {
+            if (InitialState.Solved)
+            {
+                CurrentState = InitialState;
                 SolveStep?.Invoke(this, null, SolveStepTypes.Succeeded);
                 return new IOperation[] { };
             }
+            CurrentState = InitialState;
             Stacked.Add(CurrentState);
             LastOperation = GetStartOperation(this);
+            return Solve();
+        }
+        
+        private IList<IOperation> SolveNext()
+        {
+            LastOperation = LastOperation.GetNext(this);
+            return Solve();
+        }
+
+        private IList<IOperation> Solve()
+        {
             while (true)
             {
                 if (LastOperation != null)
                 {
-                    var newState = CurrentState.Redo(LastOperation);
-                    if (newState.Done)
+                    var newState = CurrentState.Operate(LastOperation);
+                    if (newState.Solved)
                     {
                         SolveStep?.Invoke(this, newState, SolveStepTypes.Succeeded);
-                        return OperationStack.Reverse().Concat(new[] { LastOperation });
+                        return OperationStack.Reverse().Concat(new[] { LastOperation }).ToList();
                     }
                     if (Stacked.Contains(newState))
                     {

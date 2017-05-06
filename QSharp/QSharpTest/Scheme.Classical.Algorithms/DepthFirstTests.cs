@@ -35,7 +35,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 CopyFrom(other);
             }
 
-            public bool Done { get; private set; }
+            public bool Solved { get; private set; }
 
             public int[,] Data { get; private set; }
             public int RowCount { get; private set; }
@@ -73,7 +73,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 return sb.ToString();
             }
 
-            public IState Redo(IOperation op)
+            public IState Operate(IOperation op)
             {
                 var cs = new CasesState(this);
                 var cm = (CaseMover)op;
@@ -81,18 +81,10 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 return cs;
             }
 
-            public IState Undo(IOperation op)
-            {
-                var cs = new CasesState(this);
-                var cm = (CaseMover)op;
-                cs.SelfUndo(cm);
-                return cs;
-            }
-
             public bool Equals(CasesState other)
             {
                 if (RowCount != other.RowCount || ColumnCount != other.ColumnCount 
-                    || Done != other.Done || BlankRow != other.BlankRow || BlankCol != other.BlankCol)
+                    || Solved != other.Solved || BlankRow != other.BlankRow || BlankCol != other.BlankCol)
                 {
                     return false;
                 }
@@ -122,19 +114,19 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 Data[RowCount - 1, ColumnCount - 1] = 0;
                 BlankRow = RowCount - 1;
                 BlankCol = ColumnCount - 1;
-                Done = true;
+                Solved = true;
             }
 
             private void UpdateStatus()
             {
-                Done = true;
+                Solved = true;
                 for (var i = 0; i < RowCount; i++)
                 {
                     for (var j = 0; j < ColumnCount; j++)
                     {
-                        if (Done && (i < RowCount-1 || j < ColumnCount-1) && Data[i,j] != i*ColumnCount + j + 1)
+                        if (Solved && (i < RowCount-1 || j < ColumnCount-1) && Data[i,j] != i*ColumnCount + j + 1)
                         {
-                            Done = false;
+                            Solved = false;
                         }
                         if (Data[i,j] == 0)
                         {
@@ -152,7 +144,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 Data = new int[RowCount, ColumnCount];
                 BlankRow = other.BlankRow;
                 BlankCol = other.BlankCol;
-                Done = other.Done;
+                Solved = other.Solved;
                 for (var i = 0; i < RowCount; i++)
                 {
                     for (var j = 0; j < ColumnCount; j++)
@@ -196,7 +188,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 }
                 else
                 {
-                    Done = false;
+                    Solved = false;
                 }
             }
 
@@ -231,7 +223,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 }
                 else
                 {
-                    Done = false;
+                    Solved = false;
                 }
             }
         }
@@ -492,7 +484,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 {
                     solver.SolveStep += SolverSolveStep;
                 }
-                var sol = solver.SolveOne();
+                var sol = solver.SolveFirst();
                 Assert.AreEqual(questSave, quest);
                 Assert.IsTrue(sol != null);
 
@@ -508,7 +500,54 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                         PrintMove(op, quest);
                     }
                 }
-                Assert.IsTrue(quest.Done);
+                Assert.IsTrue(quest.Solved);
+                Assert.AreEqual(reset, quest);
+            }
+        }
+
+        [TestMethod]
+        public void TestMoveCasesShortest()
+        {
+            var rand = new Random(123);
+            var print = false;
+
+            for (var t = 0; t < 10; t++)
+            {
+                var rows = rand.Next(2, 8);
+                var cols = rand.Next(2, 8);
+                var reset = new CasesState(rows, cols);
+                var steps = rand.Next(15, 40);
+                Debug.WriteLine($"Test iteration {t}: {rows}x{cols}@{steps}");
+
+                var test = GenerateRandomTest(rand, reset, steps, 16);
+
+                var quest = test.Item1;
+                var solver = test.Item2;
+                var questSave = quest.Clone();
+                if (print)
+                {
+                    solver.SolveStep += SolverSolveStep;
+                }
+                var sol = solver.SolveFirst().ToList();
+                solver.Reset();
+                var sol2 = solver.SolveShortest(3);
+                Assert.AreEqual(questSave, quest);
+                Assert.IsTrue(sol != null);
+                Assert.IsTrue(sol2 != null);
+                Assert.IsTrue(sol2.Count <= sol.Count());
+                if (print)
+                {
+                    PrintInit(quest, steps);
+                }
+                foreach (var op in sol2)
+                {
+                    quest.SelfRedo((CaseMover)op);
+                    if (print)
+                    {
+                        PrintMove(op, quest);
+                    }
+                }
+                Assert.IsTrue(quest.Solved);
                 Assert.AreEqual(reset, quest);
             }
         }
