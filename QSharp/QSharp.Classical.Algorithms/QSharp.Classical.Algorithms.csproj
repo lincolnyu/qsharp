@@ -38,6 +38,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BreadthFirstSolver.cs" />
     <Compile Include="DepthFirstSolver.cs" />
     <Compile Include="DepthFirstSolverCommon.cs" />
     <Compile Include="DepthFirstSolverDP.cs" />

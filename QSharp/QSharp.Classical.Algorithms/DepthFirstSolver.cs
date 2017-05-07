@@ -37,7 +37,6 @@ namespace QSharp.Classical.Algorithms
         {
             if (InitialState.Solved)
             {
-                CurrentState = InitialState;
                 SolveStep?.Invoke(this, null, SolveStepTypes.Succeeded);
                 return new TOperation[] { };
             }

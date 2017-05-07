@@ -78,6 +78,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheme.Buffering\BlockyCircularBufferTest.cs" />
     <Compile Include="Scheme.Buffering\HookyCircularBufferTest.cs" />
+    <Compile Include="Scheme.Classical.Algorithms\BreadthFirstTest.cs" />
+    <Compile Include="Scheme.Classical.Algorithms\CaseMoving\CaseMover.cs" />
+    <Compile Include="Scheme.Classical.Algorithms\CaseMoving\CasesState.cs" />
     <Compile Include="Scheme.Classical.Algorithms\DepthFirstTests.cs" />
     <Compile Include="Scheme.Classical.Sequential\CircularBufferTest.cs" />
     <Compile Include="Scheme.Classical.Sequential\DequeTest.cs" />
@@ -259,6 +262,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
