@@ -33,6 +33,8 @@ namespace QSharp.Classical.Algorithms
 
         public delegate void SolveStepEventHandler(DepthFirstSolver dfs, IState state, SolveStepTypes type);
 
+        public delegate bool SolveShortestQuitPredicate(DepthFirstSolver dfs, int solNum, IList<IOperation> minsl);
+
         public DepthFirstSolver(IState initialState, GetStartOperationDelegate getStart, int maxDepth = int.MaxValue)
         {
             InitialState = initialState;
@@ -62,13 +64,12 @@ namespace QSharp.Classical.Algorithms
             LastOperation = null;
         }
 
-        public IList<IOperation> SolveShortest(int numToCheck = int.MaxValue)
+        public IList<IOperation> SolveShortest(SolveShortestQuitPredicate quit)
         {
-            var min = int.MaxValue;
             IList<IOperation> minsl = null;
-            for (var c = 0; c < numToCheck; c++)
+            for (var solNum = 0; !quit(this, solNum, minsl); solNum++)
             {
-                var sol = c == 0? SolveFirst() : SolveNext();
+                var sol = solNum == 0 ? SolveFirst() : SolveNext();
                 if (sol == null)
                 {
                     break;
@@ -78,9 +79,8 @@ namespace QSharp.Classical.Algorithms
                 {
                     return sl;
                 }
-                if (sl.Count < min)
+                if (sl.Count < (minsl?.Count ?? int.MaxValue))
                 {
-                    min = sl.Count;
                     minsl = sl;
                 }
             }

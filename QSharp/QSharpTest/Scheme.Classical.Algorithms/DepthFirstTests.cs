@@ -530,7 +530,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 }
                 var sol = solver.SolveFirst().ToList();
                 solver.Reset();
-                var sol2 = solver.SolveShortest(3);
+                var sol2 = solver.SolveShortest((dfs, sn, minsl)=>sn>=3);
                 Assert.AreEqual(questSave, quest);
                 Assert.IsTrue(sol != null);
                 Assert.IsTrue(sol2 != null);
