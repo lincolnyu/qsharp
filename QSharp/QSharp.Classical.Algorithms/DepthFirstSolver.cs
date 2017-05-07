@@ -144,8 +144,8 @@ namespace QSharp.Classical.Algorithms
                     }
                     else
                     {
-                        LastOperation = null;
                         SolveStep?.Invoke(this, newState, SolveStepTypes.HitStackLimit);
+                        LastOperation = LastOperation.GetNext(this);
                     }
                 }
                 if (LastOperation == null)

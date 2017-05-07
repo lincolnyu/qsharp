@@ -476,7 +476,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 var steps = rand.Next(15, 40);
                 Debug.WriteLine($"Test iteration {t}: {rows}x{cols}@{steps}");
 
-                var test = GenerateRandomTest(rand, reset, steps, 16);
+                var test = GenerateRandomTest(rand, reset, steps, 15);
                 var quest = test.Item1;
                 var solver = test.Item2;
                 var questSave = quest.Clone();
@@ -519,7 +519,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 var steps = rand.Next(15, 40);
                 Debug.WriteLine($"Test iteration {t}: {rows}x{cols}@{steps}");
 
-                var test = GenerateRandomTest(rand, reset, steps, 16);
+                var test = GenerateRandomTest(rand, reset, steps, 15);
 
                 var quest = test.Item1;
                 var solver = test.Item2;
