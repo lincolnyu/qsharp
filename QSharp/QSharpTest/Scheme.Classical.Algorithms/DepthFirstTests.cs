@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QSharp.Classical.Algorithms;
-using static QSharp.Classical.Algorithms.DepthFirstSolver;
+using static QSharp.Classical.Algorithms.DepthFirstSolverCommon;
 
 namespace QSharpTest.Scheme.Classical.Algorithms
 {
@@ -247,8 +247,11 @@ namespace QSharpTest.Scheme.Classical.Algorithms
 
             public override string ToString() => Direction.ToString();
 
-            IOperation IOperation.GetNext(DepthFirstSolver dft)
+            IOperation IOperation.GetNext(DepthFirstSolverCommon dft)
                 => GetNext(dft);
+
+            public IOperation GetFirst(DepthFirstSolverCommon dfs)
+                => GetFirst((CasesState)dfs.CurrentState);
 
             public static implicit operator CaseMover(Directions d)
                 => new CaseMover(d);
@@ -258,9 +261,6 @@ namespace QSharpTest.Scheme.Classical.Algorithms
 
             public static CaseMover GetFirst(CasesState cs)
                 => GetAvailable(cs).First();
-
-            public IOperation GetFirst(DepthFirstSolver dfs)
-                => GetFirst((CasesState)dfs.CurrentState);
 
             public static IEnumerable<CaseMover> GetAvailable(CasesState cs)
             {
@@ -282,7 +282,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 }
             }
 
-            public CaseMover GetNext(DepthFirstSolver dft)
+            public CaseMover GetNext(DepthFirstSolverCommon dft)
             {
                 var cs = (CasesState)dft.CurrentState;
                 if (cs.BlankRow == 0)
@@ -434,6 +434,32 @@ namespace QSharpTest.Scheme.Classical.Algorithms
             return new Tuple<CasesState, DepthFirstSolver, CaseMover[]>(quest, solver, ops);
         }
 
+        private static Tuple<CasesState, DepthFirstSolverDP, CaseMover[]> GenerateRandomTestDP(Random rand, CasesState reset, int steps)
+        {
+            var quest = reset.Clone();
+            var ops = new CaseMover[steps];
+
+            for (var s = 0; s < steps; s++)
+            {
+                var alt = CaseMover.GetAvailable(quest).ToList();
+                var sel = rand.Next(alt.Count);
+                var op = alt[sel];
+                ops[s] = op;
+                quest.SelfRedo(op);
+            }
+
+            var questClone = quest.Clone();
+            for (var s = steps - 1; s >= 0; s--)
+            {
+                var op = ops[s];
+                questClone.SelfUndo(op);
+            }
+            Assert.AreEqual(reset, questClone);
+
+            var solver = new DepthFirstSolverDP(quest, dfs => CaseMover.GetFirst((CasesState)dfs.CurrentState));
+            return new Tuple<CasesState, DepthFirstSolverDP, CaseMover[]>(quest, solver, ops);
+        }
+
         private static void PrintInit(IState state, int steps)
         {
             Debug.WriteLine("------------------------------");
@@ -441,11 +467,11 @@ namespace QSharpTest.Scheme.Classical.Algorithms
             Debug.WriteLine(state);
         }
 
-        private static void SolverSolveStep(DepthFirstSolver dfs, IState state, SolveStepTypes type)
+        private static void SolverSolveStep(DepthFirstSolver dfs, IState state, DepthFirstSolver.SolveStepTypes type)
         {
             Debug.WriteLine("------------------------------");
             Debug.WriteLine(type);
-            if (type ==  SolveStepTypes.Advance)
+            if (type == DepthFirstSolver.SolveStepTypes.Advance)
             {
                 Debug.WriteLine(dfs.LastOperation);
             }
@@ -454,7 +480,19 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 Debug.WriteLine(state);
             }
         }
-
+        private static void SolverSolveStepDP(DepthFirstSolverDP dfs, IState state, DepthFirstSolverDP.SolveStepTypes type)
+        {
+            Debug.WriteLine("------------------------------");
+            Debug.WriteLine(type);
+            if (type == DepthFirstSolverDP.SolveStepTypes.Advance)
+            {
+                Debug.WriteLine(dfs.LastOperation);
+            }
+            if (state != null)
+            {
+                Debug.WriteLine(state);
+            }
+        }
         private static void PrintMove(IOperation op, IState state)
         {
             Debug.WriteLine("------------------------------");
@@ -483,6 +521,49 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 if (print)
                 {
                     solver.SolveStep += SolverSolveStep;
+                }
+                var sol = solver.SolveFirst();
+                Assert.AreEqual(questSave, quest);
+                Assert.IsTrue(sol != null);
+
+                if (print)
+                {
+                    PrintInit(quest, steps);
+                }
+                foreach (var op in sol)
+                {
+                    quest.SelfRedo((CaseMover)op);
+                    if (print)
+                    {
+                        PrintMove(op, quest);
+                    }
+                }
+                Assert.IsTrue(quest.Solved);
+                Assert.AreEqual(reset, quest);
+            }
+        }
+
+        [TestMethod]
+        public void TestMoveCasesDP()
+        {
+            var rand = new Random(123);
+            var print = false;
+
+            for (var t = 0; t < 1; t++)
+            {
+                var rows = 3;// rand.Next(2, 8);
+                var cols = 3;// rand.Next(2, 8);
+                var reset = new CasesState(rows, cols);
+                var steps = rand.Next(15, 40);
+                Debug.WriteLine($"Test iteration {t}: {rows}x{cols}@{steps}");
+
+                var test = GenerateRandomTestDP(rand, reset, steps);
+                var quest = test.Item1;
+                var solver = test.Item2;
+                var questSave = quest.Clone();
+                if (print)
+                {
+                    solver.SolveStep += SolverSolveStepDP;
                 }
                 var sol = solver.SolveFirst();
                 Assert.AreEqual(questSave, quest);
