@@ -81,6 +81,9 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 return cs;
             }
 
+            public IOperation GetFirstOperation(DepthFirstSolverCommon dfs)
+                => CaseMover.GetFirst(this);
+
             public bool Equals(CasesState other)
             {
                 if (RowCount != other.RowCount || ColumnCount != other.ColumnCount 
@@ -430,7 +433,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
 
             var solveSteps = Math.Min(steps, maxSolveSteps);
 
-            var solver = new DepthFirstSolver(quest, dfs => CaseMover.GetFirst((CasesState)dfs.CurrentState), maxSolveSteps);
+            var solver = new DepthFirstSolver(quest, maxSolveSteps);
             return new Tuple<CasesState, DepthFirstSolver, CaseMover[]>(quest, solver, ops);
         }
 
@@ -456,7 +459,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
             }
             Assert.AreEqual(reset, questClone);
 
-            var solver = new DepthFirstSolverDP(quest, dfs => CaseMover.GetFirst((CasesState)dfs.CurrentState));
+            var solver = new DepthFirstSolverDP(quest);
             return new Tuple<CasesState, DepthFirstSolverDP, CaseMover[]>(quest, solver, ops);
         }
 

@@ -17,7 +17,7 @@ namespace QSharp.Classical.Algorithms
 
         public delegate void SolveStepEventHandler(DepthFirstSolver dfs, IState state, SolveStepTypes type);
 
-        public DepthFirstSolver(IState initialState, GetStartOperationDelegate getStart, int maxDepth = int.MaxValue) : base(initialState, getStart)
+        public DepthFirstSolver(IState initialState, int maxDepth = int.MaxValue) : base(initialState)
         {
             MaxDepth = maxDepth;
         }
@@ -43,7 +43,7 @@ namespace QSharp.Classical.Algorithms
             }
             CurrentState = InitialState;
             Stacked.Add(CurrentState);
-            LastOperation = GetStartOperation(this);
+            LastOperation = CurrentState.GetFirstOperation(this);
             return Solve<TOperation>();
         }
 

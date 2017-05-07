@@ -16,7 +16,7 @@ namespace QSharp.Classical.Algorithms
 
         public delegate void SolveStepEventHandler(DepthFirstSolverDP dfs, IState state, SolveStepTypes type);
 
-        public DepthFirstSolverDP(IState initialState, GetStartOperationDelegate getStart) : base(initialState, getStart)
+        public DepthFirstSolverDP(IState initialState) : base(initialState)
         {
         }
 
@@ -34,7 +34,7 @@ namespace QSharp.Classical.Algorithms
             }
             CurrentState = InitialState;
             Visited.Add(CurrentState);
-            LastOperation = GetStartOperation(this);
+            LastOperation = CurrentState.GetFirstOperation(this);
             return Solve<TOperation>();
         }
 

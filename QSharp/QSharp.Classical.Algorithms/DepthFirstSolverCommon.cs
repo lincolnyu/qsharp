@@ -10,6 +10,7 @@ namespace QSharp.Classical.Algorithms
             bool Solved { get; }
 
             IState Operate(IOperation op);
+            IOperation GetFirstOperation(DepthFirstSolverCommon dfs);
         }
 
         public interface IOperation
@@ -17,19 +18,14 @@ namespace QSharp.Classical.Algorithms
             IOperation GetFirst(DepthFirstSolverCommon dfs);
             IOperation GetNext(DepthFirstSolverCommon dfs);
         }
-
-        public delegate IOperation GetStartOperationDelegate(DepthFirstSolverCommon dfs);
-
+        
         public delegate bool SolveShortestQuitPredicate<TOperation>(DepthFirstSolverCommon dfs, int solNum, IList<TOperation> minsl) where TOperation : IOperation;
 
-        protected DepthFirstSolverCommon(IState initialState, GetStartOperationDelegate getStart)
+        protected DepthFirstSolverCommon(IState initialState)
         {
             InitialState = initialState;
-            GetStartOperation = getStart;
         }
-
-        public GetStartOperationDelegate GetStartOperation { get; }
-
+        
         public Stack<IOperation> OperationStack { get; } = new Stack<IOperation>();
         public Stack<IState> StateStack { get; } = new Stack<IState>();
 
