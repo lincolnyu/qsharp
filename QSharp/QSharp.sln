@@ -67,7 +67,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Scheme.Buffering", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Signal.Visual", "QSharp.Signal.Visual\QSharp.Signal.Visual.csproj", "{ACCDCAE3-B3AD-4462-8CED-A04C55E6E14A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Classical.Algorithms", "QSharp.Classical.Abstract\QSharp.Classical.Algorithms.csproj", "{CEA2451F-4E90-4FBD-84F9-BDFE71F5C3B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSharp.Classical.Algorithms", "QSharp.Classical.Algorithms\QSharp.Classical.Algorithms.csproj", "{CEA2451F-4E90-4FBD-84F9-BDFE71F5C3B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

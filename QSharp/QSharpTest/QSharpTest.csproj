@@ -167,7 +167,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QSharp.Classical.Abstract\QSharp.Classical.Algorithms.csproj">
+    <ProjectReference Include="..\QSharp.Classical.Algorithms\QSharp.Classical.Algorithms.csproj">
       <Project>{CEA2451F-4E90-4FBD-84F9-BDFE71F5C3B3}</Project>
       <Name>QSharp.Classical.Algorithms</Name>
     </ProjectReference>
