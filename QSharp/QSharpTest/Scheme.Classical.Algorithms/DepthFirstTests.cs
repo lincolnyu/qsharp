@@ -528,9 +528,9 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 {
                     solver.SolveStep += SolverSolveStep;
                 }
-                var sol = solver.SolveFirst().ToList();
+                var sol = solver.SolveFirst<CaseMover>().ToList();
                 solver.Reset();
-                var sol2 = solver.SolveShortest((dfs, sn, minsl)=>sn>=3);
+                var sol2 = solver.SolveShortest<CaseMover>((dfs, sn, minsl)=>sn>=3);
                 Assert.AreEqual(questSave, quest);
                 Assert.IsTrue(sol != null);
                 Assert.IsTrue(sol2 != null);
@@ -541,7 +541,7 @@ namespace QSharpTest.Scheme.Classical.Algorithms
                 }
                 foreach (var op in sol2)
                 {
-                    quest.SelfRedo((CaseMover)op);
+                    quest.SelfRedo(op);
                     if (print)
                     {
                         PrintMove(op, quest);

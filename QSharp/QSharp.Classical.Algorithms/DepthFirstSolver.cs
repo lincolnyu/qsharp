@@ -33,7 +33,7 @@ namespace QSharp.Classical.Algorithms
 
         public delegate void SolveStepEventHandler(DepthFirstSolver dfs, IState state, SolveStepTypes type);
 
-        public delegate bool SolveShortestQuitPredicate(DepthFirstSolver dfs, int solNum, IList<IOperation> minsl);
+        public delegate bool SolveShortestQuitPredicate<TOperation>(DepthFirstSolver dfs, int solNum, IList<TOperation> minsl) where TOperation: IOperation;
 
         public DepthFirstSolver(IState initialState, GetStartOperationDelegate getStart, int maxDepth = int.MaxValue)
         {
@@ -64,12 +64,21 @@ namespace QSharp.Classical.Algorithms
             LastOperation = null;
         }
 
-        public IList<IOperation> SolveShortest(SolveShortestQuitPredicate quit)
+        public IList<IOperation> SolveShortest(SolveShortestQuitPredicate<IOperation> quit)
+            => SolveShortest<IOperation>(quit);
+
+        public IList<IOperation> SolveFirst()
+            => SolveFirst<IOperation>();
+
+        public IList<IOperation> SolveNext()
+            => SolveNext<IOperation>();
+
+        public IList<TOperation> SolveShortest<TOperation>(SolveShortestQuitPredicate<TOperation> quit) where TOperation : IOperation
         {
-            IList<IOperation> minsl = null;
+            IList<TOperation> minsl = null;
             for (var solNum = 0; !quit(this, solNum, minsl); solNum++)
             {
-                var sol = solNum == 0 ? SolveFirst() : SolveNext();
+                var sol = solNum == 0 ? SolveFirst<TOperation>() : SolveNext<TOperation>();
                 if (sol == null)
                 {
                     break;
@@ -87,27 +96,27 @@ namespace QSharp.Classical.Algorithms
             return minsl;
         }
 
-        public IList<IOperation> SolveFirst()
+        public IList<TOperation> SolveFirst<TOperation>() where TOperation : IOperation
         {
             if (InitialState.Solved)
             {
                 CurrentState = InitialState;
                 SolveStep?.Invoke(this, null, SolveStepTypes.Succeeded);
-                return new IOperation[] { };
+                return new TOperation[] { };
             }
             CurrentState = InitialState;
             Stacked.Add(CurrentState);
             LastOperation = GetStartOperation(this);
-            return Solve();
+            return Solve<TOperation>();
         }
         
-        private IList<IOperation> SolveNext()
+        public IList<TOperation> SolveNext<TOperation>() where TOperation: IOperation
         {
             LastOperation = LastOperation.GetNext(this);
-            return Solve();
+            return Solve<TOperation>();
         }
 
-        private IList<IOperation> Solve()
+        private IList<TOperation> Solve<TOperation>() where TOperation : IOperation
         {
             while (true)
             {
@@ -117,7 +126,7 @@ namespace QSharp.Classical.Algorithms
                     if (newState.Solved)
                     {
                         SolveStep?.Invoke(this, newState, SolveStepTypes.Succeeded);
-                        return OperationStack.Reverse().Concat(new[] { LastOperation }).ToList();
+                        return OperationStack.Reverse().Cast<TOperation>().Concat(new[] { (TOperation)LastOperation }).ToList();
                     }
                     if (Stacked.Contains(newState))
                     {
