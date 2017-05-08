@@ -5,10 +5,10 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BB89281C-C9C9-42E7-8D68-73E393763E3A}</ProjectGuid>
+    <ProjectGuid>{CEA2451F-4E90-4FBD-84F9-BDFE71F5C3B3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>QSharp.Scheme.Utility.HbSpaceMgmt</RootNamespace>
-    <AssemblyName>QSharp.Scheme.Utility.HbSpaceMgmt</AssemblyName>
+    <RootNamespace>QSharp.Classical.Algorithms</RootNamespace>
+    <AssemblyName>QSharp.Classical.Algorithms</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -38,43 +38,11 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Allotter.cs" />
-    <Compile Include="BaseOperator.cs" />
-    <Compile Include="BTreeSection.cs" />
-    <Compile Include="Embodiment.cs" />
-    <Compile Include="Encoders.cs" />
-    <Compile Include="HBSpaceManager.cs" />
-    <Compile Include="Hole.cs" />
-    <Compile Include="IBTreeSection.cs" />
-    <Compile Include="IChunkDescriptorEncoder.cs" />
-    <Compile Include="IEncodable.cs" />
-    <Compile Include="INodeEncoder.cs" />
-    <Compile Include="IOperator.cs" />
-    <Compile Include="IPaginator.cs" />
-    <Compile Include="IPosition.cs" />
-    <Compile Include="IRootEncoder.cs" />
-    <Compile Include="ISection.cs" />
-    <Compile Include="ISize.cs" />
-    <Compile Include="IStream.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="NodeCache.cs" />
+    <Compile Include="BreadthFirstSolver.cs" />
+    <Compile Include="DepthFirstSolver.cs" />
+    <Compile Include="DepthFirstSolverCommon.cs" />
+    <Compile Include="DepthFirstSolverDP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RootSection.cs" />
-    <Compile Include="Section.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj">
-      <Project>{3fb8608b-0ab5-44cc-820a-f2dc23200553}</Project>
-      <Name>QSharp.Scheme.Classical.Sequential</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj">
-      <Project>{a297c131-4fab-4f8f-b9b8-b5048fc12236}</Project>
-      <Name>QSharp.Scheme.Classical.Trees</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj">
-      <Project>{0c8dfed7-19c5-4280-84dc-e6ae5573695f}</Project>
-      <Name>QSharp.Shared</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>
