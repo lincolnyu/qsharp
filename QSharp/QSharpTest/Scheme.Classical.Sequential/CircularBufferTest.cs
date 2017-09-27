@@ -45,7 +45,8 @@ namespace QSharpTest.Scheme.Classical.Sequential
 
             buf.UncheckedCopy(4, 10, 7);
 
-            var expected = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0 };
+            // note it copies from the tail first
+            var expected = new int[] { 3, 4, 5, 6, 7, 2, 3, 4, 5, 6, 7, 2 };
 
             Assert.AreEqual(expected.Length, buf.Length);
             for (var i = 0; i < expected.Length; i++)

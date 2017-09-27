@@ -1,5 +1,7 @@
 ﻿using System;
+#if OldDotNet
 using System.Runtime.Serialization;
+#endif
 using QSharp.Shared;
 
 namespace QSharp.Shader.Graphics.Base.Exceptions
@@ -9,7 +11,7 @@ namespace QSharp.Shader.Graphics.Base.Exceptions
     /// </summary>
     public class GraphicsException : QException
     {
-        #region Constructors
+#region Constructors
 
         /// <summary>
         ///  parameterless constructor
@@ -46,7 +48,7 @@ namespace QSharp.Shader.Graphics.Base.Exceptions
         }
 #endif
 
-        #endregion
+#endregion
     }
     
 }

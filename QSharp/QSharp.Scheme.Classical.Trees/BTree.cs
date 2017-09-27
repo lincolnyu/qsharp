@@ -24,7 +24,7 @@ namespace QSharp.Scheme.Classical.Trees
             var tt = typeof(T);
 
             // TODO the two below might be different
-#if OldRt
+#if OldRt || NETSTANDARD
             var interfaces = tt.GetTypeInfo().ImplementedInterfaces;
 #else
             var interfaces = tt.GetInterfaces();

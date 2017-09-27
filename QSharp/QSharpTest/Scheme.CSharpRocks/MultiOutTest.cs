@@ -17,13 +17,10 @@ namespace QSharpTest.Scheme.CSharpRocks
         [TestMethod]
         public void TestMultiOut()
         {
-            int i;
-            double d;
-            string s;
-            MultiOutFunc(3).Assign(out i, out d, out s);
+            MultiOutFunc(3).Assign(out int i, out double d, out string s);
             Assert.AreEqual(3 * 2, i);
             Assert.AreEqual(3 * 3, d);
-            Assert.AreEqual("aaa", s);
+            Assert.AreEqual("aaaaaa", s);
         }
     }
 }
