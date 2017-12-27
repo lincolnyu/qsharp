@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QSharp.Classical.Algorithms\QSharp.Classical.Algorithms.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Buffering\QSharp.Scheme.Buffering.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Graphs\QSharp.Scheme.Classical.Graphs.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Hash\QSharp.Scheme.Classical.Hash.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Sequential\QSharp.Scheme.Classical.Sequential.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Classical.Trees\QSharp.Scheme.Classical.Trees.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.CSharpRocks\QSharp.Scheme.CSharpRocks.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.ExactCover\QSharp.Scheme.ExactCover.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Mathematics\QSharp.Scheme.Mathematics.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Threading\QSharp.Scheme.Threading.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Utility.HbSpaceMgmt\QSharp.Scheme.Utility.HbSpaceMgmt.csproj" />
+    <ProjectReference Include="..\QSharp.Scheme.Utility\QSharp.Scheme.Utility.csproj" />
+    <ProjectReference Include="..\QSharp.Shader.Geometry.Triangulation\QSharp.Shader.Geometry.Triangulation.csproj" />
+    <ProjectReference Include="..\QSharp.Shader.Graphics\QSharp.Shader.Graphics.csproj" />
+    <ProjectReference Include="..\QSharp.Shader\QSharp.Shader.csproj" />
+    <ProjectReference Include="..\QSharp.Shared\QSharp.Shared.csproj" />
+    <ProjectReference Include="..\QSharp.Signal.Classic\QSharp.Signal.Classic.csproj" />
+    <ProjectReference Include="..\QSharp.Signal.NeuralNetwork\QSharp.Signal.NeuralNetwork.csproj" />
+    <ProjectReference Include="..\QSharp.Signal.Visual\QSharp.Signal.Visual.csproj" />
+    <ProjectReference Include="..\QSharp.String.Arithmetic\QSharp.String.Arithmetic.csproj" />
+    <ProjectReference Include="..\QSharp.String.Compiler\QSharp.String.Compiler.csproj" />
+    <ProjectReference Include="..\QSharp.String.ExpressionEvaluation\QSharp.String.ExpressionEvaluation.csproj" />
+    <ProjectReference Include="..\QSharp.String.Rex\QSharp.String.Rex.csproj" />
+    <ProjectReference Include="..\QSharp.String.Stream\QSharp.String.Stream.csproj" />
+    <ProjectReference Include="..\QSharp.String\QSharp.String.csproj" />
+  </ItemGroup>
+
+</Project>
