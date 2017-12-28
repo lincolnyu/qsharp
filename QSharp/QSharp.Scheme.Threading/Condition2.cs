@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace QSharp.Scheme.Threading
 {
@@ -9,7 +10,6 @@ namespace QSharp.Scheme.Threading
     public class Condition2
     {
         public delegate bool Predicate();
-        public delegate void Action();
 
         public void WaitUntil(Predicate predicate, Action preWait, Action postWait)
         {
@@ -33,15 +33,17 @@ namespace QSharp.Scheme.Threading
             }
         }
 
+        public void WaitUntil(Predicate predicate)
+            => WaitUntil(predicate, ()=>{},()=>{});
+       
         /// <summary>
         ///  Action on the condition variable and notify threads waiting
         /// </summary>
         /// <param name="action">
         ///  Actions on the variable and calls either Monitor.PulseAll(this) 
         ///  or Monitor.Pulse(this) afterwards
-        /// </param>
-         
-        public void ActionAndNotify(Action action)
+        /// </param> 
+        public void ChangeAndNotify(Action action)
         {
             var lockWasTaken = false;
             try
