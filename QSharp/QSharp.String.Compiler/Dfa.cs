@@ -197,7 +197,7 @@ namespace QSharp.String.Compiler
                 foreach (var item in this)
                 {
                     sb.Append(item);
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
                 return sb.ToString();
             }
@@ -399,9 +399,9 @@ namespace QSharp.String.Compiler
                 }
                 sb.Append("state[");
                 sb.Append(MyStateIndex[state]);
-                sb.Append("] {\r\treesize");
+                sb.Append("] {\r\n");
                 sb.Append(state);
-                sb.Append("----------\r\treesize");    // delimiter separating item division and go devision
+                sb.Append("----------\r\n");    // delimiter separating item division and go devision
 
                 foreach (Bnf.ISymbol symbol in state.MyGo)
                 {
@@ -412,9 +412,9 @@ namespace QSharp.String.Compiler
                     sb.Append(symbol);
                     sb.Append("] = state[");
                     sb.Append(stateIndex);
-                    sb.Append("]\r\treesize");
+                    sb.Append("]\r\n");
                 }
-                sb.Append("}\r\treesize\r\treesize");
+                sb.Append("}\r\n\r\n");
             }
             return sb.ToString();
         }
@@ -594,7 +594,7 @@ namespace QSharp.String.Compiler
                 foreach (var item in this)
                 {
                     sb.Append(item);
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
                 return sb.ToString();
             }
@@ -869,9 +869,9 @@ namespace QSharp.String.Compiler
                 }
                 sb.Append("state[");
                 sb.Append(MyStateIndex[state]);
-                sb.Append("] {\r\treesize");
+                sb.Append("] {\r\n");
                 sb.Append(state);
-                sb.Append("----------\r\treesize");    // delimiter separating item division and go devision
+                sb.Append("----------\r\n");    // delimiter separating item division and go devision
 
                 foreach (var symbol in state.MyGo)
                 {
@@ -882,9 +882,9 @@ namespace QSharp.String.Compiler
                     sb.Append(symbol);
                     sb.Append("] = state[");
                     sb.Append(stateIndex);
-                    sb.Append("]\r\treesize");
+                    sb.Append("]\r\n");
                 }
-                sb.Append("}\r\treesize\r\treesize");
+                sb.Append("}\r\n\r\n");
             }
             return sb.ToString();
         }

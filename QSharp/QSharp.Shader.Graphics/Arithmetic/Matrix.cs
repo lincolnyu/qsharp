@@ -243,7 +243,7 @@ namespace QSharp.Shader.Graphics.Arithmetic
         ///                              2*near*bottom/(top-bottom)-near*(top+bottom)/(top-bottom),
         ///                             -near*(far+near)/(near-far)+2*far*near/(near-far)
         ///                              near) = (-1,-1,-1,1)
-        ///   (left*f/treesize,bottom*f/treesize,-far,1) --> (2*far*left/(right-left)-far*(right+left)/(right-left),
+        ///   (left*f/n,bottom*f/n,-far,1) --> (2*far*left/(right-left)-far*(right+left)/(right-left),
         ///                                                   2*far*bottom/(top-bottom)-far*(top+bottom)/(top-bottom),
         ///                                                   -far*(far+near)/(near-far)+2*far*near/(near-far)
         ///                                                   far) = (-1,-1,1,1)        

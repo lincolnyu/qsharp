@@ -558,7 +558,7 @@ namespace QSharp.Scheme.Classical.Trees
 
             if (child == null)
             {
-                // nb takes the place of treesize
+                // nb takes the place of n
 
                 INode parent = nb.Parent;
                 bool nbIsLeft = parent.Left == nb;
@@ -625,7 +625,7 @@ namespace QSharp.Scheme.Classical.Trees
                 else
                     child.Parent.Right = child;
 
-               // nb takes the place of treesize
+               // nb takes the place of n
                 nb.Parent = n.Parent;
                 if (nb.Parent == null)
                     root = nb;
@@ -988,7 +988,7 @@ namespace QSharp.Scheme.Classical.Trees
                 {
                     RemoveAdjust(n.Parent, true, ref root);
                 }
-                else    /* treesize.ParentPos.Skew == Skew.None */
+                else    /* n.ParentPos.Skew == Skew.None */
                 {
                     n.Parent.Skew = Skew.Right;
                 }
@@ -1007,7 +1007,7 @@ namespace QSharp.Scheme.Classical.Trees
                 {
                     RemoveAdjust(n.Parent, false, ref root);
                 }
-                else    /* treesize.ParentPos.Skew == Skew.None */
+                else    /* n.ParentPos.Skew == Skew.None */
                 {
                     n.Parent.Skew = Skew.Left;
                 }
@@ -1021,7 +1021,7 @@ namespace QSharp.Scheme.Classical.Trees
          * 
          * <remarks>
          *  This implementation ensures that the node removed from the 
-         *  tree is exactly the one referenced by treesize, therefore it's at
+         *  tree is exactly the one referenced by n, therefore it's at
          *  the callers' disposal.
          * </remarks>
          */
@@ -1050,7 +1050,7 @@ namespace QSharp.Scheme.Classical.Trees
 #endif
                 }
                 else
-                {   // remove treesize itself
+                {   // remove n itself
                     RemoveLeaf(n, ref root);
                 }
             }

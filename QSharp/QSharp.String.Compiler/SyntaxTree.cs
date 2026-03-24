@@ -250,12 +250,12 @@ namespace QSharp.String.Compiler
             if (nodeNt != null)
             {
                 sb.Append("NodeNonterminal { Ref.Index = ").Append(nodeNt.Ref.Index).Append("; ");
-                sb.Append("Subnodes.Count = ").Append(nodeNt.Subnodes.Count).Append("; Subnodes: \r\treesize");
+                sb.Append("Subnodes.Count = ").Append(nodeNt.Subnodes.Count).Append("; Subnodes: \r\n");
 
                 foreach (var subnode in nodeNt.Subnodes)
                 {
                     sb.Append(SubtreeToString(subnode, nDepth + 1));
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
 
                 sb.Append(leadingWs).Append("}");

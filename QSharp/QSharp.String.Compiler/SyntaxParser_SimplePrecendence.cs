@@ -61,7 +61,7 @@ namespace QSharp.String.Compiler
                     sb.Append(s2);
                     sb.Append("] -> ");
                     sb.Append(this[s1, s2]);
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
             }
             return sb.ToString();

@@ -380,7 +380,7 @@ namespace QSharp.String.Compiler
             foreach (var pdl in P)
             {
                 sb.Append(pdl);
-                sb.Append("\r\treesize");
+                sb.Append("\r\n");
             }
             return sb.ToString();
         }

@@ -90,7 +90,7 @@ namespace QSharp.String.Compiler
                         sb.Append(token);
                         sb.Append("] -> ");
                         sb.Append(action);
-                        sb.Append("\r\treesize");
+                        sb.Append("\r\n");
                     }
                 }
                 return sb.ToString();

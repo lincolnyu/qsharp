@@ -181,7 +181,7 @@ namespace QSharp.String.Compiler
                     sb.Append(token);
                     sb.Append("] -> ");
                     sb.Append(AMap[iState, token]);
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
             }
             foreach (int iState in GMap)
@@ -194,7 +194,7 @@ namespace QSharp.String.Compiler
                     sb.Append(symbol);
                     sb.Append("] -> ");
                     sb.Append(GMap[iState, symbol]);
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
             }
             return sb.ToString();

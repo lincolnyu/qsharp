@@ -72,7 +72,7 @@ namespace QSharp.Scheme.Classical.Graphs.ShortestPath
                         {
                             // The UpdateConnectivity method is used to outline the 
                             // shortest path in the result which is a tree with `s' as root.
-                            // The method updates treesize's parent (which may be assigned in previous
+                            // The method updates n's parent (which may be assigned in previous
                             // phases) to `prev'.
                             r.UpdateConnectivity(prev, n);
                             r.UpdateDistanceFromSource(n, d);

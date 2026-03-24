@@ -309,7 +309,7 @@ namespace QSharp.String.Compiler
                 sb.Append(iState);
                 sb.Append("] -> ");
                 sb.Append(action);
-                sb.Append("\r\treesize");
+                sb.Append("\r\n");
             }
 
             foreach (var iState in GMap)
@@ -321,7 +321,7 @@ namespace QSharp.String.Compiler
                     sb.Append(',');
                     sb.Append(symbol);
                     sb.Append("] -> ");
-                    sb.Append("\r\treesize");
+                    sb.Append("\r\n");
                 }
             }
             return sb.ToString();

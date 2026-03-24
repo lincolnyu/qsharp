@@ -92,7 +92,7 @@ namespace QSharp.Scheme.Classical.Trees
 
         /**
          * <summary>
-         *  Pre: treesize is the node in question, it is assumed to be marked red
+         *  Pre: n is the node in question, it is assumed to be marked red
          * </summary>
          */
         public static void InsertAdjustCase1(INode n, ref INode root)
@@ -110,8 +110,8 @@ namespace QSharp.Scheme.Classical.Trees
 
         /**
          * <summary>
-         *  Pre: treesize is the node in question, it is assumed to be marked red
-         *        since this case  can only be called from case 1, treesize.ParentPos != null
+         *  Pre: n is the node in question, it is assumed to be marked red
+         *        since this case  can only be called from case 1, n.ParentPos != null
          *  
          * </summary>
          */
@@ -125,9 +125,9 @@ namespace QSharp.Scheme.Classical.Trees
 
         /**
          * <summary>
-         *  Pre: treesize is the node in question, it is assumed to be marked red
+         *  Pre: n is the node in question, it is assumed to be marked red
          *       since this case can only be called from case 2, the color 
-         *       treesize's parent is red, then it must not be the root, hence treesize 
+         *       n's parent is red, then it must not be the root, hence n 
          *       has grandparent
          * </summary>
          */
@@ -190,9 +190,9 @@ namespace QSharp.Scheme.Classical.Trees
 
         /**
          * <summary>
-         *  Pre: treesize is the node in question, it is assumed to be marked red
+         *  Pre: n is the node in question, it is assumed to be marked red
          *       since this case can only be called from case 3, 
-         *       thereby treesize has grandparent
+         *       thereby n has grandparent
          * </summary>
          */
         public static void InsertAdjustCase4(INode n, ref INode root)
@@ -202,12 +202,12 @@ namespace QSharp.Scheme.Classical.Trees
             if (n == n.Parent.Right && n.Parent == g.Left)
             {
                 n.Parent.RotateZag(out n);
-                n = n.Left;     // formerly it's treesize's parent
+                n = n.Left;     // formerly it's n's parent
             }
             else if (n == n.Parent.Left && n.Parent == g.Right)
             {
                 n.Parent.RotateZig(out n);
-                n = n.Right;    // formerly it's treesize's parent
+                n = n.Right;    // formerly it's n's parent
             }
 
             InsertAdjustCase5(n, ref root);
@@ -215,9 +215,9 @@ namespace QSharp.Scheme.Classical.Trees
 
         /**
          * <summary>
-         *  Pre: treesize is the node in question, it is assumed to be marked red
+         *  Pre: n is the node in question, it is assumed to be marked red
          *       since this case can only be called from case 4, 
-         *       thereby treesize has grandparent
+         *       thereby n has grandparent
          * </summary>
          */
         public static void InsertAdjustCase5(INode n, ref INode root)
@@ -256,7 +256,7 @@ namespace QSharp.Scheme.Classical.Trees
             var child = n.Right ?? n.Left;
 
             if (child == null)
-            {   // delete treesize itself
+            {   // delete n itself
 
                 if (n.Color == Color.Black)
                 {
@@ -287,16 +287,16 @@ namespace QSharp.Scheme.Classical.Trees
 
                 child.Color = Color.Black;
 /*
-                if (treesize.Color == Color.Black)
+                if (n.Color == Color.Black)
                 {
                     if (child.Color == Color.Red)
                         child.Color = Color.Black;
                     else
                     {
 #if USE_INTEGRATED
-                        DeleteCaseIntegrated123(treesize, ref root);
+                        DeleteCaseIntegrated123(n, ref root);
 #else
-                        DeleteCase1(treesize, ref root);
+                        DeleteCase1(n, ref root);
 #endif
                     }
                 }
@@ -497,7 +497,7 @@ namespace QSharp.Scheme.Classical.Trees
         /**
          * <remarks>
          *  This implementation ensures that the node removed from the 
-         *  tree is exactly the one referenced by treesize, therefore it's at
+         *  tree is exactly the one referenced by n, therefore it's at
          *  the callers' disposal.
          * </remarks>
          */

@@ -358,7 +358,7 @@ namespace QSharp.Scheme.Utility
             {
                 sb.Append(cp).Append("; ");
             }
-            sb.Append("\treesize");
+            sb.Append("\n");
 
             return sb.ToString();
         }
